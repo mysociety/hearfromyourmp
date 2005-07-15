@@ -1,0 +1,100 @@
+/*
+ * ycml.css
+ * Top-level style sheet for YCML.
+ *
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+ *
+ * $Id: ycml.css,v 1.1 2005-07-15 23:20:52 matthew Exp $
+ *
+ */
+
+/* Site wide styles */
+
+body, html {
+    font-family: Georgia, serif;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+    background-color: #ffffff;
+}
+p {
+    line-height: 1.4;
+}
+form {
+    padding: 5px;
+    background-color: #eeffee;
+    border: solid 1px #009900;
+}
+input {
+    border: solid 1px #99cc99;
+}
+input:hover, input:focus {
+    border: solid 1px #009900;
+}
+label {
+    cursor: pointer;
+    font-weight: bold;
+    display: block;
+}
+
+h1 {
+    font-size: 200%;
+    margin: 0;
+    padding: 0.4em 10px;
+    background-color: #eeffee;
+    color: #009900;
+    border-bottom: solid 2px #009900;
+}
+
+#content {
+    max-width: 70em;
+    margin: 2em;
+}
+
+#footer {
+    font-size: 89%;
+    margin: 0 0 0 auto;
+    padding: 5px;
+    text-align: right;
+    border: solid 1px #009900;
+    background-color: #eeffee;
+    border-width: 1px 0;
+}
+
+#errors {
+    margin: 0 auto 1em;
+    color: #ff0000;
+    background-color: #ffcccc;
+    border: solid 2px #990000;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+#errors ul {
+    padding: 0;
+    margin: 0 0 0 1.5em;
+}
+
+.box {
+    float: left;
+    clear: left;
+    width: 12em;
+    background-color: #eeffee;
+    padding: 5px;
+    margin-bottom: 1em;
+}
+.box h2 {
+    font-size: 120%;
+    border-bottom: solid 1px #009900;
+    margin: 0;
+}
+.box ul {
+    font-size: 89%;
+    padding: 0;
+    margin: 0 0 0 1.5em;
+}
+
+#indented {
+    margin-left: 14em;
+}
+

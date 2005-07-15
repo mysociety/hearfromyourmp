@@ -1,0 +1,11 @@
+Subject: <?=$values['reason_email_subject']?>
+
+Please click on the link below to confirm your email address.
+<?=$values['reason_email']?>
+
+<?=$values['url']?>
+
+We will never give away or sell your email address to anyone else
+without your permission.
+
+<?=$values['signature']?>

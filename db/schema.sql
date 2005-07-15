@@ -5,17 +5,76 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.1 2005-05-05 01:01:23 francis Exp $
+-- $Id: schema.sql,v 1.2 2005-07-15 23:20:46 matthew Exp $
 --
+
+-- Returns the timestamp of current time, but with possibly overriden "today".
+create function pb_current_timestamp()
+    returns timestamp as '
+    begin
+        return current_timestamp;
+    end;
+' language 'plpgsql';
 
 create table constituent (
     id serial not null primary key,
 
-    name text not null,
-    email text not null,
+    person_id integer not null references person(id),
+
+-- Constituency they've signed up to, plus postcode they used
+    constituency integer not null,
     postcode text not null,
 
-    creation_time timestamp not null,
+-- Metadata
+    creation_time timestamp not null default current_timestamp,
     creation_ipaddr text not null
 );
 
+create index constituent_person_id_idx on constituent(person_id);
+
+-- secret
+-- A random secret.
+create table secret (
+    secret text not null
+);
+
+-- users, but call the table person rather than user so we don't have to quote
+-- its name in every statement....
+create table person (
+    id serial not null primary key,
+    name text,
+    email text not null,
+    password text,
+    website text,
+    numlogins integer not null default 0
+);
+
+create unique index person_email_idx on person(email);
+
+-- Stores randomly generated tokens and serialised hash arrays associated
+-- with them.
+create table token (
+    scope text not null,        -- what bit of code is using this token
+    token text not null,
+    data bytea not null,
+    created timestamp not null default current_timestamp,
+    primary key (scope, token)
+);
+
+create table requeststash (
+    key char(8) not null primary key,
+    whensaved timestamp not null default current_timestamp,
+    method text not null default 'GET' check (
+            method = 'GET' or method = 'POST'
+        ),
+    url text not null,
+    -- contents of POSTed form
+    post_data bytea check (
+            (post_data is null and method = 'GET') or
+            (post_data is not null and method = 'POST')
+        ),
+    extra text
+);
+
+-- make expiring old requests quite quick
+create index requeststash_whensaved_idx on requeststash(whensaved);
