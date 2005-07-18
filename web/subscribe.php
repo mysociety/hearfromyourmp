@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.1 2005-07-15 23:20:52 matthew Exp $
+// $Id: subscribe.php,v 1.2 2005-07-18 16:26:21 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -106,7 +106,7 @@ function do_subscribe() {
             # Send another reminder email?
         }
 ?>
-<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You'll now get emailed when threshold reached, person sends then, etc."), $rep_name, $area_name) ?> <a href="/"><?=_('YCML home page') ?></a></p>
+<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_name, $area_name, english_ordinal($count)) ?> <a href="/"><?=_('YCML home page') ?></a></p>
 <?
     } else { ?>
 <p class="loudmessage" align="center">You have already signed up to this YCML!</p>
