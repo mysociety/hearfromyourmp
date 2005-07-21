@@ -1,0 +1,49 @@
+#!/usr/local/bin/php -w
+<?
+# convert-subs:
+# Convert people from the old system to the new.
+#
+# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+# 
+# $Id: convert-subs,v 1.1 2005-07-21 10:26:39 matthew Exp $
+
+require_once '../phplib/ycml.php';
+require_once '../../phplib/utility.php';
+require_once '../../phplib/mapit.php';
+
+$q = db_query('select id,name,email,postcode from constituent where constituency is null');
+while ($r = db_fetch_row($q)) {
+    $id = $r['id'];
+    $postcode = canonicalise_postcode($r['postcode']);
+    $name = $r['name'];
+    $email = $r['email'];
+    $areas = mapit_get_voting_areas($postcode);
+    if (mapit_get_error($areas)) {
+        print "Illegal postcode entered, id $id, postcode $postcode\n";
+        $wrong++;
+    } else {
+        $wmc_id = $areas['WMC'];
+        $person_id = db_getOne('select id from person where email = ?', $email);
+        if (is_null($person_id)) {
+            $person_id = db_getOne("select nextval('person_id_seq')");
+            db_query('insert into person (id,name,email) values (?,?,?)', array($person_id, $name, $email));
+        }
+        $already_exist = db_getOne('select id from constituent where constituency = ? and person_id = ?', array($wmc_id, $person_id));
+        if ($already_exist) {
+            db_query('delete from constituent where id = ?', array($id));
+            print "Deleting duplicate entry $id, email $email, postcode $postcode\n";
+            $deleted++;
+        } else {
+            db_query("update constituent set name=null,email=null,person_id=?,constituency=? where id=?", array($person_id, $wmc_id, $id));
+            print "Updating entry $id, email $email, postcode $postcode to constituency $wmc_id, person id $person_id\n";
+            $right++;
+        }
+    }
+}
+
+print "\n$wrong wrong postcodes, $right updated, $deleted dupes deleted.\n";
+db_commit();
+
+?>
+
