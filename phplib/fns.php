@@ -5,9 +5,10 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.1 2005-07-15 23:20:48 matthew Exp $
+// $Id: fns.php,v 1.2 2005-07-22 11:54:10 matthew Exp $
 
 require_once "../../phplib/evel.php";
+require_once "../../phplib/utility.php";
 
 // $to can be one recipient address in a string, or an array of addresses
 function ycml_send_email_template($to, $template_name, $values, $headers = array()) {

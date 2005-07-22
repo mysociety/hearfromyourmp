@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.2 2005-07-18 16:26:21 matthew Exp $
+// $Id: subscribe.php,v 1.3 2005-07-22 11:54:10 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -76,7 +76,6 @@ function do_subscribe() {
     $area_rep_suffix = $area_info['rep_suffix'];
     $area_name = $area_info['name'];
     
-    $area_status = dadem_get_area_status($wmc_id);
     $reps = dadem_get_representatives($wmc_id);
     $rep_info = dadem_get_representative_info($reps[0]);
     $rep_name = $rep_info['name'];
