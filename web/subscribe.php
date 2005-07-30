@@ -5,15 +5,13 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.3 2005-07-22 11:54:10 matthew Exp $
+// $Id: subscribe.php,v 1.4 2005-07-30 15:35:46 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
-require_once '../../phplib/mapit.php';
-require_once '../../phplib/dadem.php';
 
 $title = _('Signing up');
 page_header($title);
@@ -63,24 +61,10 @@ function do_subscribe() {
     $r['reason_email_subject'] = _("Subscribe to YCML");
     $person = person_signon($r, $q_email, $q_name);
     $person_id = $person->id();
-    
-    $postcode = canonicalise_postcode($q_postcode);
-    $areas = mapit_get_voting_areas($postcode);
-    if (mapit_get_error($areas)) {
-        /* This error should never happen, as earlier postcode validation in form will stop it */
-        err('Invalid postcode while setting alert, please check and try again.');
-    }
-    $wmc_id = $areas['WMC'];
-    $area_info = mapit_get_voting_area_info($wmc_id);
-    $area_rep_name = $area_info['rep_name'];
-    $area_rep_suffix = $area_info['rep_suffix'];
-    $area_name = $area_info['name'];
-    
-    $reps = dadem_get_representatives($wmc_id);
-    $rep_info = dadem_get_representative_info($reps[0]);
-    $rep_name = $rep_info['name'];
-    $rep_party = $rep_info['party'];
-    # TODO: Get method (email only?) from here
+
+    $wmc_id = ycml_get_constituency_id($q_postcode);
+    $area_info = ycml_get_area_info($wmc_id);
+    $rep_info = ycml_get_mp_info($wmc_id);
 
     $already_signed = db_getOne("select id from constituent where 
         constituency = ? and person_id = ?
@@ -92,7 +76,7 @@ function do_subscribe() {
                 )
                 values (?, ?, ?, ?)", array(
                     $person_id, $wmc_id,
-                    $postcode, $_SERVER['REMOTE_ADDR']
+                    $q_postcode, $_SERVER['REMOTE_ADDR']
                 ));
         db_commit();
     
@@ -105,7 +89,7 @@ function do_subscribe() {
             # Send another reminder email?
         }
 ?>
-<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_name, $area_name, english_ordinal($count)) ?> <a href="/"><?=_('YCML home page') ?></a></p>
+<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?> <a href="/"><?=_('YCML home page') ?></a></p>
 <?
     } else { ?>
 <p class="loudmessage" align="center">You have already signed up to this YCML!</p>

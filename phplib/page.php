@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.1 2005-07-15 23:20:48 matthew Exp $
+// $Id: page.php,v 1.2 2005-07-30 15:35:44 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -40,7 +40,7 @@ function page_header($title='', $params = array()) {
     if ($P) {
         print '<p id="signedon" class="noprint">';
         print _('Hello, ');
-        if ($P->has_name())
+        if ($P->name_or_blank())
             print htmlspecialchars($P->name);
         else 
             print htmlspecialchars($P->email);
@@ -48,20 +48,20 @@ function page_header($title='', $params = array()) {
         print _('this isn\'t you?  click here');
         print '</a>)</small></p>';
     }
-?>
-<div id="content"><?    
 
     // Warn that we are on a testing site
     $devwarning = array();
     if (OPTION_YCML_STAGING) {
         $devwarning[] = _('This is a test site for developers only. You probably want
-<a href="http://www.mysociety.org/">the real site</a>.');
+<a href="http://www.mysociety.org/ycml/">the real site</a>.');
     }
     if (count($devwarning) > 0) {
-        ?><p class="noprint" align="center" style="color: #cc0000; background-color: #ffffff; margin-top: 0;"><?
+        ?><p class="noprint" align="center" style="color: #cc0000; background-color: #ffffff;"><?
         print join('<br>', $devwarning);
         ?></p><?
-    }
+    } ?>
+<div id="content">
+<?
 }
 
 /* page_footer PARAMS

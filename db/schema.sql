@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.3 2005-07-22 11:54:10 matthew Exp $
+-- $Id: schema.sql,v 1.4 2005-07-30 15:35:43 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -86,7 +86,9 @@ create index requeststash_whensaved_idx on requeststash(whensaved);
 create table message (
     id serial not null primary key,
     constituency integer not null,
-    content text not null,
+    posted timestamp not null default current_timestamp,
+    subject text not null,
+    content text not null
 );
 
 create table comment (
@@ -94,8 +96,8 @@ create table comment (
     message integer not null references message(id),
     refs text not null default '',
     person_id integer not null references person(id),
-    date integer not null,
-    ipaddr integer not null,
+    date timestamp not null default current_timestamp,
+    ipaddr text not null,
     content text not null,
     visible integer not null default 0
 );

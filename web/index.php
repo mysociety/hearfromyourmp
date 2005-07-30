@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.1 2005-07-15 23:20:52 matthew Exp $
+// $Id: index.php,v 1.2 2005-07-30 15:35:46 matthew Exp $
 
 require_once '../phplib/ycml.php';
 page_header();
@@ -13,19 +13,26 @@ front_page();
 page_footer();
 
 function front_page() {
-    print <<<EOF
-<div class="box">
-<h2>Latest messages</h2>
-<ul>
-</ul>
-</div>
-
-<div class="box">
-<h2>Latest replies</h2>
-<ul>
-</ul>
-</div>
-EOF;
+    $q = db_query('SELECT id,subject,constituency FROM message ORDER BY posted DESC LIMIT 5');
+    $out = '';
+    while ($r = db_fetch_array($q)) {
+        $area_info = ycml_get_area_info($r['constituency']);
+        $rep_info = ycml_get_mp_info($r['constituency']);
+        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
+    }
+    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
+    $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
+        FROM comment,message,person
+        WHERE comment.message = message.id AND comment.person_id = person.id
+        ORDER BY posted DESC LIMIT 5');
+    $out = '';
+    while ($r = db_fetch_array($q)) {
+        $area_info = ycml_get_area_info($r['constituency']);
+        $rep_info = ycml_get_mp_info($r['constituency']);
+        $ds = prettify($r['date']);
+        $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
+    }
+    if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
     signup_form();
     print <<<EOF
 <div id="indented">
@@ -62,7 +69,7 @@ EOF;
 
 function signup_form() {
     print <<<EOF
-<form class="box" method="post" action="/subscribe">
+<form class="box" method="post" action="/">
 <h2>Sign up now</h2>
     <input type="hidden" name="subscribe" id="subscribe" value="1">
     <label for="name">Name:</label>
