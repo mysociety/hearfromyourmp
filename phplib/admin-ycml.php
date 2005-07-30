@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.1 2005-07-22 11:54:10 matthew Exp $
+ * $Id: admin-ycml.php,v 1.2 2005-07-30 16:50:35 matthew Exp $
  * 
  */
 
@@ -166,101 +166,19 @@ class ADMIN_PAGE_YCML_MAIN {
         print '<p>';
         
         // Messages
-        print h2(_("Messages"));
+        print "<h2>Messages</h2>";
         $q = db_query('select * from message 
-                where pledge_id = ? order by whencreated', $pdata['id']);
+                where constituency = ? order by posted', $id);
 
         $n = 0;
         while ($r = db_fetch_array($q)) {
             if ($n++)
                 print '<hr>';
-
-            $got_creator_count = db_getOne('select count(*) from message_creator_recipient where message_id = ?', $r['id']);
-            $got_signer_count = db_getOne('select count(*) from message_signer_recipient where message_id = ?', $r['id']);
-
-            $whom = array();
-            if ($r['sendtocreator'] == 't') { $whom[] = 'creator'; }
-            if ($r['sendtosigners'] == 't') { $whom[] = 'signers'; }
-            if ($r['sendtolatesigners'] == 't') { $whom[] = 'late signers'; }
-
-            print "<p>";
-            print "<strong>". $r['circumstance'] . ' ' . $r['circumstance_count'] . '</strong>';
-            print " created on ". prettify(substr($r['whencreated'], 0, 19));
-            print " to be sent from <strong>" . $r['fromaddress'] . "</strong> to <strong>";
-            print join(", ", $whom) . "</strong>";
-            print "<br>has been queued to evel for ";
-            print "<strong>$got_creator_count creators</strong>";
-            print " and <strong>$got_signer_count signers</strong>";
-            if ($r['sms'])
-                print "<br><strong>sms content:</strong> " . $r['sms'];
-            if ($r['emailtemplatename'])
-                print "<br><strong>email template:</strong> " . $r['emailtemplatename'];
-            if ($r['emailsubject'])
-                print "<br><strong>email subject:</strong> " . $r['emailsubject'];
-            if ($r['emailbody']) {
-                ?><br><strong>email body:</strong>
-                <div class="message"><?= comments_text_to_html($r['emailbody']) ?></div> <?
-            }
-
+            print "<b>$r[subject]</b><br>$r[content]";
         }
         if ($n == 0) {
             print "No messages yet.";
         }
-
-        // Category setting
-        $cats = array();
-        $q = db_query('select category_id from pledge_category where pledge_id = '.$pdata['id']);
-        while ($r = db_fetch_array($q)) {
-            $cats[$r['category_id']] = 1;
-        }
-        print '<form name="categoriesform" method="post" action="'.$this->self_link.'">
-            <input type="hidden" name="pledge_id" value="'.$pdata['id'].'">
-            <input type="hidden" name="update_cats" value="1">
-            <h2>Categories</h2>
-            <p><select name="categories[]" multiple>';
-        $s = db_query('select id, parent_category_id, name from category 
-            where parent_category_id is null
-            order by id');
-        while ($a = db_fetch_row($s)) {
-            list($id, $parent_id, $name) = $a;
-            print '<option';
-            if (array_key_exists($id, $cats)) print ' selected';
-            print ' value="' . $id . '">' .
-                (is_null($parent_id) ? '' : '&nbsp;-&nbsp;') . 
-                 htmlspecialchars($name) . ' </option>';
-        }
-        print '</select> <input type="submit" value="Update"></p></form>';
-
-        print '<h2>Actions</h2>';
-        print '<form name="sendannounceform" method="post" action="'.$this->self_link.'"><input type="hidden" name="send_announce_token_pledge_id" value="' . $pdata['id'] . '"><input type="submit" name="send_announce_token" value="Send announce URL to creator"></form>';
-
-print '<form name="removepledgepermanentlyform" method="post" action="'.$this->self_link.'"><strong>Caution!</strong> This really is forever, you probably don\'t want to do it: <input type="hidden" name="remove_pledge_id" value="' . $pdata['id'] . '"><input type="submit" name="remove_pledge" value="Remove pledge permanently"></form>';
-
-    }
-
-    function remove_pledge($id) {
-        pledge_delete_pledge($id);
-        db_commit();
-        print p(_('<em>That pledge has been successfully removed, along with all its signatories.</em>'));
-    }
-
-    function remove_signer($id) {
-        pledge_delete_signer($id);
-        db_commit();
-        print p(_('<em>That signer has been successfully removed.</em>'));
-    }
-
-    function showname_signer($id) {
-        db_query('UPDATE signers set showname = ? where id = ?', 
-            array(get_http_var('showname') ? true : false, $id));
-        db_commit();
-        print p(_('<em>Show name for signer updated</em>'));
-    }
-
-    function update_prominence($pledge_id) {
-        db_query('UPDATE pledges set prominence = ? where id = ?', array(get_http_var('prominence'), $pledge_id));
-        db_commit();
-        print p(_("<em>Changes to pledge prominence saved</em>"));
     }
 
     function display($self_link) {
@@ -307,9 +225,9 @@ print '<form name="removepledgepermanentlyform" method="post" action="'.$this->s
     }
 }
 
-class ADMIN_PAGE_PB_LATEST {
-    function ADMIN_PAGE_PB_LATEST() {
-        $this->id = 'pblatest';
+class ADMIN_PAGE_YCML_LATEST {
+    function ADMIN_PAGE_YCML_LATEST() {
+        $this->id = 'ycmllatest';
         $this->navname = 'Timeline';
 
         if (get_http_var('linelimit')) {
@@ -318,132 +236,51 @@ class ADMIN_PAGE_PB_LATEST {
             $this->linelimit = 250;
         }
 
-        $this->ref = null;
-        if ($ref = get_http_var('ref')) {
-            $this->ref = db_getOne('select id from pledges where ref=?', $ref);
-        }
-        $this->ignore = null;
-        if ($ignore = get_http_var('ignore')) {
-            $this->ignore = db_getOne('select id from pledges where ref=?', $ignore);
+        $this->constituency = null;
+        if ($constituency = get_http_var('constituency')) {
+            $this->constituency = $constituency;
         }
     }
 
-    # pledges use creationtime
-    # signers use signtime
     function show_latest_changes() {
-        $q = db_query('SELECT signers.name, signer_person.email,
-                              signers.mobile, signtime, showname, pledges.title,
-                              pledges.ref, pledges.id,
-                              extract(epoch from signtime) as epoch
-                         FROM pledges, signers
-                         LEFT JOIN person AS signer_person ON signer_person.id = signers.person_id
-                        WHERE signers.pledge_id = pledges.id
-                     ORDER BY signtime DESC');
+        $q = db_query('SELECT *,extract(epoch from posted) as epoch FROM message
+                     ORDER BY posted DESC');
+        $this->area_info = array();
         while ($r = db_fetch_array($q)) {
-            if (!$this->ref || $this->ref==$r['id']) {
-                $signed[$r['id']][$r['email']] = 1;
+            $c_id = $r['constituency'];
+            if (!array_key_exists($c_id, $this->area_info)) {
+                $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+            }
+            if (!$this->constituency || $this->constituency==$c_id) {
                 $time[$r['epoch']][] = $r;
             }
         }
-
-        // Token display not so useful, and wastes too much space
-        // (what would be useful is unused tokens)
-        /*
-        $q = db_query('SELECT *,extract(epoch from created) as epoch
-                         FROM token
-                     ORDER BY created DESC');
+        $q = db_query('SELECT comment.*,constituency,subject,name,email,extract(epoch from date) as epoch
+                        FROM comment, message, person
+                        WHERE comment.message = message.id AND person_id = person.id
+                        ORDER BY date DESC');
         while ($r = db_fetch_array($q)) {
-            $stuff = $r['data'];
-            $pos = 0;
-            $res = rabx_wire_rd(&$stuff, &$pos);
-            if (rabx_is_error($res)) {
-                $r['error'] = 'RABX Error: ' . $res->text;
-            }
-            if ($r['scope'] == "login") {
-                $stash_data = db_getRow('select * from requeststash where key = ?', $res['stash']);
-                # TODO: Could extract data from post_data here for display if it were useful to do so
-                $time[$r['epoch']][] = array_merge(array_merge($r, $res), $stash_data);
-            } else {
-                if (!isset($signed[$res['pledge_id']]) || 
-                    !isset($res['email']) || 
-                    !isset($signed[$res['pledge_id']][$res['email']])) {
-                        $time[$r['epoch']][] = array_merge($r, $res);
-                }
+            if (!$this->constituency || $this->constituency==$r['constituency']) {
+                $time[$r['epoch']][] = $r;
             }
         }
-        */
-    
-        $q = db_query('SELECT pledges.*,extract(epoch from creationtime) as epoch, person.email as email
-                         FROM pledges LEFT JOIN person ON person.id = pledges.person_id
-                     ORDER BY pledges.id DESC');
-        $this->pledgeref = array();
+        $q = db_query('SELECT *,extract(epoch from creation_time) as epoch FROM constituent,person
+                        WHERE person_id = person.id
+                        ORDER BY creation_time DESC');
         while ($r = db_fetch_array($q)) {
-            if (!$this->ref || $this->ref==$r['id']) {
-                if (!get_http_var('onlysigners')) {
-                    $time[$r['epoch']][] = $r;
-                }
-                $this->pledgeref[$r['id']] = $r['ref'];
+            $c_id = $r['constituency'];
+            if (!array_key_exists($c_id, $this->area_info)) {
+                $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+            }
+            if (!$this->constituency || $this->constituency==$c_id) {
+                $time[$r['epoch']][] = $r;
             }
         }
-        if (!get_http_var('onlysigners')) {
-            $q = db_query('SELECT *
-                             FROM incomingsms
-                         ORDER BY whenreceived DESC');
-            while ($r = db_fetch_array($q)) {
-                $time[$r['whenreceived']][] = $r;
-            }
-            $q = db_query('SELECT *
-                             FROM outgoingsms
-                         ORDER BY lastsendattempt DESC LIMIT 10');
-            while ($r = db_fetch_array($q)) {
-                if (!$this->ref) {
-                    $time[$r['lastsendattempt']][] = $r;
-                }
-            }
-            $q = db_query('SELECT whencreated, circumstance, ref,extract(epoch from whencreated) as epoch, pledges.id
-                             FROM message, pledges
-                            WHERE message.pledge_id = pledges.id
-                         ORDER BY whencreated DESC');
-            while ($r = db_fetch_array($q)) {
-                if (!$this->ref || $this->ref==$r['id']) {
-                    $time[$r['epoch']][] = $r;
-                }
-            }
-            $q = db_query('SELECT comment.*, extract(epoch from whenposted) as commentposted,
-                                  person.email as author_email
-                             FROM comment
-                             LEFT JOIN person ON person.id = comment.person_id
-                         ORDER BY whenposted DESC');
-            while ($r = db_fetch_array($q)) {
-                if (!$this->ref || $this->ref==$r['pledge_id']) {
-                    $time[$r['commentposted']][] = $r;
-                }
-            }
-            $q = db_query('SELECT alert.postcode as alertpostcode, 
-                                    extract(epoch from whenqueued) as whenqueued,
-                                  person.email as email, person.name as name,
-                                  pledges.ref as ref, pledges.id as pledge_id
-                             FROM alert_sent
-                             LEFT JOIN alert ON alert.id = alert_sent.alert_id
-                             LEFT JOIN person ON person.id = alert.person_id
-                             LEFT JOIN pledges ON alert_sent.pledge_id = pledges.id
-                             WHERE event_code = \'pledges/local/GB\'
-                         ORDER BY whenqueued DESC');
-            while ($r = db_fetch_array($q)) {
-                if (!$this->ref || $this->ref==$r['pledge_id']) {
-                    $time[$r['whenqueued']][] = $r;
-                }
-            }
-         }
         krsort($time);
 
         print '<a href="'.$this->self_link.'">Full log</a>';
-        if ($this->ref) {
-            print ' | <em>Viewing only pledge "'.$this->pledgeref[$this->ref].'"</em> (<a href="?page=pb&amp;pledge='.$this->pledgeref[$this->ref].'">admin</a>)';
-        } elseif ($this->ignore) {
-            print ' | <em>Ignoring pledge "'.$this->pledgeref[$this->ignore].'"</em> (<a href="?page=pb&amp;pledge='.$this->pledgeref[$this->ignore].'">admin</a>)';
-        } else {
-            print ' | <a href="'.$this->self_link.'&amp;onlysigners=1">Only signatures</a>';
+        if ($this->constituency) {
+            print ' | <em>Viewing constituency "'.$this->area_info[$this->constituency]['name'].'"</em> (<a href="?page=ycml&amp;constituency='.$this->constituency.'">admin</a>)';
         }
         $date = ''; 
         $linecount = 0;
@@ -464,61 +301,15 @@ class ADMIN_PAGE_PB_LATEST {
             }
             print '<dt><b>' . date('H:i:s', $epoch) . ':</b></dt> <dd>';
             foreach ($datas as $data) {
-            if (array_key_exists('signtime', $data)) {
-                print $this->pledge_link('ref', $data['ref']);
-                if ($data['showname'] == 'f')
-                    print ' anonymously';
-                print ' signed by ';
-                print $data['name'];
-                if ($data['email']) print ' &lt;'.$data['email'].'&gt;';
-                if ($data['mobile']) print ' (' . $data['mobile'] . ')';
-            } elseif (array_key_exists('creationtime', $data)) {
-                print "Pledge $data[id], ref <em>$data[ref]</em>, ";
-                print $this->pledge_link('ref', $data['ref'], $data['title']) . ' created (confirmed)';
-                print " by $data[name] &lt;$data[email]&gt;";
-            } elseif (array_key_exists('whenreceived', $data)) {
-                print "Incoming SMS from $data[sender] received, sent
-                $data[whensent], message $data[message]
-                ($data[foreignid] $data[network])";
-            } elseif (array_key_exists('whencreated', $data)) {
-                print "Message $data[circumstance] queued for pledge " .
-                $this->pledge_link('ref', $data['ref']);
-            } elseif (array_key_exists('created', $data)) {
-                if (array_key_exists('error', $data)) {
-                    print '<em>' . $data['error'] . '</em><br>';
-                }
-                print "$data[scope] token $data[token] created ";
-                if (array_key_exists('email', $data)) {
-                    print "for $data[name] $data[email] ";
-                    if (array_key_exists('pledge_id', $data)) {
-                        print " pledge " . $this->pledge_link('id', $data['pledge_id']);
-                    }
-                } elseif (array_key_exists('circumstance', $res)) {
-                    print "for pledge " . $this->pledge_link('id', $res['pledge_id']);
-                }
-                if ($data['scope'] == "login") {
-                    if (!array_key_exists('method', $data)) {
-                        print "<em>Stash expired</em>";
-                    } else {
-                        print " " . $data['method'] . " to " . $data['url'];
-                    }
-                }
-            } elseif (array_key_exists('lastsendattempt', $data)) {
-                if ($data['ispremium'] == 't') 
-                    print 'Premium ';
-                print "SMS sent to $data[recipient], message
-                    '$data[message]' status $data[lastsendstatus]";
-            } elseif (array_key_exists('commentposted', $data)) {
-                $comment_email = $data['email'];
-                if (!$comment_email)
-                    $comment_email = $data['author_email'];
-                print "$data[name] &lt;$comment_email&gt; commented on " .
-                    $this->pledge_link('id', $data['pledge_id']) . " saying
-                '$data[text]'";
-            } elseif (array_key_exists('whenqueued', $data)) {
-                print "Local alert to ". htmlspecialchars($data['email']) .
-                  " " . htmlspecialchars($data['alertpostcode']) . " " .
-                  " for pledge " . $this->pledge_link('id', $data['pledge_id']);
+            if (array_key_exists('posted', $data)) {
+                if (!$this->constituency) print $this->area_info[$data['constituency']]['name'] . ' ';
+                print "MP posted message <a href=\"/view/message/$data[id]\">$data[subject]</a> : $data[content]";
+            } elseif (array_key_exists('date', $data)) {
+                print "$data[name] &lt;$data[email]&gt; commented on <a href=\"/view/message/$data[message]\">$data[subject]</a> saying '";
+                print htmlspecialchars($data['content']) . "'";
+            } elseif (array_key_exists('creation_time', $data)) {
+                print "$data[name] &lt;$data[email]&gt; (postcode $data[postcode]) signed up";
+                if (!$this->constituency) print " to " . $this->area_info[$data['constituency']]['name'];
             } else {
                 print_r($data);
             }
@@ -530,26 +321,7 @@ class ADMIN_PAGE_PB_LATEST {
         print "</div>";
     }
 
-    function pledge_link($type, $data, $title='') {
-        if ($type == 'id') {
-            if (!array_key_exists($data, $this->pledgeref)) {
-                return "DELETED";
-            }
-            $ref = $this->pledgeref[$data];
-        }
-        else 
-            $ref = $data;
-        if (!$title) 
-            $title = $ref;
-        $str = '<a href="' . OPTION_BASE_URL . '/' . $ref . '">' .
-            htmlspecialchars($title) . '</a>';
-        if (!$this->ref)
-            $str .= ' (<a href="?page=pb&amp;pledge='.$ref.'">admin</a>' .  ' | ' . ' <a href="?page=pblatest&amp;ref='.$ref.'">timeline</a>'. ')';
-        return $str;
-    }
-
     function display($self_link) {
-        db_connect();
         $this->show_latest_changes();
     }
 }
