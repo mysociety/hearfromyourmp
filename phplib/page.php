@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.2 2005-07-30 15:35:44 matthew Exp $
+// $Id: page.php,v 1.3 2005-07-30 17:00:55 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -34,7 +34,7 @@ function page_header($title='', $params = array()) {
 <style type="text/css">@import url("/ycml.css");</style>
 </head>
 <body>
-<h1>Your Constituency Mailing List</h1>
+<h1><a href="/">Your Constituency Mailing List</a></h1>
 <?
     // Display who is logged in 
     if ($P) {

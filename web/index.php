@@ -5,15 +5,16 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.3 2005-07-30 15:38:42 matthew Exp $
+// $Id: index.php,v 1.4 2005-07-30 17:00:56 matthew Exp $
 
 require_once '../phplib/ycml.php';
 page_header();
 front_page();
 page_footer();
 
-function front_page() {
-    $q = db_query('SELECT id,subject,constituency FROM message ORDER BY posted DESC LIMIT 5');
+function front_page() { ?>
+<img align="right" src="../shoupsm.png" width="204" height="329" alt="">
+<?  $q = db_query('SELECT id,subject,constituency FROM message ORDER BY posted DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
         $area_info = ycml_get_area_info($r['constituency']);
@@ -36,8 +37,7 @@ function front_page() {
     signup_form();
     print <<<EOF
 <div id="indented">
-<p><img align="right" src="../shoupsm.png" width="204" height="329" alt="">
-<em>&ldquo;So, the voting is over. The politicians vanish to Westminster, and
+<p><em>&ldquo;So, the voting is over. The politicians vanish to Westminster, and
 everything carries on as before, right?&rdquo;</em></p>
 
 <p>Wrong. Between elections the internet is really starting to challenge
