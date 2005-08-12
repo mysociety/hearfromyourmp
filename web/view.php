@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.5 2005-08-12 18:26:08 matthew Exp $
+# $Id: view.php,v 1.6 2005-08-12 22:43:57 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -249,8 +249,8 @@ function comment_form($P) {
 }
 
 function person_allowed_to_reply($person_id, $constituency, $message) {
-    $signed_up = db_getOne('SELECT id FROM constituent,message
-                            WHERE person_id = ? AND constituency = ? AND message.id = ?
+    $signed_up = db_getOne('SELECT constituent.id FROM constituent,message
+                            WHERE person_id = ? AND constituent.constituency = ? AND message.id = ?
                             AND creation_time<=posted',
                             array($person_id, $constituency, $message));
     if ($signed_up) return true;
