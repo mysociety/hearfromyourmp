@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.4 2005-08-12 17:46:09 matthew Exp $
+# $Id: view.php,v 1.5 2005-08-12 18:26:08 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -70,7 +70,11 @@ function show_messages($c_id) {
     $area_info = ycml_get_area_info($c_id);
     $rep_info = ycml_get_mp_info($c_id);
     $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
-    $q = db_query('SELECT *, extract(epoch from posted) as posted, (select count(*) from comment where comment.message=message.id AND visible<>0) as numposts FROM message WHERE constituency = ?', $c_id);
+    $q = db_query('SELECT *, extract(epoch from posted) as posted,
+                    (select count(*) from comment where comment.message=message.id
+                        AND visible<>0) as numposts
+                    FROM message
+                    WHERE constituency = ? ORDER BY message.posted', $c_id);
 ?>
 <h2><?=$area_info['name'] ?></h2>
 <p>The MP for this constituency is <?=$rep_info['name'] ?>, <?=$rep_info['party'] ?>.
@@ -115,10 +119,10 @@ function show_message($message) {
         $P = person_if_signed_on();
     }
     if (!is_null($P)) {
-        if (person_allowed_to_reply($P->id(), $c_id)) {
+        if (person_allowed_to_reply($P->id(), $c_id, $message)) {
             comment_form($P);
         } else {
-            print '<p id="formreplace">You are not subscribed to this YCML.</p>';
+            print '<p id="formreplace">You are not subscribed to this YCML, or subscribed after this message was posted.</p>';
         }
     } else {
         print '<p id="formreplace">If you are subscribed to this YCML, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe?r=/view/message/' . $message . '">sign up</a> in order to post your own comments.</p>';
@@ -182,8 +186,8 @@ function post_comment_form() {
 
     $r = get_message($q_message);
     $constituency = $r['constituency'];
-    if (!person_allowed_to_reply($P->id(), $constituency)) {
-        print '<div class="error">Sorry, but you are not subscribed to this constituency.</div>';
+    if (!person_allowed_to_reply($P->id(), $constituency, $q_message)) {
+        print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
         return false;
     }
 
@@ -244,8 +248,11 @@ function comment_form($P) {
 <?
 }
 
-function person_allowed_to_reply($person_id, $constituency) {
-    $signed_up = db_getOne('SELECT id FROM constituent WHERE person_id = ? AND constituency = ?', array($person_id, $constituency));
+function person_allowed_to_reply($person_id, $constituency, $message) {
+    $signed_up = db_getOne('SELECT id FROM constituent,message
+                            WHERE person_id = ? AND constituency = ? AND message.id = ?
+                            AND creation_time<=posted',
+                            array($person_id, $constituency, $message));
     if ($signed_up) return true;
     return false;
 }
