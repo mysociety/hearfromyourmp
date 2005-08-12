@@ -1,0 +1,111 @@
+#!/usr/local/bin/php -q
+<?php
+/* 
+ * send-message-alerts:
+ * Run from cron regularly to send new message email alerts.
+ *
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+ *
+ * $Id: send-message-alerts,v 1.1 2005-08-12 17:46:05 matthew Exp $
+ *
+ */
+
+require_once "../conf/general";
+require_once '../phplib/fns.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+
+function verbose($str) {
+    global $verbose;
+    if ($verbose) 
+        fwrite(STDERR, "send-message-alerts: $str\n");
+}
+function error($str) {
+    fwrite(STDERR, "send-message-alerts: ERROR: $str\n");
+}
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcgi';
+
+$switches = $options[0];
+$args = $options[1];
+$verbose = 0; 
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+YCML message alert sending script.
+
+Usage: send-message-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_message_alerts();
+
+// send_message_alerts sends alerts for new messages to YCML
+function send_message_alerts() {
+    verbose("sending message alerts");
+
+    // Search for alert
+    $q = db_query("
+            select message.id as message_id, message.constituency, message.subject, message.content,
+                    person.id as person_id, person.name, person.email
+            from message, constituent, person
+            where
+                message.constituency = constituent.constituency and
+                constituent.person_id = person.id and
+                posted >= creation_time and
+                (select whenqueued from message_sent where
+                    message_sent.person_id = person.id and
+                    message_sent.message_id = message.id) is null
+            order by posted
+            ");
+
+    while ($row = db_fetch_array($q)) {
+        verbose("person #${row['person_id']} (${row['email']}) has alert on message ${row['message_id']}");
+
+        $area_info = ycml_get_area_info($row['constituency']);
+        $rep_info = ycml_get_mp_info($row['constituency']);
+
+#        # Grab a lock, making sure alert hasn't been deleted meanwhile
+#        $stillthere = db_getOne('select id from alert where id = ? for update', $row['alert_id']);
+#        if (!$stillthere) continue;
+
+        # Check to see if the alert has been sent meanwhile
+        $alreadysent = db_getOne('select person_id from message_sent where person_id = ? and message_id = ?', 
+                 array($row['person_id'], $row['message_id']));
+        if ($alreadysent) continue;
+
+        # Store that alert has been sent
+        db_query("insert into message_sent (person_id, message_id) values (?, ?)", 
+                 array($row['person_id'], $row['message_id']));
+
+        # Send email
+        $row['mp_name'] = $rep_info['name'];
+        $row['constituency_name'] = $area_info['name'];
+        $row['message_url'] = OPTION_BASE_URL . '/view/message/' . $row['message_id'];
+#        $row['unsubscribe_url'] = alert_unsubscribe_link($row['alert_id'], $row['alerted_email']);
+        $f = ycml_send_email_template($row['email'], 'alert-message', $row);
+        if (!$f) {
+            # Revert record that it has been sent
+            db_rollback();
+            error("Failed to send message alert to " . $row['email'] . " message #" . $row['message_id']);
+        } else {
+            # Commit that it has been sent
+            db_commit();
+        }
+    }
+
+    verbose("finished sending message alerts");
+}
+

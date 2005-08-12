@@ -10,9 +10,10 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.3 2005-08-12 16:04:19 matthew Exp $
+# $Id: view.php,v 1.4 2005-08-12 17:46:09 matthew Exp $
 
 require_once '../phplib/ycml.php';
+require_once '../phplib/fns.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';

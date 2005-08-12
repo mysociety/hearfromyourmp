@@ -5,10 +5,44 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.2 2005-07-22 11:54:10 matthew Exp $
+// $Id: fns.php,v 1.3 2005-08-12 17:46:09 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
+require_once "../../phplib/mapit.php";
+require_once "../../phplib/dadem.php";
+
+# ycml_get_constituency_id POSTCODE
+# Given a postcode, returns the WMC id
+function ycml_get_constituency_id($postcode) {
+    $postcode = canonicalise_postcode($postcode);
+    $areas = mapit_get_voting_areas($postcode);
+    if (mapit_get_error($areas)) {
+        /* This error should never happen, as earlier postcode validation in form will stop it */
+        err('Invalid postcode while subscribing, please check and try again.');
+    }
+    return $areas['WMC'];
+}
+
+# ycml_get_constituency_info WMC_ID
+# Given a WMC id, returns (REP NAME, REP SUFFIX, AREA NAME)
+function ycml_get_area_info($wmc_id) {
+    $area_info = mapit_get_voting_area_info($wmc_id);
+    mapit_check_error($area_info);
+    if ($area_info['type'] != 'WMC')
+        err('Invalid area type');
+    return $area_info;
+}
+
+# ycml_get_mp_info WMC_ID
+# Given a WMC id, returns rep's name and party
+function ycml_get_mp_info($wmc_id) {
+    $reps = dadem_get_representatives($wmc_id);
+    dadem_check_error($reps);
+    $rep_info = dadem_get_representative_info($reps[0]);
+    # TODO: Get method (email only?) from here
+    return $rep_info;
+}
 
 // $to can be one recipient address in a string, or an array of addresses
 function ycml_send_email_template($to, $template_name, $values, $headers = array()) {

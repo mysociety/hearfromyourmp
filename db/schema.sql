@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.4 2005-07-30 15:35:43 matthew Exp $
+-- $Id: schema.sql,v 1.5 2005-08-12 17:46:06 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -102,3 +102,16 @@ create table comment (
     visible integer not null default 0
 );
 create index comment_refs_idx on comment(refs)
+
+create table message_sent (
+    person_id integer references person(id),
+    message_id integer references message(id),
+    comment_id integer references comment(id),
+    whenqueued timestamp not null default pb_current_timestamp()
+);
+
+create index message_sent_person_id_idx on message_sent(person_id);
+create index message_sent_message_id_idx on message_sent(message_id);
+create index message_sent_comment_id_idx on message_sent(comment_id);
+create unique index message_sent_message_unique_idx on message_sent(person_id, message_id);
+create unique index message_sent_comment_unique_idx on message_sent(person_id, comment_id);
