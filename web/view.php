@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.2 2005-07-30 15:35:46 matthew Exp $
+# $Id: view.php,v 1.3 2005-08-12 16:04:19 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../../phplib/person.php';
@@ -120,7 +120,7 @@ function show_message($message) {
             print '<p id="formreplace">You are not subscribed to this YCML.</p>';
         }
     } else {
-        print '<p id="formreplace">If you are subscribed to this YCML, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe">sign up</a> in order to post your own comments.</p>';
+        print '<p id="formreplace">If you are subscribed to this YCML, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe?r=/view/message/' . $message . '">sign up</a> in order to post your own comments.</p>';
     }
 }
 
@@ -219,7 +219,7 @@ function post_comment_form() {
             values (?, ?, ?, ?, ?, ?, ?)', array($id, $q_message, $refs, $P->id(), $_SERVER['REMOTE_ADDR'], $q_text, 1));
         db_commit();
 
-        print '<p>Thank you for your comment. You can view it <a href="/view/message/'.$q_message.'#comment' . $id . '">here</a>.</p>';
+        print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '#comment' . $id . '">view it here</a>.</p>';
     }
 }
 

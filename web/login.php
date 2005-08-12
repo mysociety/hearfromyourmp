@@ -36,13 +36,14 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.1 2005-07-15 23:20:52 matthew Exp $
+ * $Id: login.php,v 1.2 2005-08-12 16:04:19 matthew Exp $
  * 
  */
 
 require_once '../phplib/ycml.php';
 require_once '../../phplib/auth.php';
 require_once '../phplib/fns.php';
+require_once '../phplib/constituent.php';
 # require_once '../../pb/phplib/page.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/stash.php';
@@ -65,7 +66,7 @@ try again</p>
         exit();
     } else {
         setcookie('test_cookie', '1', null, '/',OPTION_WEB_DOMAIN, false);
-        header("Location: /login.php?" . $_SERVER['QUERY_STRING'] . "&test_cookie=1\n");
+        header("Location: /login?" . $_SERVER['QUERY_STRING'] . "&test_cookie=1\n");
         exit();
     }
 }
@@ -92,7 +93,6 @@ importparams(
     );
 if ($q_name=='<Enter your name>') {
     $q_name=null;
-    $q_h_email=null;
 }
 
 /* General purpose login, asks for email also. */
@@ -124,7 +124,15 @@ if (!is_null($q_t)) {
         err("Please check the URL (i.e. the long code of letters and numbers) is copied correctly from your email.  Technical details: The token '$q_t' wasn't found.");
     $P = person_get($d['email']);
     if (is_null($P)) {
-        $P = person_get_or_create($d['email'], $d['name']);
+        if (!$d['name']) {
+            page_header('Subscribe to YCML');
+            print '<div id="errors">You do not appear to be registered. Please sign up!</div>';
+            constituent_subscribe_box(array('email'=>$d['email']));
+            page_footer();
+            exit();
+        } else {
+            $P = person_get_or_create($d['email'], $d['name']);
+        }
     }
 
     $P->inc_numlogins();
@@ -193,6 +201,10 @@ function login_page() {
             login_form(array('email'=>'Please enter your email address.'));
             exit();
         }
+        if (!validate_email($q_email)) {
+            login_form(array('email'=>'Please enter a valid email address'));
+            exit();
+        }
         global $q_password;
         $P = person_get($q_email);
         if (is_null($P) || !$P->check_password($q_password)) {
@@ -215,6 +227,11 @@ function login_page() {
             login_form(array('email'=>'Please enter your email address.'));
             exit();
         }
+        if (!validate_email($q_email)) {
+            login_form(array('email'=>'Please enter a valid email address'));
+            exit();
+        }
+
         $token = auth_token_store('login', array(
                         'email' => $q_email,
                         'name' => $q_name,
@@ -241,7 +258,7 @@ continue
 
         page_footer(array('nonav' => 1));
         exit();
-            /* NOTREACHED */
+        /* NOTREACHED */
     } else {
         login_form();
         exit();
@@ -281,41 +298,28 @@ function login_form($errors = array()) {
 <p><strong><?=$reason?></strong></p>
 
 <? if (is_null($q_email) || $errors) { ?>
-
 <ul>
-
 <li> Enter your email address: <input<? if (array_key_exists('email', $errors) || array_key_exists('badpass', $errors)) print ' class="error"' ?> type="text" size="30" name="email" id="email" value="<?=$q_h_email?>">
-
-</ul>
-
-<p><strong>Have you used YCML before?</strong></p>
-
 <? } else { ?>
-
 <input type="hidden" name="email" value="<?=$q_h_email?>">
-
+<ul>
 <? } ?>
 
-<ul>
-
-
-<li>I've never used YCML before, let me confirm my email address now.
-
-<input type="submit" name="SendEmail" value="Click here to continue &gt;&gt;"><br>
-<small>(we'll send an email, click the link in it to confirm your email is working)</small></p>
-
-</li>
-
-<li><p>I've been here before, and I have a YCML password:
+<li><p>I have a YCML password:
 
 <input type="password" name="password" id="password" value="" <? if (array_key_exists('badpass', $errors)) print ' class="error"' ?> >
 <input type="submit" name="LogIn" value="Let me in &gt;&gt;"></p>
 
-<input type="checkbox" name="rememberme" id="rememberme" value="1"><strong>Remember me</strong></input>
+<input type="checkbox" name="rememberme" id="rememberme" value="1"><strong>Remember me</strong>
 <small>(don't use this on a public or shared computer)</small>
 
 </li>
 
+<li><p>I've forgotten or don't have a password.
+<input type="submit" name="SendEmail" value="Click here to continue &gt;&gt;"><br>
+</p>
+
+</li>
 </ul>
 
 </form>
@@ -382,28 +386,27 @@ EOF;
 
 <ul>
 
-<form action="/login" name="loginNoPassword" class="login" method="POST" accept-charset="utf-8">
+<li><form action="/login" name="loginNoPassword" class="login" method="POST" accept-charset="utf-8">
 <input type="hidden" name="stash" value="$q_h_stash">
 <input type="hidden" name="email" value="$q_h_email">
 <input type="hidden" name="name" value="$q_h_name">
-<li>No, I don't want to think of a password right now.
+No, I don't want to think of a password right now.
 <input type="submit" name="NoPassword" value="Click here to continue &gt;&gt;">
 <br><small>(you can set a password another time)</small>
-</li></form>
+</form></li>
 
-<form action="/login" name="loginSetPassword" class="login" method="POST" accept-charset="utf-8">
+<li><form action="/login" name="loginSetPassword" class="login" method="POST" accept-charset="utf-8">
 <input type="hidden" name="stash" value="$q_h_stash">
 <input type="hidden" name="email" value="$q_h_email">
 <input type="hidden" name="name" value="$q_h_name">
 <input type="hidden" name="SetPassword" value="1">
-
-<li><p>Yes, I'd like to set a password, so I don't have to keep going back to my email.
+Yes, I'd like to set a password, so I don't have to keep going back to my email.
 <br>
     <strong>Password:</strong> <input type="password" name="pw1" id="pw1" size="15">
     <strong>Password (again):</strong> <input type="password" name="pw2" size="15">
     <input type="submit" name="SetPassword" value="Set password &gt;&gt;">
-</li>
 </form>
+</li>
 
 </ul>
 

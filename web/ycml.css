@@ -5,7 +5,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: ycml.css,v 1.3 2005-07-30 17:00:56 matthew Exp $
+ * $Id: ycml.css,v 1.4 2005-08-12 16:04:19 matthew Exp $
  *
  */
 
@@ -61,9 +61,12 @@ blockquote {
     font-style: italic;
 }
 
-#content {
-    max-width: 70em;
+#w {
     margin: 2em;
+}
+#content {
+    margin: 0 auto;
+    max-width: 50em;
 }
 
 #footer {

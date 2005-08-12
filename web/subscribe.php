@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.4 2005-07-30 15:35:46 matthew Exp $
+// $Id: subscribe.php,v 1.5 2005-08-12 16:04:19 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -89,8 +89,13 @@ function do_subscribe() {
             # Send another reminder email?
         }
 ?>
-<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?> <a href="/"><?=_('YCML home page') ?></a></p>
-<?
+<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?></p>
+<p><?
+        if ($return = get_http_var('r')) {
+            print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
+        } else {
+            print '<a href="/">YCML home page</a></p>';
+        } ?></p><?
     } else { ?>
 <p class="loudmessage" align="center">You have already signed up to this YCML!</p>
 <?

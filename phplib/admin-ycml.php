@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.2 2005-07-30 16:50:35 matthew Exp $
+ * $Id: admin-ycml.php,v 1.3 2005-08-12 16:04:19 matthew Exp $
  * 
  */
 
@@ -65,7 +65,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $c_id = $r['constituency'];
             $c_name = $areas_info[$c_id]['name'];
             $row = "";
-            $row .= '<td>' . $c_name . '<br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
+            $row .= '<td><a href="/view/'.$c_id.'">' . $c_name . '</a><br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
                 <a href="?page=ycmllatest&amp;constituency='.$c_id.'">timeline</a>';
             $row .= '</td>';
             $row .= '<td align="center">' . $r['count'] . '</td>';
@@ -108,10 +108,22 @@ class ADMIN_PAGE_YCML_MAIN {
 
         $out = array();
         print "<h2>The constituency of $area_info[name]</h2>";
-        print "<p>The MP for this constituency is $rep_info[name] ($rep_info[party]). Subscribed so far: $subscribers.";
+        print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
+?>
+<h3>Post a message as this MP</h3>
+<form method="post">
+<table cellpadding="3" cellspacing="0" border="0">
+<tr><th><label for="subject">Subject:</label></th>
+<td><input type="text" id="subject" name="subject" value="" size="40"></td>
+</tr>
+<tr valign="top"><th><label for="message">Message:</label></th>
+<td><textarea id="message" name="message" rows="10" cols="70"></textarea></td>
+</tr></table>
+<input type="submit" value="Post">
+</form>
 
-        print "<h2>Subscribers</h2>";
-        while ($r = db_fetch_array($q)) {
+<h3>Subscribers</h3>
+<?      while ($r = db_fetch_array($q)) {
             $r = array_map('htmlspecialchars', $r);
             $e = array();
             if ($r['name']) array_push($e, $r['name']);
@@ -166,7 +178,7 @@ class ADMIN_PAGE_YCML_MAIN {
         print '<p>';
         
         // Messages
-        print "<h2>Messages</h2>";
+        print '<h3>Messages</h3>';
         $q = db_query('select * from message 
                 where constituency = ? order by posted', $id);
 
@@ -181,10 +193,24 @@ class ADMIN_PAGE_YCML_MAIN {
         }
     }
 
+    function post_message($constituency, $subject, $message) {
+        db_query('INSERT INTO message (constituency, subject, content)
+                    VALUES (?, ?, ?)',
+                    array($constituency, $subject, $message));
+        db_commit();
+        print '<p><em>Message posted!</em></p>';
+    }
+
     function display($self_link) {
         $constituency = get_http_var('constituency');
-/*
+
         // Perform actions
+        $subject = get_http_var('subject');
+        $message = get_http_var('message');
+        if ($subject && $message) {
+            $this->post_message($constituency, $subject, $message);
+        }
+/*
         if (get_http_var('update_prom')) {
             $pledge_id = get_http_var('pledge_id');
             $this->update_prominence($pledge_id);

@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.1 2005-07-15 23:20:48 matthew Exp $
+// $Id: constituent.php,v 1.2 2005-08-12 16:04:19 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -39,10 +39,14 @@ function constituent_unsubscribe_link($signup_id, $email) {
 }
 
 /* Display form for YCML sign up. */
-function constituent_subscribe_box() {
+function constituent_subscribe_box($array = array()) {
     $name = get_http_var('name');
-    $email = get_http_var('email');
+    if (array_key_exists('email', $array))
+        $email = $array['email'];
+    else
+        $email = get_http_var('email');
     $postcode = get_http_var('postcode');
+    $return = get_http_var('r');
 
     $P = person_if_signed_on();
     if (!is_null($P)) {
@@ -54,6 +58,7 @@ function constituent_subscribe_box() {
 
 ?>
 <form accept-charset="utf-8" method="post" action="/subscribe">
+<input type="hidden" name="r" value="<?=htmlspecialchars($return) ?>">
 <h2>Sign up now</h2>
 <p></p>
     <input type="hidden" name="subscribe" id="subscribe" value="1">
