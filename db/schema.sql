@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.5 2005-08-12 17:46:06 matthew Exp $
+-- $Id: schema.sql,v 1.6 2005-08-19 17:57:58 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -23,9 +23,10 @@ create table constituent (
     email text,
 -- For new-style signups
     person_id integer not null references person(id),
--- Constituency they've signed up to, plus postcode they used
+-- Constituency they've signed up to, plus postcode they used, and whether they're the current rep.
     constituency integer not null default 0,
     postcode text not null,
+    is_mp boolean not null default false,
 -- Metadata
     creation_time timestamp not null default current_timestamp,
     creation_ipaddr text not null
@@ -48,8 +49,6 @@ create table person (
     email text not null,
     password text,
     website text,
--- If this person is an MP, this is the ID of the constituency of where
-    mp_for integer,
     numlogins integer not null default 0
 );
 
@@ -88,7 +87,7 @@ create table message (
     constituency integer not null,
     posted timestamp not null default current_timestamp,
     subject text not null,
-    content text not null
+    content text not null,
 );
 
 create table comment (
@@ -100,6 +99,7 @@ create table comment (
     ipaddr text not null,
     content text not null,
     visible integer not null default 0
+    posted_by_mp boolean not null default false
 );
 create index comment_refs_idx on comment(refs)
 

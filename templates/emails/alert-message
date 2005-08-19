@@ -1,0 +1,15 @@
+Subject: New message to the <?=$values['constituency_name']?> constituency at YCML
+
+<?=$values['mp_name']?> MP has written a new message on YCML.
+
+The subject is '<?=$values['subject']?>', and the body is as follows:
+
+<?=$values['content']?>
+
+
+* View or reply to this message: <?=$values['message_url']?>
+
+<?=$values['signature']?>
+
+To stop receiving emails when there are new comments on this pledge, click this link: XXX
+

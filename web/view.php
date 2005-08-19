@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.6 2005-08-12 22:43:57 matthew Exp $
+# $Id: view.php,v 1.7 2005-08-19 17:58:01 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -105,9 +105,9 @@ function show_message($message) {
     if ($next) print ' | <a href="/view/message/' . $next . '">Next message</a>';
     print '</p>';
     print '</div>';
-    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
+    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_mp from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
     if (count($cc))
-        print '<h3>Comments</h3> <ul>' . do_format_comments($cc, 0, count($cc) - 1) . '</ul>';
+        print '<h3>Comments</h3> <ul id="comments">' . do_format_comments($cc, 0, count($cc) - 1) . '</ul>';
 
     if (get_http_var('showform')) {
         $r = array();
@@ -134,7 +134,10 @@ function do_format_comments($cc, $first, $last) {
     $html = '';
     for ($i = $first; $i <= $last; ++$i) {
         $r = $cc[$i];
-        $html .= "<li>" . format_one_comment($r);
+        $r['posted_by_mp'] = ($r['posted_by_mp']=='t') ? true : false;
+        $html .= '<li';
+        if ($r['posted_by_mp']) $html .= ' class="by_mp"';
+        $html .= '>' . format_one_comment($r);
 /*      XXX COMMENTED OUT AS NO THREADING TO START
         $html .= '<a href="view?mode=post;article=$q_message;replyid=$id">Reply to this</a>.';
         # Consider whether the following comments are replies to this comment.
@@ -152,13 +155,18 @@ function do_format_comments($cc, $first, $last) {
 
 function format_one_comment($r) {
     $ds = prettify($r['date']);
-    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> <strong>';
+    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
+    if ($r['posted_by_mp']) $comment .= '<strong>';
     if ($r['website'])
         $comment .= '<a href="' . $r['website'] . '">';
     $comment .= $r['name'];
     if ($r['website'])
         $comment .= '</a>';
-    $comment .= ', ' . $ds . "</strong>:</p>\n<div>" . htmlspecialchars($r['content']) . '</div>';
+    $comment .= ', ';
+    if ($r['posted_by_mp']) $comment .= 'MP, ';
+    $comment .= $ds;
+    if ($r['posted_by_mp']) $comment .= '</strong>';
+    $comment .= ":</p>\n<div>" . htmlspecialchars($r['content']) . '</div>';
     return $comment;
 }
 
@@ -198,19 +206,21 @@ function post_comment_form() {
         . '<blockquote>' . format_one_comment(db_getRow('SELECT id, author, email, link, date, content FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
     }
 
+    $preview = '';
     if (!is_null($q_counter)) {
         $website = $P->website_or_blank();
-        print '<h3>Previewing your comment</h3> <p><em>Not yet</em> posted by <strong>';
-        if ($website) print "<a href=\"$website\">";
-        print $P->name();
-        if ($website) print '</a>';
-        print '</strong>:</p> <div>' . $q_h_text . '</div>';
+        $preview = '<h3>Previewing your comment</h3> <p><em>Not yet</em> posted by <strong>';
+        if ($website) $preview .= "<a href=\"$website\">";
+        $preview .= $P->name();
+        if ($website) $preview .= '</a>';
+        $preview .= '</strong>:</p> <div>' . $q_h_text . '</div>';
     }
 
     if (!preg_match('#[^\s]#', $q_text))
         $q_counter = null;
 
     if (!$q_Post || is_null($q_counter)) {
+        print $preview;
         comment_form($P);
     } else {
         $refs = '';
@@ -219,9 +229,11 @@ function post_comment_form() {
             $refs .= ",$q_replyid";
         }
 
+        $posted_by_mp = constituent_is_mp($P->id(), $constituency);
         $id = sprintf('%08x', db_getOne('select count(*) from comment'));
-        db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible)
-            values (?, ?, ?, ?, ?, ?, ?)', array($id, $q_message, $refs, $P->id(), $_SERVER['REMOTE_ADDR'], $q_text, 1));
+        db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_mp)
+            values (?, ?, ?, ?, ?, ?, ?, ?)', array($id, $q_message, $refs, $P->id(),
+            $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_mp));
         db_commit();
 
         print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '#comment' . $id . '">view it here</a>.</p>';
@@ -257,4 +269,8 @@ function person_allowed_to_reply($person_id, $constituency, $message) {
     return false;
 }
 
+function constituent_is_mp($person_id, $constituency) {
+    return db_getOne('SELECT is_mp FROM constituent
+                        WHERE person_id = ? AND constituency = ?', array($person_id, $constituency) );
+}
 ?>

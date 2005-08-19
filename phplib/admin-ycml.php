@@ -6,17 +6,18 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.3 2005-08-12 16:04:19 matthew Exp $
+ * $Id: admin-ycml.php,v 1.4 2005-08-19 17:57:59 matthew Exp $
  * 
  */
 
-require_once "../phplib/ycml.php";
+require_once "ycml.php";
 require_once "fns.php";
 require_once "../../phplib/db.php";
 require_once "../../phplib/mapit.php";
 require_once "../../phplib/dadem.php";
 require_once "../../phplib/utility.php";
 require_once "../../phplib/importparams.php";
+require_once "../../phplib/person.php";
 
 class ADMIN_PAGE_YCML_MAIN {
     function ADMIN_PAGE_YCML_MAIN () {
@@ -109,8 +110,31 @@ class ADMIN_PAGE_YCML_MAIN {
         $out = array();
         print "<h2>The constituency of $area_info[name]</h2>";
         print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
+
+        $all = db_getAll('SELECT constituent.id,name,email   FROM constituent,person
+                          WHERE constituent.person_id=person.id AND constituency=?
+                          ORDER BY name', array($id));
+        $choices = '';
+        foreach ($all as $r) {
+            $choices .= '<option value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
+        }
 ?>
+<h3>Create or set login for this MP</h3>
+<form method="post">
+<em>Either:</em> email:<input type="text" name="MPemail" value="" size="30"> <input type="submit" name="createMP" value="Create a brand spanking new account for this MP">
+</form>
+<form method="post">
+<em>Or:</em> pick an existing account subscribed to this constituency:
+<?      if ($choices) {
+            print '<select name="selectMP">' . $choices . '</select> <input';
+        } else {
+            print '<select name="selectMP" disabled><option>No matches</select> <input disabled';
+        }
+?>
+ type="submit" value="Use this account">
+</form>
 <h3>Post a message as this MP</h3>
+<?      if (db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id)) { ?>
 <form method="post">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
@@ -121,14 +145,18 @@ class ADMIN_PAGE_YCML_MAIN {
 </tr></table>
 <input type="submit" value="Post">
 </form>
-
+<?      } else { ?>
+<p>You cannot post a message until this constituency has an MP account. Please create or choose one.</p>
+<?      } ?>
 <h3>Subscribers</h3>
 <?      while ($r = db_fetch_array($q)) {
+            $is_mp = ($r['is_mp'] == 't') ? true : false;
             $r = array_map('htmlspecialchars', $r);
             $e = array();
             if ($r['name']) array_push($e, $r['name']);
             if ($r['email']) array_push($e, $r['email']);
             $e = join("<br>", $e);
+            if ($is_mp) $e = "<strong>$e</strong>";
             $out[$e] = '<td>'.$e.'</td>';
             $out[$e] .= '<td>'.prettify($r['creation_time']).'</td>';
 
@@ -155,7 +183,7 @@ class ADMIN_PAGE_YCML_MAIN {
         }
         if (count($out)) {
             print '<table border="1" cellpadding="3" cellspacing="0"><tr>';
-            $cols = array('e'=>'Signer', 't'=>'Time', 'n'=>'Show name?');
+            $cols = array('e'=>'Signer', 't'=>'Time');
             foreach ($cols as $s => $col) {
                 print '<th>';
                 if ($sort != $s) print '<a href="'.$this->self_link.'&amp;constituency='.$id.'&amp;s='.$s.'">';
@@ -163,7 +191,6 @@ class ADMIN_PAGE_YCML_MAIN {
                 if ($sort != $s) print '</a>';
                 print '</th>';
             }
-            print '<th>Action</th>';
             print '</tr>';
             $a = 0;
             foreach ($out as $row) {
@@ -209,38 +236,26 @@ class ADMIN_PAGE_YCML_MAIN {
         $message = get_http_var('message');
         if ($subject && $message) {
             $this->post_message($constituency, $subject, $message);
-        }
-/*
-        if (get_http_var('update_prom')) {
-            $pledge_id = get_http_var('pledge_id');
-            $this->update_prominence($pledge_id);
-        } elseif (get_http_var('remove_pledge_id')) {
-            $remove_id = get_http_var('remove_pledge_id');
-            if (ctype_digit($remove_id))
-                $this->remove_pledge($remove_id);
-        } elseif (get_http_var('remove_signer_id')) {
-            $signer_id = get_http_var('remove_signer_id');
-            if (ctype_digit($signer_id)) {
-                $pledge_id = db_getOne("SELECT pledge_id FROM signers WHERE id = $signer_id");
-                $this->remove_signer($signer_id);
-            }
-        } elseif (get_http_var('showname_signer_id')) {
-            $signer_id = get_http_var('showname_signer_id');
-            if (ctype_digit($signer_id)) {
-                $pledge_id = db_getOne("SELECT pledge_id FROM signers WHERE id = $signer_id");
-                $this->showname_signer($signer_id);
-            }
-         } elseif (get_http_var('update_cats')) {
-            $pledge_id = get_http_var('pledge_id');
-            $this->update_categories($pledge_id);
-        } elseif (get_http_var('send_announce_token')) {
-            $pledge_id = get_http_var('send_announce_token_pledge_id');
-            if (ctype_digit($pledge_id)) {
-                send_announce_token($pledge_id);
-                print p(_('<em>Announcement permission mail sent</em>'));
+        } elseif (get_http_var('createMP')) {
+            $reps = dadem_get_representatives($constituency);
+            $rep_info = dadem_get_representative_info($reps[0]);
+            $email = get_http_var('MPemail');
+            $P = person_get_or_create($email, $rep_info['name']);
+            db_query('UPDATE constituent SET is_mp = false WHERE constituency = ?', $constituency);
+            db_query("INSERT INTO constituent (person_id, constituency, postcode,
+                    creation_ipaddr, is_mp) VALUES (?, ?, ?, ?, true)",
+                    array($P->id(), $constituency, '', $_SERVER['REMOTE_ADDR']));
+            db_commit();
+            print '<p><em>MP created</em></p>';
+        } elseif (get_http_var('selectMP')) {
+            $c_id = get_http_var('selectMP');
+            if (ctype_digit($c_id)) {
+                db_query('UPDATE constituent SET is_mp = false WHERE constituency = ?', $constituency);
+                db_query('UPDATE constituent SET is_mp = true WHERE id = ?', $c_id);
+                db_commit();
+                print '<p><em>MP selected</em></p>';
             }
         }
-*/
 
         // Display page
         if ($constituency) {
