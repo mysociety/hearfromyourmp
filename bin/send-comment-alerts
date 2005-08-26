@@ -1,0 +1,114 @@
+#!/usr/local/bin/php -q
+<?php
+/* 
+ * send-comment-alerts:
+ * Run from cron regularly to send new comment email alerts.
+ *
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+ *
+ * $Id: send-comment-alerts,v 1.1 2005-08-26 15:35:29 matthew Exp $
+ *
+ */
+
+require_once "../conf/general";
+require_once '../phplib/fns.php';
+require_once "../phplib/alert.php";
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+
+function verbose($str) {
+    global $verbose;
+    if ($verbose) 
+        fwrite(STDERR, "send-comment-alerts: $str\n");
+}
+function error($str) {
+    fwrite(STDERR, "send-comment-alerts: ERROR: $str\n");
+}
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcgi';
+
+$switches = $options[0];
+$args = $options[1];
+$verbose = 0; 
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+YCML comment alert sending script.
+
+Usage: send-comment-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_comment_alerts();
+
+// send_comment_alerts sends alerts for new comments on a message
+function send_comment_alerts() {
+    verbose("sending comment alerts");
+
+    // Search for alert
+    $q = db_query("
+            select alert.id as alert_id, alert.person_id, alert.message_id, comment.id as comment_id,
+                   comment.content as comment_content,
+                   message.subject,
+                   person.name as comment_author_name,
+                   alerted.name as alerted_name, alerted.email as alerted_email
+            from alert
+                left join comment on alert.message_id = comment.message
+                left join message on alert.message_id = message.id
+                left join person on comment.person_id = person.id
+                left join person as alerted on alert.person_id = alerted.id
+            where
+                date >= whensubscribed and
+                (select whenqueued from alert_sent where
+                    alert_sent.alert_id = alert.id and
+                    alert_sent.comment_id = comment.id) is null
+                and comment.person_id <> alert.person_id
+            order by date
+            ");
+
+    while ($row = db_fetch_array($q)) {
+        verbose("person #${row['person_id']} (${row['alerted_email']}) has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['comment_author_name']})");
+
+        # Grab a lock, making sure alert hasn't been deleted meanwhile
+        $stillthere = db_getOne('select id from alert where id = ? for update', $row['alert_id']);
+        if (!$stillthere) continue;
+
+        # Check to see if the alert has been sent meanwhile
+        $alreadysent = db_getOne('select alert_id from alert_sent where alert_id = ? and comment_id = ?', 
+                 array($row['alert_id'], $row['comment_id']));
+        if ($alreadysent) continue;
+
+        # Store that alert has been sent
+        db_query("insert into alert_sent (alert_id, comment_id) values (?, ?)", 
+                 array($row['alert_id'], $row['comment_id']));
+
+        # Send email
+        $row['comment_url'] = ycml_make_view_url($row['message_id'], $row['alerted_email']);
+        $row['comment_text'] = trim($row['comment_content']);
+        $row['unsubscribe_url'] = alert_unsubscribe_link($row['alert_id'], $row['alerted_email']);
+        $f = ycml_send_email_template($row['alerted_email'], 'alert-comment', $row);
+        if (!$f) {
+            # Revert record that it has been sent
+            db_rollback();
+            error("Failed to send comment alert to " . $row['alerted_email'] . " alert #" . $row['alert_id'] . " comment #" . $row['comment_id']);
+        } else {
+            # Commit that it has been sent
+            db_commit();
+        }
+    }
+
+    verbose("finished sending comment alerts");
+}
+

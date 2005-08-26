@@ -1,0 +1,12 @@
+Subject: New comment on message '<?=$values['subject']?>' at YCML
+
+<?=$values['comment_author_name']?> has left a comment saying:
+
+'<?=$values['comment_text']?>'
+
+View or reply to this comment: <?=$values['comment_url']?>
+
+<?=$values['signature']?>
+
+To stop receiving emails when there are new comments on this pledge,
+follow this link: <?=$values['unsubscribe_url']?>

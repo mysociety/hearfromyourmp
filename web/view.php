@@ -10,8 +10,9 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.7 2005-08-19 17:58:01 matthew Exp $
+# $Id: view.php,v 1.8 2005-08-26 15:35:35 matthew Exp $
 
+require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../../phplib/person.php';
@@ -27,25 +28,25 @@ importparams(
 
 if ($q_mode == 'post') {
     page_header('Replying to a message');
-    post_comment_form();
+    view_post_comment_form();
 } elseif ($q_message) {
     # Show thread for particular message.
     page_header('Viewing particular message');
-    show_message($q_message);
+    view_message($q_message);
 } elseif ($q_constituency) {
     # Show list of messages for this particular constituency.
     page_header('Viewing constituency page');
-    show_messages($q_constituency);
+    view_messages($q_constituency);
 } else {
     # Main page. Show nothing? Or list of constituencies?
     page_header('List of constituencies');
-    show_constituencies();
+    view_constituencies();
 }
 page_footer();
 
 # ---
 
-function show_constituencies() {
+function view_constituencies() {
     $q = db_query('SELECT DISTINCT constituency FROM message');
     $out = array();
     while ($r = db_fetch_array($q)) {
@@ -66,7 +67,7 @@ function show_constituencies() {
     }
 }
 
-function show_messages($c_id) {
+function view_messages($c_id) {
     $area_info = ycml_get_area_info($c_id);
     $rep_info = ycml_get_mp_info($c_id);
     $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
@@ -91,8 +92,8 @@ So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have
     }
 }
 
-function show_message($message) {
-    $r = get_message($message);
+function view_message($message) {
+    $r = message_get($message);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
@@ -107,7 +108,7 @@ function show_message($message) {
     print '</div>';
     $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_mp from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
     if (count($cc))
-        print '<h3>Comments</h3> <ul id="comments">' . do_format_comments($cc, 0, count($cc) - 1) . '</ul>';
+        print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
     if (get_http_var('showform')) {
         $r = array();
@@ -129,7 +130,7 @@ function show_message($message) {
     }
 }
 
-function do_format_comments($cc, $first, $last) {
+function comment_show($cc, $first, $last) {
     global $q_message;
     $html = '';
     for ($i = $first; $i <= $last; ++$i) {
@@ -137,7 +138,7 @@ function do_format_comments($cc, $first, $last) {
         $r['posted_by_mp'] = ($r['posted_by_mp']=='t') ? true : false;
         $html .= '<li';
         if ($r['posted_by_mp']) $html .= ' class="by_mp"';
-        $html .= '>' . format_one_comment($r);
+        $html .= '>' . comment_show_one($r);
 /*      XXX COMMENTED OUT AS NO THREADING TO START
         $html .= '<a href="view?mode=post;article=$q_message;replyid=$id">Reply to this</a>.';
         # Consider whether the following comments are replies to this comment.
@@ -145,7 +146,7 @@ function do_format_comments($cc, $first, $last) {
         for ($j = $i + 1; $j <= $last && preg_match("/^$R(,|$)/", $cc[$j][1]); ++$j) {}
         --$j;
         if ($j > $i)
-            $html .= "<ul>" . do_format_comments($cc, $i + 1, $j) . "</ul>";
+            $html .= "<ul>" . comment_show($cc, $i + 1, $j) . "</ul>";
         $i = $j;
 */
         $html .= "</li>";
@@ -153,7 +154,7 @@ function do_format_comments($cc, $first, $last) {
     return $html;
 }
 
-function format_one_comment($r) {
+function comment_show_one($r) {
     $ds = prettify($r['date']);
     $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
     if ($r['posted_by_mp']) $comment .= '<strong>';
@@ -170,17 +171,18 @@ function format_one_comment($r) {
     return $comment;
 }
 
-function get_message($id) {
+function message_get($id) {
     $r = db_getRow('SELECT *,extract(epoch from posted) as epoch FROM message WHERE id = ?', $id);
     if (!$r)
         err('Unknown message ID');
     return $r;
 }
 
-function post_comment_form() {
-    global $q_text, $q_h_text, $q_replyid, $q_counter, $q_message, $q_Post;
+function view_post_comment_form() {
+    global $q_text, $q_h_text, $q_emailreplies, $q_replyid, $q_counter, $q_message, $q_Post;
     importparams(
         array('text', '//', '', null),
+        array('emailreplies', '/^1$/', '', null),
         array('replyid', '/^\d+$/', '', null),
         array('counter', '/^\d+$/', '', null),
         array('Post', '/^Post$/', '', null)
@@ -192,7 +194,7 @@ function post_comment_form() {
     $r['reason_email_subject'] = _("Post to YCML");
     $P = person_signon($r);
 
-    $r = get_message($q_message);
+    $r = message_get($q_message);
     $constituency = $r['constituency'];
     if (!person_allowed_to_reply($P->id(), $constituency, $q_message)) {
         print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
@@ -203,17 +205,17 @@ function post_comment_form() {
         if (db_getOne('select count(*) from comment where id = ? and visible <> 0', $q_replyid) != 1)
             err("Bad reply ID $replyid");
         print '<p><em>This is the comment to which you are replying:</em></p>'
-        . '<blockquote>' . format_one_comment(db_getRow('SELECT id, author, email, link, date, content FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
+        . '<blockquote>' . comment_show_one(db_getRow('SELECT id, author, email, link, date, content FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
     }
 
     $preview = '';
     if (!is_null($q_counter)) {
         $website = $P->website_or_blank();
-        $preview = '<h3>Previewing your comment</h3> <p><em>Not yet</em> posted by <strong>';
+        $preview = '<h3>Previewing your comment</h3> <ul id="comments"><li><p><em>Not yet</em> posted by <strong>';
         if ($website) $preview .= "<a href=\"$website\">";
         $preview .= $P->name();
         if ($website) $preview .= '</a>';
-        $preview .= '</strong>:</p> <div>' . $q_h_text . '</div>';
+        $preview .= '</strong>:</p> <div>' . $q_h_text . '</div></li></ul>';
     }
 
     if (!preg_match('#[^\s]#', $q_text))
@@ -234,6 +236,8 @@ function post_comment_form() {
         db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_mp)
             values (?, ?, ?, ?, ?, ?, ?, ?)', array($id, $q_message, $refs, $P->id(),
             $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_mp));
+        if ($q_emailreplies)
+            alert_signup($P->id(), $q_message);
         db_commit();
 
         print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '#comment' . $id . '">view it here</a>.</p>';
@@ -241,7 +245,7 @@ function post_comment_form() {
 }
 
 function comment_form($P) {
-    global $q_message, $q_counter, $q_h_text;
+    global $q_message, $q_counter, $q_h_text, $q_emailreplies;
     if (is_null($q_counter))
         $counter = 0;
     else
@@ -254,6 +258,7 @@ function comment_form($P) {
 <? /* NO THREADING <input type="hidden" name="replyid" value=""> */ ?>
 <h2>Post a reply</h2>
 <p><label for="text">Message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
+<p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> Email me future comments to this message</p>
 <input type="submit" name="Preview" value="Preview">
 <? if ($counter>0) print '<input type="submit" name="Post" value="Post">'; ?>
 </form>

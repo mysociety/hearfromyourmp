@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.6 2005-08-19 17:57:58 matthew Exp $
+-- $Id: schema.sql,v 1.7 2005-08-26 15:35:30 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -106,12 +106,29 @@ create index comment_refs_idx on comment(refs)
 create table message_sent (
     person_id integer references person(id),
     message_id integer references message(id),
-    comment_id integer references comment(id),
-    whenqueued timestamp not null default pb_current_timestamp()
+    whenqueued timestamp not null default current_timestamp
 );
 
 create index message_sent_person_id_idx on message_sent(person_id);
 create index message_sent_message_id_idx on message_sent(message_id);
-create index message_sent_comment_id_idx on message_sent(comment_id);
 create unique index message_sent_message_unique_idx on message_sent(person_id, message_id);
-create unique index message_sent_comment_unique_idx on message_sent(person_id, comment_id);
+
+create table alert (
+    id serial not null primary key,
+    person_id integer not null references person(id),
+    message_id integer not null references message(id),
+    whensubscribed timestamp not null default current_timestamp
+);
+create index alert_person_id_idx on alert(person_id);
+create index alert_message_id_idx on alert(message_id);
+create unique index alert_unique_idx on alert(person_id, message_id);
+
+create table alert_sent (
+    alert_id integer not null references alert(id),
+    comment_id text not null references comment(id),
+    whenqueued timestamp not null default current_timestamp
+);
+create index alert_sent_id_idx on alert_sent(alert_id);
+create index alert_sent_comment_id_idx on alert_sent(comment_id);
+create unique index alert_sent_unique_idx on alert_sent(alert_id, comment_id);
+

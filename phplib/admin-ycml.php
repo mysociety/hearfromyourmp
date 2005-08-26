@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.4 2005-08-19 17:57:59 matthew Exp $
+ * $Id: admin-ycml.php,v 1.5 2005-08-26 15:35:32 matthew Exp $
  * 
  */
 
@@ -66,7 +66,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $c_id = $r['constituency'];
             $c_name = $areas_info[$c_id]['name'];
             $row = "";
-            $row .= '<td><a href="/view/'.$c_id.'">' . $c_name . '</a><br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
+            $row .= '<td><a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">' . $c_name . '</a><br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
                 <a href="?page=ycmllatest&amp;constituency='.$c_id.'">timeline</a>';
             $row .= '</td>';
             $row .= '<td align="center">' . $r['count'] . '</td>';
@@ -344,9 +344,9 @@ class ADMIN_PAGE_YCML_LATEST {
             foreach ($datas as $data) {
             if (array_key_exists('posted', $data)) {
                 if (!$this->constituency) print $this->area_info[$data['constituency']]['name'] . ' ';
-                print "MP posted message <a href=\"/view/message/$data[id]\">$data[subject]</a> : $data[content]";
+                print "MP posted message <a href=\"" . OPTION_BASE_URL . "/view/message/$data[id]\">$data[subject]</a> : $data[content]";
             } elseif (array_key_exists('date', $data)) {
-                print "$data[name] &lt;$data[email]&gt; commented on <a href=\"/view/message/$data[message]\">$data[subject]</a> saying '";
+                print "$data[name] &lt;$data[email]&gt; commented on <a href=\"" . OPTION_BASE_URL . "/view/message/$data[message]\">$data[subject]</a> saying '";
                 print htmlspecialchars($data['content']) . "'";
             } elseif (array_key_exists('creation_time', $data)) {
                 print "$data[name] &lt;$data[email]&gt; (postcode $data[postcode]) signed up";
