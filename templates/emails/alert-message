@@ -11,5 +11,5 @@ The subject is '<?=$values['subject']?>', and the body is as follows:
 
 <?=$values['signature']?>
 
-To stop receiving emails when there are new comments on this pledge, click this link: XXX
+To stop your subscription to this YCML, follow this link: XXX
 
