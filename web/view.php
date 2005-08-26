@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.8 2005-08-26 15:35:35 matthew Exp $
+# $Id: view.php,v 1.9 2005-08-26 16:29:26 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -96,8 +96,11 @@ function view_message($message) {
     $r = message_get($message);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
+    if (OPTION_YCML_STAGING) {
+        $rep_info['name'] = spoonerise($rep_info['name']);
+    }
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
-        . ' at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote>' . $r['content'] . '</blockquote>';
+        . ' MP at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote>' . $r['content'] . '</blockquote>';
     $next = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted > ?', array($c_id, $r['posted']) );
     $prev = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted < ?', array($c_id, $r['posted']) );
     print '<p align="right">';

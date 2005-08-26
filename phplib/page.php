@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.4 2005-08-12 16:04:19 matthew Exp $
+// $Id: page.php,v 1.5 2005-08-26 16:29:24 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -52,7 +52,8 @@ function page_header($title='', $params = array()) {
     // Warn that we are on a testing site
     $devwarning = array();
     if (OPTION_YCML_STAGING) {
-        $devwarning[] = _('This is a test site for developers only. You probably want
+        $devwarning[] = _('This is a test site for developers only.<br><strong>These are not
+        messages from the MPs; nothing here is real.</strong><br>You probably want
 <a href="http://www.mysociety.org/ycml/">the real site</a>.');
     }
     if (count($devwarning) > 0) {
