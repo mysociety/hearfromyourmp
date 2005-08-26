@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.9 2005-08-26 16:29:26 matthew Exp $
+# $Id: view.php,v 1.10 2005-08-26 17:31:46 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -166,8 +166,8 @@ function comment_show_one($r) {
     $comment .= $r['name'];
     if ($r['website'])
         $comment .= '</a>';
+    if ($r['posted_by_mp']) $comment .= ' MP';
     $comment .= ', ';
-    if ($r['posted_by_mp']) $comment .= 'MP, ';
     $comment .= $ds;
     if ($r['posted_by_mp']) $comment .= '</strong>';
     $comment .= ":</p>\n<div>" . htmlspecialchars($r['content']) . '</div>';
