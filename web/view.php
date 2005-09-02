@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.10 2005-08-26 17:31:46 matthew Exp $
+# $Id: view.php,v 1.11 2005-09-02 09:12:16 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -94,13 +94,17 @@ So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have
 
 function view_message($message) {
     $r = message_get($message);
+    $content = preg_replace('#\r#', '', $r['content']);
+    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = make_clickable($content);
+    $content = str_replace('@', '&#64;', $content);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
     if (OPTION_YCML_STAGING) {
         $rep_info['name'] = spoonerise($rep_info['name']);
     }
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
-        . ' MP at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote>' . $r['content'] . '</blockquote>';
+        . ' MP at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     $next = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted > ?', array($c_id, $r['posted']) );
     $prev = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted < ?', array($c_id, $r['posted']) );
     print '<p align="right">';
