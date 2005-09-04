@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.4 2005-08-26 15:35:32 matthew Exp $
+// $Id: fns.php,v 1.5 2005-09-04 16:57:16 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -41,6 +41,9 @@ function ycml_get_mp_info($wmc_id) {
     dadem_check_error($reps);
     $rep_info = dadem_get_representative_info($reps[0]);
     # TODO: Get method (email only?) from here
+    if (OPTION_YCML_STAGING) {
+        $rep_info['name'] = spoonerise($rep_info['name']);
+    }
     return $rep_info;
 }
 

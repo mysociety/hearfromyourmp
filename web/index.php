@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.5 2005-08-12 17:46:09 matthew Exp $
+// $Id: index.php,v 1.6 2005-09-04 16:57:17 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -26,7 +26,7 @@ function front_page() { ?>
     $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
         FROM comment,message,person
         WHERE comment.message = message.id AND comment.person_id = person.id
-        ORDER BY posted DESC LIMIT 5');
+        ORDER BY date DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
         $area_info = ycml_get_area_info($r['constituency']);
