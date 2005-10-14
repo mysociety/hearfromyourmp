@@ -1,4 +1,4 @@
-Subject: New comment on message '<?=$values['subject']?>' at YCML
+Subject: New comment on message '<?=$values['subject']?>' at HearFromYourMP
 
 <?=$values['comment_author_name']?> has left a comment saying:
 

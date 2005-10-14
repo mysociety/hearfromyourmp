@@ -1,11 +1,11 @@
 <?
 // fns.php:
-// General functions for YCML
+// General functions for HearFromYourMP
 //
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.5 2005-09-04 16:57:16 matthew Exp $
+// $Id: fns.php,v 1.6 2005-10-14 17:34:46 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -62,7 +62,7 @@ function ycml_send_email_template($to, $template_name, $values, $headers = array
         $values['email'] = null;
     }
         
-    $values['signature'] = _("-- the YCML team");
+    $values['signature'] = _("-- the HearFromYourMP team");
 
     if (is_file("../templates/emails/$lang/$template_name"))
         $template = file_get_contents("../templates/emails/$lang/$template_name");
@@ -92,7 +92,7 @@ function ycml_send_email_internal($to, $spec) {
 
     // Add standard YCML From header
     if (!array_key_exists("From", $spec)) {
-        $spec['From'] = '"YCML" <' . OPTION_CONTACT_EMAIL . ">";
+        $spec['From'] = '"HearFromYourMP" <' . OPTION_CONTACT_EMAIL . ">";
     }
 
     // With one recipient, put in header.  Otherwise default to undisclosed recip.

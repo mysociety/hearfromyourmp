@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.5 2005-08-26 16:29:24 matthew Exp $
+// $Id: page.php,v 1.6 2005-10-14 17:34:46 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -30,11 +30,11 @@ function page_header($title='', $params = array()) {
 <title><?
     if ($title)
         print htmlspecialchars($title) . ' - ';
-?>Your Constituency Mailing List</title>
+?>HearFromYourMP.com</title>
 <style type="text/css">@import url("/ycml.css");</style>
 </head>
 <body>
-<h1><a href="/">Your Constituency Mailing List</a></h1>
+<h1><a href="/">HearFromYourMP</a></h1>
 <?
     // Display who is logged in 
     if ($P) {
@@ -55,14 +55,14 @@ function page_header($title='', $params = array()) {
         $devwarning[] = _('This is a test site for developers only.<br><strong>These are not
         messages from the MPs; nothing here is real.</strong><br>You probably want
 <a href="http://www.mysociety.org/ycml/">the real site</a>.');
-    }
-    if (count($devwarning) > 0) {
-        ?><p class="noprint" align="center" style="color: #cc0000; background-color: #ffffff;"><?
-        print join('<br>', $devwarning);
-        ?></p><?
     } ?>
 <div id="w"><div id="content">
 <?
+    if (count($devwarning) > 0) {
+        ?><p class="noprint" align="center" style="color: #cc0000;"><?
+        print join('<br>', $devwarning);
+        ?></p><?
+    }
 }
 
 /* page_footer PARAMS
@@ -74,7 +74,9 @@ function page_footer($params = array()) {
         $footer_outputted = 1;
 ?>
 </div></div>
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a></p>
+<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>. <a href="/terms">Terms of Use</a>
+| <a href="/faq"><acronym title="Frequently Asked Questions">FAQ</acronym></a>
+| <a href="/contact">Contact Us</a></p>
 </body>
 </html>
 <?  }

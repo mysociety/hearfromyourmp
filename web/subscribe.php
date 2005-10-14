@@ -1,11 +1,11 @@
 <?
 // subscribe.php:
-// Signing up for YCML.
+// Signing up for HearFromYourMP.
 //
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.6 2005-08-12 17:46:09 matthew Exp $
+// $Id: subscribe.php,v 1.7 2005-10-14 17:34:49 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -24,22 +24,21 @@ if (get_http_var('subscribe')) {
         print '</li></ul></div>';
         constituent_subscribe_box();
     }
-/* } elseif (get_http_var('direct_unsubscribe')) {
+} elseif (get_http_var('direct_unsubscribe')) {
     // Clicked from email to unsubscribe
-    $alert_id = get_http_var('direct_unsubscribe');
+    $constituent_id = get_http_var('direct_unsubscribe');
     $P = person_if_signed_on();
     if (!$P) 
         err(_('Unexpectedly not signed on after following unsubscribe link'));
-    $desc = alert_h_description($alert_id);
+    $row = db_getRow("select * from constituent where id = ?", $constituent_id);
     print '<p>';
-    if ($desc) {
-        alert_unsubscribe($P->id(), $alert_id);
-        printf(_("Thanks!  You won't receive more email about %s."), $desc);
+    if ($row) {
+        constituent_unsubscribe($P->id(), $constituent_id);
+        print "Thanks! You won't receive more email from that constituency.";
     } else {
-        print _("Thanks!  You are already unsubscribed from YCML.");
+        print "Thanks! You are already unsubscribed from that constituency.";
     }
     print '</p>';
-*/
 } else {
     constituent_subscribe_box();
 }
@@ -57,9 +56,9 @@ function do_subscribe() {
 
     /* Get the user to log in. */
     $r = array();
-    $r['reason_web'] = _('Before adding you to YCML, we need to confirm your email address.');
+    $r['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
     $r['reason_email'] = _("You'll then be emailed when the threshold is reached, etc.");
-    $r['reason_email_subject'] = _("Subscribe to YCML");
+    $r['reason_email_subject'] = _("Subscribe to HearFromYourMP");
     $person = person_signon($r, $q_email, $q_name);
     $person_id = $person->id();
 
@@ -90,15 +89,15 @@ function do_subscribe() {
             # Send another reminder email?
         }
 ?>
-<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to %s's YCML for the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?></p>
+<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to HearFromYourMP for %s in the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?></p>
 <p><?
         if ($return = get_http_var('r')) {
             print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
         } else {
-            print '<a href="/">YCML home page</a></p>';
+            print '<a href="/">HearFromYourMP home page</a></p>';
         } ?></p><?
     } else { ?>
-<p class="loudmessage" align="center">You have already signed up to this YCML!</p>
+<p class="loudmessage" align="center">You have already signed up to HearFromYourMP in this constituency!</p>
 <?
     }
 

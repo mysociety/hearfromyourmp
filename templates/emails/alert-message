@@ -1,15 +1,18 @@
-Subject: New message to the <?=$values['constituency_name']?> constituency at YCML
-
-<?=$values['mp_name']?> MP has written a new message on YCML.
-
-The subject is '<?=$values['subject']?>', and the body is as follows:
+Subject: New message from your MP, <?=$values['mp_name']?>
 
 <?=$values['content']?>
 
+-------------------
 
-* View or reply to this message: <?=$values['message_url']?>
+Please note - you cannot respond to your MP by pressing reply!
+
+To leave a public comment on this message, follow this link:
+<?=$values['message_url']?>
+
+To send a message in private to your MP about this issue, follow this link:
+<?=$values['writetothem_url']?>
+
+To stop your subscription to HearFromYourMP in this constituency, follow this link:
+<?=$values['unsubscribe_url']?>
 
 <?=$values['signature']?>
-
-To stop your subscription to this YCML, follow this link: XXX
-

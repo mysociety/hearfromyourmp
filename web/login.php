@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.2 2005-08-12 16:04:19 matthew Exp $
+ * $Id: login.php,v 1.3 2005-10-14 17:34:49 matthew Exp $
  * 
  */
 
@@ -98,9 +98,9 @@ if ($q_name=='<Enter your name>') {
 /* General purpose login, asks for email also. */
 if (get_http_var("now")) {
     $P = person_signon(array(
-                    'reason_web' => "To log into YCML, we need to check your email address.",
-                    'reason_email' => "Then you will be logged into YCML, and can set or change your password.",
-                    'reason_email_subject' => 'Log into YCML'
+                    'reason_web' => "To log into HearFromYourMP, we need to check your email address.",
+                    'reason_email' => "Then you will be logged into HearFromYourMP, and can set or change your password.",
+                    'reason_email_subject' => 'Log into HearFromYourMP'
 
                 ));
     page_header("Logged in");
@@ -109,7 +109,7 @@ if (get_http_var("now")) {
         print htmlspecialchars($P->name);
     else 
         print htmlspecialchars($P->email);
-    print "</strong>.  Enjoy using YCML!";
+    print "</strong>.  Enjoy using HearFromYourMP!";
     page_footer();
     exit;
 }
@@ -125,7 +125,7 @@ if (!is_null($q_t)) {
     $P = person_get($d['email']);
     if (is_null($P)) {
         if (!$d['name']) {
-            page_header('Subscribe to YCML');
+            page_header('Subscribe to HearFromYourMP');
             print '<div id="errors">You do not appear to be registered. Please sign up!</div>';
             constituent_subscribe_box(array('email'=>$d['email']));
             page_footer();
@@ -305,7 +305,7 @@ function login_form($errors = array()) {
 <ul>
 <? } ?>
 
-<li><p>I have a YCML password:
+<li><p>I have a HearFromYourMP password:
 
 <input type="password" name="password" id="password" value="" <? if (array_key_exists('badpass', $errors)) print ' class="error"' ?> >
 <input type="submit" name="LogIn" value="Let me in &gt;&gt;"></p>
@@ -363,14 +363,14 @@ function change_password_page($P) {
     if ($P->has_password()) {
         page_header('Change your password');
         print <<<EOF
-<p>There is a password set for your email address on YCML. Perhaps
+<p>There is a password set for your email address on HearFromYourMP. Perhaps
 you've forgotten it? You can set a new password using this form:</p>
 EOF;
     } else {
         page_header('Set a password');
         print <<<EOF
 <p>On this page you can set a password which you can use to identify yourself
-to YCML, so that you don't have to check your email in the future.
+to HearFromYourMP, so that you don't have to check your email in the future.
 You don't have to set a password if you don't want to.
 </p>
 EOF;
@@ -382,7 +382,7 @@ EOF;
     print <<<EOF
 <div class="pledge">
 
-<p><strong>Would you like to set a YCML password?</strong></p>
+<p><strong>Would you like to set a HearFromYourMP password?</strong></p>
 
 <ul>
 

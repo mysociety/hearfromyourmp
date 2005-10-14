@@ -1,12 +1,12 @@
 <?php
 /*
  * admin-ycml.php:
- * YCML admin pages.
+ * HearFromYourMP admin pages.
  * 
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.6 2005-10-14 11:54:32 matthew Exp $
+ * $Id: admin-ycml.php,v 1.7 2005-10-14 17:34:46 matthew Exp $
  * 
  */
 
@@ -38,7 +38,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
 class ADMIN_PAGE_YCML_MAIN {
     function ADMIN_PAGE_YCML_MAIN () {
         $this->id = "ycml";
-        $this->navname = _("YCML Summary");
+        $this->navname = _("HearFromYourMP Summary");
     }
 
     function table_header($sort) {
@@ -95,7 +95,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $rows[$k] = $row;
         }
         if (count($rows)) {
-            print '<p>Here\'s the current state of YCML:</p>';
+            print '<p>Here\'s the current state of HearFromYourMP:</p>';
             $this->table_header($sort);
             $a = 0;
             foreach ($rows as $row) {
@@ -105,7 +105,7 @@ class ADMIN_PAGE_YCML_MAIN {
             }
             print '</table>';
         } else {
-            print '<p>No-one has signed up to YCML at all, anywhere, ever.</p>';
+            print '<p>No-one has signed up to HearFromYourMP at all, anywhere, ever.</p>';
         }
     }
 
@@ -250,7 +250,7 @@ class ADMIN_PAGE_YCML_MAIN {
             while ($r = db_fetch_array($q)) {
                 if ($n++)
                     print '<hr>';
-                print "<b>$r[subject]</b><br>$r[content]";
+                print '<b>' . htmlspecialchars($r['subject']) . '</b><br>' . htmlspecialchars($r['content']);
             }
             if ($n == 0) {
                 print "No messages yet.";
@@ -259,6 +259,7 @@ class ADMIN_PAGE_YCML_MAIN {
     }
 
     function post_message($constituency, $subject, $message) {
+        $message = str_replace("\r", '', $message);
         db_query('INSERT INTO message (constituency, subject, content)
                     VALUES (?, ?, ?)',
                     array($constituency, $subject, $message));

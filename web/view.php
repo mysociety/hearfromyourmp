@@ -1,6 +1,6 @@
 <?
 # view.php:
-# The meat of YCML
+# The meat of HearFromYourMP
 # 
 # Things this script has to do:
 # * View messages for a particular constituency
@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.12 2005-09-04 16:57:17 matthew Exp $
+# $Id: view.php,v 1.13 2005-10-14 17:34:49 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -63,7 +63,7 @@ function view_constituencies() {
         foreach ($out as $line) print $line;
         print '</ul>';
     } else {
-        print '<p>There are no messages on YCML yet.</p>';
+        print '<p>There are no messages on HearFromYourMP yet.</p>';
     }
 }
 
@@ -79,7 +79,7 @@ function view_messages($c_id) {
 ?>
 <h2><?=$area_info['name'] ?></h2>
 <p>The MP for this constituency is <?=$rep_info['name'] ?>, <?=$rep_info['party'] ?>.
-So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have') ?> signed up to this YCML.</p>
+So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.</p>
 <?
     $out = '';
     while ($r = db_fetch_array($q)) {
@@ -88,7 +88,7 @@ So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have
     if ($out) {
         print "<h3>Messages posted</h3> <ul>$out</ul>";
     } else {
-        print "<p><em>This MP has not yet sent any messages through YCML.</em></p>";
+        print "<p><em>This MP has not yet sent any messages through HearFromYourMP.</em></p>";
     }
 }
 
@@ -116,9 +116,9 @@ function view_message($message) {
 
     if (get_http_var('showform')) {
         $r = array();
-        $r['reason_web'] = _('Before posting to YCML, we need to confirm your email address and that you are subscribed to this constituency.');
+        $r['reason_web'] = _('Before posting to HearFromYourMP, we need to confirm your email address and that you are subscribed to this constituency.');
         $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-        $r['reason_email_subject'] = _("Post to YCML");
+        $r['reason_email_subject'] = _("Post to HearFromYourMP");
         $P = person_signon($r);
     } else {
         $P = person_if_signed_on();
@@ -127,10 +127,10 @@ function view_message($message) {
         if (person_allowed_to_reply($P->id(), $c_id, $message)) {
             comment_form($P);
         } else {
-            print '<p id="formreplace">You are not subscribed to this YCML, or subscribed after this message was posted.</p>';
+            print '<p id="formreplace">You are not subscribed to HearFromYourMP in this constituency, or subscribed after this message was posted.</p>';
         }
     } else {
-        print '<p id="formreplace">If you are subscribed to this YCML, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe?r=/view/message/' . $message . '">sign up</a> in order to post your own comments.</p>';
+        print '<p id="formreplace">If you are subscribed to HearFromYourMP in this constituency, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe?r=/view/message/' . $message . '">sign up</a> in order to post your own comments.</p>';
     }
 }
 
@@ -193,9 +193,9 @@ function view_post_comment_form() {
     );
 
     $r = array();
-    $r['reason_web'] = _('Before posting to YCML, we need to confirm your email address and that you are subscribed to this constituency.');
+    $r['reason_web'] = _('Before posting to HearFromYourMP, we need to confirm your email address and that you are subscribed to this constituency.');
     $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-    $r['reason_email_subject'] = _("Post to YCML");
+    $r['reason_email_subject'] = _("Post to HearFromYourMP");
     $P = person_signon($r);
 
     $r = message_get($q_message);

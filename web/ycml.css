@@ -5,7 +5,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: ycml.css,v 1.5 2005-08-19 17:58:01 matthew Exp $
+ * $Id: ycml.css,v 1.6 2005-10-14 17:34:49 matthew Exp $
  *
  */
 
@@ -17,20 +17,41 @@ body, html {
     padding: 0;
     color: #000000;
     background-color: #ffffff;
+    background: url("/shoup.png") 100% 50% no-repeat;
+    background-attachment: fixed;
+    min-height: 329px;
 }
-p {
+p, dd, li {
     line-height: 1.4;
 }
+ol li {
+    margin-bottom: 0.5em;
+}
+dt {
+    font-weight: bold;
+}
+dd {
+    margin-bottom: 1em;
+}
+a:link { color: #0000ff; }
+a:visited { color: #000099; }
+a:hover, a:active { color: #ff0000; }
+
+#subscribeBox {
+    display: table;
+    margin: 1em auto 1em;
+    background-color: #b3daff;
+    border: solid 2px #c06db3;
+    padding: 8px;
+}
+
 form, #formreplace {
-    padding: 5px;
-    background-color: #eeffee;
-    border: solid 1px #009900;
 }
-input {
-    border: solid 1px #99cc99;
+input, textarea {
+    border: solid 1px #f09de3;
 }
-input:hover, input:focus {
-    border: solid 1px #009900;
+input:hover, input:focus, textarea:hover, textarea:focus {
+    border: solid 1px #c06db3;
 }
 label {
     cursor: pointer;
@@ -42,14 +63,14 @@ h1 {
     font-size: 200%;
     margin: 0;
     padding: 0.4em 10px;
-    background-color: #eeffee;
-    color: #009900;
-    border-bottom: solid 2px #009900;
+    background-color: #d9ecff;
+    color: #20005C;
+    border-bottom: solid 2px #c06db3;
 }
 
 h1 a:link, h1 a:visited {
-    background-color: #eeffee;
-    color: #009900;
+    background-color: #d9ecff;
+    color: #20005C;
     text-decoration: none;
 }
 
@@ -58,7 +79,7 @@ h2 {
 }
 
 blockquote {
-    font-style: italic;
+    font-style: normal;
 }
 
 #w {
@@ -72,11 +93,10 @@ blockquote {
 #footer {
     clear: both;
     font-size: 89%;
-    margin: 0 0 0 auto;
     padding: 5px;
     text-align: right;
-    border: solid 1px #009900;
-    background-color: #eeffee;
+    border: solid 1px #c06db3;
+    background-color: #d9ecff;
     border-width: 1px 0;
 }
 
@@ -103,13 +123,13 @@ blockquote {
     float: left;
     clear: left;
     width: 12em;
-    background-color: #eeffee;
+    background-color: #d9ecff;
     padding: 5px;
     margin-bottom: 1em;
 }
 .box h2 {
     font-size: 120%;
-    border-bottom: solid 1px #009900;
+    border-bottom: solid 1px #c06db3;
     margin: 0;
 }
 .box ul {
@@ -124,8 +144,8 @@ blockquote {
 
 #message {
     padding: 5px;
-    background-color: #eeffee;
-    border: solid 1px #009900;
+    dbackground-color: #d9ecff;
+    border: solid 1px #c06db3;
 }
 ul#comments li div {
     margin: 0 10%;
