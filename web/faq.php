@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.1 2005-10-14 17:34:48 matthew Exp $
+// $Id: faq.php,v 1.2 2005-10-14 18:16:02 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -45,7 +45,8 @@ us &mdash; nobody would want to use our services if we were partisan.
 <dt>How do I sign up?
 <dd>Just <a href="/">go to the homepage</a> and enter your
 postcode, your name, and your email address. Then hit go &mdash; that's all
-there is to it <strong>YOU HAVE TO CONFIRMYOUR EMAIL</strong>. Your MP will write to you some time between today and
+there is to it (apart from confirming your email address).
+Your MP will write to you some time between today and
 the far distant future &mdash; we'll point you to some other fun &amp; useful
 services that we run whilst you're waiting.
 
@@ -130,6 +131,13 @@ tell us what you want, or build it yourself as a volunteer. :)
 <dd>Gin and chocolates, marked C/O Tom Steinberg, 18 Victoria Park Square,
 London E2 9PF. I'll make sure the rest of the gang get their share.
 Honest.
+
+<dt>What's that background image on every page?
+<dd>It's a patent illustration for a lever voting machine. As 
+<a href="http://www.cs.uiowa.edu/~jones/voting/pictures/#lever">Douglas W. Jones's Illustrated Voting Machine History</a> says:
+<blockquote>
+<img align="right" src="/shoupsm.png" alt="">&quot;Two manufacturers split the market for lever voting machines, Shoup and AVM (Automatic Voting Machines); the latter company is the direct descendant of Jacob H. Myers original company, organized in 1895. Ransom F. Shoup made a number of improvements to lever voting machines between 1929 and 1975. [The image] shows an early Shoup machine; like most of its successors, this included a substantial voting booth, yet it could be collapsed into a package that was relatively easy to transport and store.&quot;
+</blockquote>
 
 </dl>
 <? }

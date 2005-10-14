@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.3 2005-10-14 17:34:49 matthew Exp $
+ * $Id: login.php,v 1.4 2005-10-14 18:16:02 matthew Exp $
  * 
  */
 
@@ -305,7 +305,10 @@ function login_form($errors = array()) {
 <ul>
 <? } ?>
 
-<li><p>I have a HearFromYourMP password:
+<li><p>I'm new to HearFromYourMP:
+<input type="submit" name="SendEmail" value="Click here to continue &gt;&gt;"><br>
+
+<li><p>I have been here before and have a HearFromYourMP password:
 
 <input type="password" name="password" id="password" value="" <? if (array_key_exists('badpass', $errors)) print ' class="error"' ?> >
 <input type="submit" name="LogIn" value="Let me in &gt;&gt;"></p>
@@ -315,8 +318,6 @@ function login_form($errors = array()) {
 
 </li>
 
-<li><p>I've forgotten or don't have a password.
-<input type="submit" name="SendEmail" value="Click here to continue &gt;&gt;"><br>
 </p>
 
 </li>
@@ -370,8 +371,8 @@ EOF;
         page_header('Set a password');
         print <<<EOF
 <p>On this page you can set a password which you can use to identify yourself
-to HearFromYourMP, so that you don't have to check your email in the future.
-You don't have to set a password if you don't want to.
+to HearFromYourMP, so that you can post comments in the future without having
+to find an email from us first. You don't have to set a password if you don't want to.
 </p>
 EOF;
     }

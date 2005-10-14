@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.1 2005-10-14 17:34:48 matthew Exp $
+// $Id: about.php,v 1.2 2005-10-14 18:16:01 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -62,9 +62,9 @@ can just start talking about what they've said. Safe, easy and
 democratic.</p>
 
 <p align="center"><strong>Sign up now - the first test constituencies have already begun.</strong></p>
-</div>
 EOF;
     signup_form();
+    print '</div>';
 }
 
 function signup_form() {

@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.7 2005-10-14 17:34:49 matthew Exp $
+// $Id: subscribe.php,v 1.8 2005-10-14 18:16:02 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -89,7 +89,11 @@ function do_subscribe() {
             # Send another reminder email?
         }
 ?>
-<p class="loudmessage" align="center"><?=sprintf(_("Thanks for subscribing to HearFromYourMP for %s in the %s constituency!  You're the %s person to sign up. You'll now get emailed when threshold reached, person sends then, etc."), $rep_info['name'], $area_info['name'], english_ordinal($count)) ?></p>
+<p class="loudmessage" align="center"><?=sprintf("Thanks! You're the %s person to sign up to get emails from %s in the %s constituency.
+When the service launches fully, we'll be emailing every MP with 25 subscribers or more to ask them to send a message.
+In the mean time, you can find out lots and lots more information about %s on our sister site
+<a href=\"http://www.theyworkforyou.com/mp/?c=%s\">TheyWorkForYou</a>.",
+    english_ordinal($count), $rep_info['name'], $area_info['name'], $rep_info['name'], urlencode($area_info['name'])) ?></p>
 <p><?
         if ($return = get_http_var('r')) {
             print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
