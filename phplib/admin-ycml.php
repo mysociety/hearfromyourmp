@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.5 2005-08-26 15:35:32 matthew Exp $
+ * $Id: admin-ycml.php,v 1.6 2005-10-14 11:54:32 matthew Exp $
  * 
  */
 
@@ -18,6 +18,22 @@ require_once "../../phplib/dadem.php";
 require_once "../../phplib/utility.php";
 require_once "../../phplib/importparams.php";
 require_once "../../phplib/person.php";
+
+class ADMIN_PAGE_YCML_SUMMARY {
+    function ADMIN_PAGE_YCML_SUMMARY() {
+        $this->id = 'summary';
+    }
+    function display() {
+        $signups = db_getOne('SELECT COUNT(*) FROM constituent');
+        $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
+        $mps = db_getOne('SELECT COUNT(*) FROM constituent WHERE is_mp');
+        $people = db_getOne('SELECT COUNT(*) FROM person');
+        $messages = db_getOne('SELECT COUNT(*) FROM message');
+        $alerts = db_getOne('SELECT COUNT(*) FROM alert');
+        $comments = db_getOne('SELECT COUNT(*) FROM comment');
+        print "$signups constituency signups from $people people to $consts constituencies<br>$mps MPs have sent $messages message".($messages!=1?'s':'').", and there have been $comments comments<br>$alerts alerts";
+    }
+}
 
 class ADMIN_PAGE_YCML_MAIN {
     function ADMIN_PAGE_YCML_MAIN () {
@@ -57,16 +73,21 @@ class ADMIN_PAGE_YCML_MAIN {
         $rows = array();
         while ($r = db_fetch_array($q)) {
             $rows[] = array_map('htmlspecialchars', $r);
-            $ids[] = $r['constituency'];
+            if ($r['constituency'])
+                $ids[] = $r['constituency'];
         }
 
         $areas_info = mapit_get_voting_areas_info($ids);
 
         foreach ($rows as $k=>$r) {
-            $c_id = $r['constituency'];
-            $c_name = $areas_info[$c_id]['name'];
+            $c_id = $r['constituency'] ? $r['constituency'] : -1;
+            $c_name = array_key_exists($c_id, $areas_info) ? $areas_info[$c_id]['name'] : '&lt;Unknown / bad postcode&gt;';
             $row = "";
-            $row .= '<td><a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">' . $c_name . '</a><br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
+            $row .= '<td>';
+            if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
+            $row .= $c_name;
+            if ($c_id != -1) $row .= '</a>';
+            $row .= '<br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
                 <a href="?page=ycmllatest&amp;constituency='.$c_id.'">timeline</a>';
             $row .= '</td>';
             $row .= '<td align="center">' . $r['count'] . '</td>';
@@ -94,30 +115,41 @@ class ADMIN_PAGE_YCML_MAIN {
         $sort = get_http_var('s');
         if (!$sort || preg_match('/[^etn]/', $sort)) $sort = 'e';
 
-        $area_info = mapit_get_voting_area_info($id);
-
-        $reps = dadem_get_representatives($id);
-        $rep_info = dadem_get_representative_info($reps[0]);
-        $query = 'SELECT constituent.*, person.*, extract(epoch from creation_time) as creation_time
-                   FROM constituent
-                   LEFT JOIN person ON person.id = constituent.person_id
-                   WHERE constituency=?';
-        if ($sort=='t') $query .= ' ORDER BY constituent.creation_time DESC';
-        elseif ($sort=='n') $query .= ' ORDER BY showname DESC';
-        $q = db_query($query, $id);
+        if ($id > 0) {
+            $area_info = mapit_get_voting_area_info($id);
+            $reps = dadem_get_representatives($id);
+            $rep_info = dadem_get_representative_info($reps[0]);
+            $query = 'SELECT constituent.*, person.*, extract(epoch from creation_time) as creation_time
+                       FROM constituent
+                       LEFT JOIN person ON person.id = constituent.person_id
+                       WHERE constituency=?';
+            if ($sort=='t') $query .= ' ORDER BY constituent.creation_time DESC';
+            elseif ($sort=='n') $query .= ' ORDER BY showname DESC';
+            $q = db_query($query, $id);
+        } else {
+            $area_info['name'] = 'Unknown / bad postcode';
+            $query = 'SELECT *, extract(epoch from creation_time) as creation_time
+                       FROM constituent
+                       WHERE constituency IS NULL';
+            if ($sort=='t') $query .= ' ORDER BY constituent.creation_time DESC';
+            elseif ($sort=='n') $query .= ' ORDER BY showname DESC';
+            $q = db_query($query);
+        }
         $subscribers = db_num_rows($q);
 
         $out = array();
         print "<h2>The constituency of $area_info[name]</h2>";
-        print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
+        if ($id>0)
+            print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
 
-        $all = db_getAll('SELECT constituent.id,name,email   FROM constituent,person
-                          WHERE constituent.person_id=person.id AND constituency=?
-                          ORDER BY name', array($id));
-        $choices = '';
-        foreach ($all as $r) {
-            $choices .= '<option value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
-        }
+        if ($id>0) {
+            $all = db_getAll('SELECT constituent.id,person.name,person.email   FROM constituent,person
+                              WHERE constituent.person_id=person.id AND constituency=?
+                              ORDER BY person.name', array($id));
+            $choices = '';
+            foreach ($all as $r) {
+                $choices .= '<option value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
+            }
 ?>
 <h3>Create or set login for this MP</h3>
 <form method="post">
@@ -125,16 +157,16 @@ class ADMIN_PAGE_YCML_MAIN {
 </form>
 <form method="post">
 <em>Or:</em> pick an existing account subscribed to this constituency:
-<?      if ($choices) {
-            print '<select name="selectMP">' . $choices . '</select> <input';
-        } else {
-            print '<select name="selectMP" disabled><option>No matches</select> <input disabled';
-        }
+<?          if ($choices) {
+                print '<select name="selectMP">' . $choices . '</select> <input';
+            } else {
+                print '<select name="selectMP" disabled><option>No matches</select> <input disabled';
+            }
 ?>
  type="submit" value="Use this account">
 </form>
 <h3>Post a message as this MP</h3>
-<?      if (db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id)) { ?>
+<?          if (db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id)) { ?>
 <form method="post">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
@@ -145,9 +177,12 @@ class ADMIN_PAGE_YCML_MAIN {
 </tr></table>
 <input type="submit" value="Post">
 </form>
-<?      } else { ?>
+<?          } else { ?>
 <p>You cannot post a message until this constituency has an MP account. Please create or choose one.</p>
-<?      } ?>
+<?          }
+        }
+
+?>
 <h3>Subscribers</h3>
 <?      while ($r = db_fetch_array($q)) {
             $is_mp = ($r['is_mp'] == 't') ? true : false;
@@ -155,6 +190,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $e = array();
             if ($r['name']) array_push($e, $r['name']);
             if ($r['email']) array_push($e, $r['email']);
+            if ($r['postcode']) array_push($e, $r['postcode']);
             $e = join("<br>", $e);
             if ($is_mp) $e = "<strong>$e</strong>";
             $out[$e] = '<td>'.$e.'</td>';
@@ -205,18 +241,20 @@ class ADMIN_PAGE_YCML_MAIN {
         print '<p>';
         
         // Messages
-        print '<h3>Messages</h3>';
-        $q = db_query('select * from message 
-                where constituency = ? order by posted', $id);
+        if ($id>0) {
+            print '<h3>Messages</h3>';
+            $q = db_query('select * from message 
+                    where constituency = ? order by posted', $id);
 
-        $n = 0;
-        while ($r = db_fetch_array($q)) {
-            if ($n++)
-                print '<hr>';
-            print "<b>$r[subject]</b><br>$r[content]";
-        }
-        if ($n == 0) {
-            print "No messages yet.";
+            $n = 0;
+            while ($r = db_fetch_array($q)) {
+                if ($n++)
+                    print '<hr>';
+                print "<b>$r[subject]</b><br>$r[content]";
+            }
+            if ($n == 0) {
+                print "No messages yet.";
+            }
         }
     }
 
@@ -287,6 +325,7 @@ class ADMIN_PAGE_YCML_LATEST {
         $q = db_query('SELECT *,extract(epoch from posted) as epoch FROM message
                      ORDER BY posted DESC');
         $this->area_info = array();
+        $time = array();
         while ($r = db_fetch_array($q)) {
             $c_id = $r['constituency'];
             if (!array_key_exists($c_id, $this->area_info)) {
@@ -305,15 +344,25 @@ class ADMIN_PAGE_YCML_LATEST {
                 $time[$r['epoch']][] = $r;
             }
         }
-        $q = db_query('SELECT *,extract(epoch from creation_time) as epoch FROM constituent,person
-                        WHERE person_id = person.id
-                        ORDER BY creation_time DESC');
-        while ($r = db_fetch_array($q)) {
-            $c_id = $r['constituency'];
-            if (!array_key_exists($c_id, $this->area_info)) {
-                $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+        if (!$this->constituency || $this->constituency>0) {
+            $q = db_query('SELECT *,extract(epoch from creation_time) as epoch FROM constituent,person
+                            WHERE person_id = person.id
+                            ORDER BY creation_time DESC');
+            while ($r = db_fetch_array($q)) {
+                $c_id = $r['constituency'];
+                if (!array_key_exists($c_id, $this->area_info)) {
+                    $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+                }
+                if (!$this->constituency || $this->constituency==$c_id) {
+                    $time[$r['epoch']][] = $r;
+                }
             }
-            if (!$this->constituency || $this->constituency==$c_id) {
+        } elseif ($this->constituency<0) {
+            $this->area_info[-1]['name'] = 'Unknown / bad postcode';
+            $q = db_query('SELECT *,extract(epoch from creation_time) as epoch FROM constituent
+                            WHERE constituency IS NULL
+                            ORDER BY creation_time DESC');
+            while ($r = db_fetch_array($q)) {
                 $time[$r['epoch']][] = $r;
             }
         }
