@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.8 2005-10-15 00:27:59 matthew Exp $
+ * $Id: admin-ycml.php,v 1.9 2005-10-15 10:52:15 matthew Exp $
  * 
  */
 
@@ -170,12 +170,15 @@ class ADMIN_PAGE_YCML_MAIN {
             print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
 
         if ($id>0) {
-            $all = db_getAll('SELECT constituent.id,person.name,person.email   FROM constituent,person
+            $is_mp = db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id);
+            $all = db_getAll('SELECT constituent.id,is_mp,person.name,person.email FROM constituent,person
                               WHERE constituent.person_id=person.id AND constituency=?
                               ORDER BY person.name', array($id));
             $choices = '';
             foreach ($all as $r) {
-                $choices .= '<option value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
+                $choices .= '<option';
+                if ($r['is_mp']=='t') $choices .= ' selected';
+                $choices .= ' value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
             }
 ?>
 <h3>Create or set login for this MP</h3>
@@ -185,7 +188,7 @@ class ADMIN_PAGE_YCML_MAIN {
 <form method="post">
 <em>Or:</em> pick an existing account subscribed to this constituency:
 <?          if ($choices) {
-                print '<select name="selectMP">' . $choices . '</select> <input';
+                print '<select name="selectMP"><option value="">None selected</option>' . $choices . '</select> <input';
             } else {
                 print '<select name="selectMP" disabled><option>No matches</select> <input disabled';
             }
@@ -193,7 +196,7 @@ class ADMIN_PAGE_YCML_MAIN {
  type="submit" value="Use this account">
 </form>
 <h3>Post a message as this MP</h3>
-<?          if (db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id)) { ?>
+<?          if ($is_mp) { ?>
 <form method="post">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
