@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.7 2005-10-14 23:48:55 matthew Exp $
+// $Id: page.php,v 1.8 2005-10-15 00:11:52 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -34,7 +34,12 @@ function page_header($title='', $params = array()) {
 <style type="text/css">@import url("/ycml.css");</style>
 </head>
 <body>
-<h1><a href="/">HearFromYourMP</a></h1>
+<h1><? if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">'; ?>
+HearFromYourMP<?
+if ($_SERVER['REQUEST_URI']!='/') print '</a>';
+print ' <span id="betatest">Beta&nbsp;Test</span>';
+?>
+</h1>
 <?
     // Display who is logged in 
     if ($P) {
