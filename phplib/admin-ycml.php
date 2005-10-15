@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.7 2005-10-14 17:34:46 matthew Exp $
+ * $Id: admin-ycml.php,v 1.8 2005-10-15 00:27:59 matthew Exp $
  * 
  */
 
@@ -19,6 +19,32 @@ require_once "../../phplib/utility.php";
 require_once "../../phplib/importparams.php";
 require_once "../../phplib/person.php";
 
+class ADMIN_PAGE_YCML_LEFT {
+    function ADMIN_PAGE_YCML_LEFT() {
+        $this->navname = 'Constituencies with no signups';
+        $this->id = 'ycmlleft';
+    }
+    function display() {
+        $areas = mapit_get_areas_by_type('WMC');
+        $consts = db_getAll('SELECT DISTINCT(constituency) FROM constituent');
+        foreach ($consts as $const) {
+            $c_id = $const['constituency'];
+            $used[$c_id] = true;
+        }
+        foreach ($areas as $area_id) {
+            if (!array_key_exists($area_id, $used)) $empty[] = $area_id;
+        }
+        $areas_info = mapit_get_voting_areas_info($empty);
+        print '<ol>';
+        foreach ($areas_info as $area) {
+            $out[] = $area['name'];
+        }
+        sort($out);
+        print '<li>' . join('<li>', $out);
+        print '</ol>';
+    }
+}
+
 class ADMIN_PAGE_YCML_SUMMARY {
     function ADMIN_PAGE_YCML_SUMMARY() {
         $this->id = 'summary';
@@ -27,11 +53,12 @@ class ADMIN_PAGE_YCML_SUMMARY {
         $signups = db_getOne('SELECT COUNT(*) FROM constituent');
         $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
         $mps = db_getOne('SELECT COUNT(*) FROM constituent WHERE is_mp');
-        $people = db_getOne('SELECT COUNT(*) FROM person');
+        $people1 = db_getOne('SELECT COUNT(*) FROM person');
+        $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         $messages = db_getOne('SELECT COUNT(*) FROM message');
         $alerts = db_getOne('SELECT COUNT(*) FROM alert');
         $comments = db_getOne('SELECT COUNT(*) FROM comment');
-        print "$signups constituency signups from $people people to $consts constituencies<br>$mps MPs have sent $messages message".($messages!=1?'s':'').", and there have been $comments comments<br>$alerts alerts";
+        print "$signups constituency signups from $people1/$people2 people to $consts constituencies<br>$mps MPs have sent $messages message".($messages!=1?'s':'').", and there have been $comments comments<br>$alerts alerts";
     }
 }
 
