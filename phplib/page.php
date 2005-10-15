@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.8 2005-10-15 00:11:52 matthew Exp $
+// $Id: page.php,v 1.9 2005-10-15 09:29:22 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -30,7 +30,10 @@ function page_header($title='', $params = array()) {
 <title><?
     if ($title)
         print htmlspecialchars($title) . ' - ';
-?>HearFromYourMP.com</title>
+?>HearFromYourMP.com<?
+    if (!$title)
+        print ' - Sign up to hear from your MP about local issues, and to discuss them with other constituents';
+?></title>
 <style type="text/css">@import url("/ycml.css");</style>
 </head>
 <body>

@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.9 2005-10-15 00:02:33 matthew Exp $
+// $Id: index.php,v 1.10 2005-10-15 09:29:25 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -22,7 +22,7 @@ function front_page() { ?>
     <input type="text" name="name" id="name" value="" size="20">
     <label for="email">Email:</label>
     <input type="text" name="email" id="email" value="" size="25">
-    <label for="postcode">Postcode:</label> 
+    <label for="postcode">UK Postcode:</label> 
     <input type="text" name="postcode" id="postcode" value="<? if (array_key_exists('pc', $_GET)) print htmlentities($_GET['pc']); ?>" size="10">
 &nbsp; 
     <input type="submit" class="submit" value="Sign up">
