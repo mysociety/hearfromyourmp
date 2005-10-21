@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.3 2005-08-12 17:46:09 matthew Exp $
+ * $Id: ycml.php,v 1.4 2005-10-21 17:26:39 matthew Exp $
  * 
  */
 
@@ -42,7 +42,7 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
         /* Nuke any existing page output to display the error message. */
         ob_clean();
         /* Message will be in log file, don't display it for cleanliness */
-        $err = p(_('Please try again later, or <a href="mailto:team@mysociety.org">email us</a> for help resolving the problem.'));
+        $err = 'Please try again later, or <a href="mailto:team@mysociety.org">email us</a> for help resolving the problem.';
         if ($num & E_USER_ERROR) {
             $err = "<p><em>$message</em></p> $err";
         }

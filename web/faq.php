@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.2 2005-10-14 18:16:02 matthew Exp $
+// $Id: faq.php,v 1.3 2005-10-21 17:26:40 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -49,6 +49,16 @@ there is to it (apart from confirming your email address).
 Your MP will write to you some time between today and
 the far distant future &mdash; we'll point you to some other fun &amp; useful
 services that we run whilst you're waiting.
+
+<dt>I signed up to the placeholder page, forgot about it, and when I
+signed up again it didn't tell me that it
+knew who I was until after I'd confirmed my email address. Why? This seems
+silly.
+<dd>If we said "We recognize your email address, don't bother" before
+getting you to confirm it, nasty people could type in email addresses
+at random to work out who'd signed up to the lists. We don't want this
+to happen, so we make our users confirm their address before giving out
+any such information.
 
 <dt>Will it fill my inbox with ranting rubbish from other constituents?
 <dd>No &mdash; only the MP can send messages to all list subscribers. If they
