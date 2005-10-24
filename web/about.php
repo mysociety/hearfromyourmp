@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.2 2005-10-14 18:16:01 matthew Exp $
+// $Id: about.php,v 1.3 2005-10-24 18:45:15 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -69,7 +69,7 @@ EOF;
 
 function signup_form() {
     print <<<EOF
-<form method="post" action="/subscribe">
+<form method="post" action="/subscribe" accept-charset="utf-8">
 <div id="subscribeBox">
     <input type="hidden" name="subscribe" id="subscribe" value="1">
     <label for="name">Name:</label>

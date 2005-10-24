@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.11 2005-10-21 17:26:40 matthew Exp $
+// $Id: index.php,v 1.12 2005-10-24 18:45:15 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -15,7 +15,7 @@ page_footer();
 
 function front_page() { ?>
 <h2 align="center">Sign up to hear from your MP about local issues,<br>and to discuss them with other constituents</h2>
-<form method="post" action="/subscribe">
+<form method="post" action="/subscribe" accept-charset="utf-8">
 <div id="subscribeBox">
     <input type="hidden" name="subscribe" id="subscribe" value="1">
     <label for="name">Name:</label>
