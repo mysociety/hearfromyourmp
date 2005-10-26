@@ -1,0 +1,23 @@
+Subject: <?=$values['subscribers']?> are hanging on your every word at the HearFromYourMP website
+
+Hi,
+
+Already, <?=$values['subscribers']?> people from your constituency,
+<?=$values['constituency_name']?> have subscribed to hear updates from you
+through the HearFromYourMP website, built by mySociety, the same people who
+brought you the award-winning WriteToThem and PledgeBank websites.
+
+If you want to learn more about HearFromYourMP, just follow this link:
+    http://www.hearfromyourmp.com/
+If you'd like to send a message to your subscribers right now, then please just
+reply to this mail with your message (to make our lives easier, please put the
+text of your message between the two marker lines below, but don't worry if
+that's inconvenient -- we'll still be able to pass your message on).
+
+If you don't want to send a message now, we'll send you another message when
+there are <?=$values['next_threshold']?> subscribers waiting for you to say
+something.
+
+--- Begin your message to your subscribers below this line ---
+
+---- End your message to your subscribers above this line ----
