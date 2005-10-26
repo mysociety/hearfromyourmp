@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.3 2005-10-26 16:14:29 chris Exp $
+ * $Id: send-mp-threshold-alerts,v 1.4 2005-10-26 16:16:55 chris Exp $
  * 
  */
 
@@ -102,13 +102,13 @@ function send_mp_threshold_alerts() {
         else
             verbose("no previous alert sent for this constituency");
 
-        verbose("email address for this MP is ${rep_info['email']}");
         if (!isset($rep_info['email']) || $rep_info['email'] === '') {
             fwrite(STDERR, "send-mp-threshold-alerts: no email address available for ${rep_info['name']} MP (${area_info['name']}), but need to send threshold alert\n");
             if ($rep_info['email'] === '')
                 fwrite(STDERR, "send-mp-threshold-alerts: email address returned by DaDem was blank; should be null\n");
             continue;
         }
+        verbose("email address for this MP is ${rep_info['email']}");
 
         $pp = array(
                 'subscribers' => $current,
@@ -118,7 +118,7 @@ function send_mp_threshold_alerts() {
                 'mp_forename' => preg_replace('/\s.*$/', '', $rep_info['name']) /* XXX */
             );
 
-        if (ycml_send_email_template("chris@ex-parrot.com", 'alert-mp-threshold', $pp)) {
+        if (ycml_send_email_template($rep_info['email'], 'alert-mp-threshold', $pp)) {
             verbose("mail successfully sent");
             db_query('
                     insert into mp_threshold_alert
