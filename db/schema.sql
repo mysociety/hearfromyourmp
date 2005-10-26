@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.9 2005-10-26 10:24:53 chris Exp $
+-- $Id: schema.sql,v 1.10 2005-10-26 10:36:50 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -133,6 +133,10 @@ create index alert_sent_comment_id_idx on alert_sent(comment_id);
 create unique index alert_sent_unique_idx on alert_sent(alert_id, comment_id);
 
 create table mp_threshold_alert (
+    -- XXX This is broken because it's per-constituency, not per-MP. So if the
+    -- MP for a constituency changes and the previous MP had already sent
+    -- mails to their constituents, the new MP won't get chivvying mail. But
+    -- ignore that problem for the moment.
     constituency integer not null,
     whensent timestamp not null default current_timestamp,
     num_subscribers integer not null -- at time of sending
