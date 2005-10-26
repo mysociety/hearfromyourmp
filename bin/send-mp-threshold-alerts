@@ -1,0 +1,99 @@
+#!/usr/local/bin/php -q
+<?php
+/*
+ * send-mp-threshold-alerts:
+ * Run from cron regularly to send MPs who have never sent a mail through YCML
+ * messages telling them how many users are signed up in their constituency.
+ * 
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: send-mp-threshold-alerts,v 1.1 2005-10-26 12:48:37 chris Exp $
+ * 
+ */
+
+require_once '../conf/general';
+require_once '../phplibs/fns.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+
+function verbose($str) {
+    global $verbose;
+    if ($verbose) 
+        fwrite(STDERR, "send-mp-threshold-alerts: $str\n");
+}
+function error($str) {
+    fwrite(STDERR, "send-mp-threshold-alerts: ERROR: $str\n");
+}
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcgi';
+
+$switches = $options[0];
+$args = $options[1];
+$verbose = 0; 
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+YCML MP threshold alert sending script.
+
+Usage: send-mp-threshold-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_mp_threshold_alerts();
+
+function send_mp_threshold_alerts() {
+    verbose("sending MP threshold alerts");
+
+    $q = db_query("
+            select constituent.constituency,
+                -- current # subscribers
+                count(constituent.id),
+                -- current most recent threshold passed
+                mp_threshold(count(constituent.id)::integer, -1),
+                -- when last sent
+                max(whensent),
+                -- number of subscribers when alert last sent
+                max(num_subscribers),
+                -- threshold when alert last sent
+                mp_threshold(max(num_subscribers)::integer, -1),
+                -- null if no message sent
+                max(posted)
+            from constituent left join message
+                    on constituent.constituency = message.constituency
+                left join mp_threshold_alert
+                    on mp_threshold_alert.constituency
+                        = constituent.constituency
+            group by constituent.constituency
+            having max(posted) is null
+                and count(constituent.id) >= 25
+                and (max(whensent) is null
+                    or max(whensent) < current_timestamp
+                                        - '1 week'::interval)
+                and (max(num_subscribers) is null
+                    or mp_threshold(count(constituent.id)::integer, -1)
+                        > mp_threshold(max(num_subscribers)::integer, -1))");
+
+    while (list($constituency, $current, $current_thr, $whenlast, $last,
+                    $last_thr, $posted) = db_fetch_row($q)) {
+        verbose("Need to send an alert for $constituency with $current subscribers (>$current_thr)");
+        if (defined($last))
+            verbose("last alert was sent $whenlast when there were $last subscribers (>$last_thr)");
+        else
+            verbose("no previous alert sent for this constituency");
+    }
+}
+
+
+?>
