@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.8 2005-10-14 11:54:31 matthew Exp $
+-- $Id: schema.sql,v 1.9 2005-10-26 10:24:53 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -132,3 +132,11 @@ create index alert_sent_id_idx on alert_sent(alert_id);
 create index alert_sent_comment_id_idx on alert_sent(comment_id);
 create unique index alert_sent_unique_idx on alert_sent(alert_id, comment_id);
 
+create table mp_threshold_alert (
+    constituency integer not null,
+    whensent timestamp not null default current_timestamp,
+    num_subscribers integer not null -- at time of sending
+);
+
+create index mp_threshold_alert_constituency_idx
+    on mp_threshold_alert(constituency);
