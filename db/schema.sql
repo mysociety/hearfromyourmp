@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.10 2005-10-26 10:36:50 chris Exp $
+-- $Id: schema.sql,v 1.11 2005-10-26 10:59:32 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -131,6 +131,38 @@ create table alert_sent (
 create index alert_sent_id_idx on alert_sent(alert_id);
 create index alert_sent_comment_id_idx on alert_sent(comment_id);
 create unique index alert_sent_unique_idx on alert_sent(alert_id, comment_id);
+
+-- mp_threshold NUM DIR
+-- If DIR is positive, return the smallest threshold level larger than NUM;
+-- otherwise return the largest threshold level smaller than NUM.
+create function mp_threshold(integer, integer) returns integer as '
+    declare
+        num alias for $1;
+        dir alias for $2;
+        n integer;
+        m integer;
+    begin
+        if num < 100 then
+            m := 25;
+        elsif num < 200 then
+            m := 50;
+        else
+            m := 100;
+        end if;
+        n := num / m;
+        if dir < 0 then
+            if n = 0 then
+                return null;
+            else
+                return n * m;
+            end if;
+        elsif dir > 0 then
+            return (n + 1) * m;
+        else
+            raise exception ''DIR should be positive or negative, not 0'';
+        end if;
+    end;
+' language 'plpgsql';
 
 create table mp_threshold_alert (
     -- XXX This is broken because it's per-constituency, not per-MP. So if the
