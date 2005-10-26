@@ -8,12 +8,12 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.2 2005-10-26 13:36:31 chris Exp $
+ * $Id: send-mp-threshold-alerts,v 1.3 2005-10-26 16:14:29 chris Exp $
  * 
  */
 
 require_once '../conf/general';
-require_once '../phplibs/fns.php';
+require_once '../phplib/fns.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
 
@@ -71,12 +71,15 @@ function send_mp_threshold_alerts() {
                 -- threshold when alert last sent
                 mp_threshold(max(num_subscribers)::integer, -1),
                 -- null if no message sent
-                max(posted)
+                max(posted),
+                -- next threshold
+                mp_threshold(count(constituent.id)::integer, +1)
             from constituent left join message
                     on constituent.constituency = message.constituency
                 left join mp_threshold_alert
                     on mp_threshold_alert.constituency
                         = constituent.constituency
+            where constituent.constituency is not null
             group by constituent.constituency
             having max(posted) is null
                 and count(constituent.id) >= 25
@@ -88,17 +91,45 @@ function send_mp_threshold_alerts() {
                         > mp_threshold(max(num_subscribers)::integer, -1))");
 
     while (list($constituency, $current, $current_thr, $whenlast, $last,
-                    $last_thr, $posted) = db_fetch_row($q)) {
+                    $last_thr, $posted, $next_thr) = db_fetch_row($q)) {
 
         $area_info = ycml_get_area_info($constituency);
         $rep_info = ycml_get_mp_info($constituency);
                     
-        verbose("Need to send an alert for ${rep_info['name']} (${area_info['name']}, #$constituency) with $current subscribers (>$current_thr)");
+        verbose("need to send an alert for ${rep_info['name']} (${area_info['name']}, #$constituency) with $current subscribers (>$current_thr)");
         if (defined($last))
             verbose("last alert was sent $whenlast when there were $last subscribers (>$last_thr)");
         else
             verbose("no previous alert sent for this constituency");
+
+        verbose("email address for this MP is ${rep_info['email']}");
+        if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+            fwrite(STDERR, "send-mp-threshold-alerts: no email address available for ${rep_info['name']} MP (${area_info['name']}), but need to send threshold alert\n");
+            if ($rep_info['email'] === '')
+                fwrite(STDERR, "send-mp-threshold-alerts: email address returned by DaDem was blank; should be null\n");
+            continue;
+        }
+
+        $pp = array(
+                'subscribers' => $current,
+                'constituency_name' => $area_info['name'],
+                'next_threshold' => $next_thr,
+                'mp_name' => $rep_info['name'],
+                'mp_forename' => preg_replace('/\s.*$/', '', $rep_info['name']) /* XXX */
+            );
+
+        if (ycml_send_email_template("chris@ex-parrot.com", 'alert-mp-threshold', $pp)) {
+            verbose("mail successfully sent");
+            db_query('
+                    insert into mp_threshold_alert
+                        (constituency, num_subscribers)
+                    values (?, ?)', array($constituency, $current));
+        } else {
+            fwrite(STDERR, "send-mp-threshold-alerts: failed to send mail to ${rep_info['name']} MP (${area_info['name']}) <${rep_info['email']}>\n");
+        }
     }
+
+    db_commit();
 }
 
 
