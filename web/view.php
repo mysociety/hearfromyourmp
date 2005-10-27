@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.14 2005-10-24 18:45:15 matthew Exp $
+# $Id: view.php,v 1.15 2005-10-27 15:36:35 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -87,8 +87,10 @@ So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have
     }
     if ($out) {
         print "<h3>Messages posted</h3> <ul>$out</ul>";
-    } else {
-        print "<p><em>This MP has not yet sent any messages through HearFromYourMP.</em></p>";
+    } else { ?>
+<p><em>This MP has not yet sent any messages through HearFromYourMP.</em>
+The site is in testing &mdash; most MPs, even those with more than 25 people signed up, have not yet been emailed requests to post.</p>
+<?
     }
 }
 

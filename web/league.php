@@ -5,13 +5,53 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.1 2005-10-21 17:26:40 matthew Exp $
+// $Id: league.php,v 1.2 2005-10-27 15:36:35 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
-page_header();
-league_table();
-page_footer();
+if (array_key_exists('csv', $_GET)) {
+    header('Content-Type: text/csv');
+    csv_league_table();
+} else {
+    page_header();
+    league_table();
+    page_footer();
+}
+
+function csv_league_table() {
+    $sort = get_http_var('s');
+    if (!$sort || preg_match('/[^csmlr]/', $sort)) $sort = 's';
+    $order = '';
+    if ($sort=='l') $order = 'latest DESC';
+    elseif ($sort=='c') $order = 'constituency';
+    elseif ($sort=='m') $order = 'messages DESC';
+    elseif ($sort=='r') $order = 'comments DESC';
+    elseif ($sort=='s') $order = 'count DESC';
+
+    $q = db_query('SELECT COUNT(id) AS count,constituency,
+    EXTRACT(epoch FROM MAX(creation_time)) AS latest,
+    (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
+    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments
+    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
+    ($order ? ' ORDER BY ' . $order : '') );
+    $rows = array();
+    while ($r = db_fetch_array($q)) {
+        $rows[] = $r;
+        if ($r['constituency'])
+            $ids[] = $r['constituency'];
+    }
+
+    $areas_info = mapit_get_voting_areas_info($ids);
+
+    foreach ($rows as $k=>$r) {
+        $c_id = $r['constituency'] ? $r['constituency'] : -1;
+        $c_name = $areas_info[$c_id]['name'];
+        $rows[$k] = "\"$c_name\",$r[count]\n";
+    }
+    foreach ($rows as $row) {
+        print $row;
+    }
+}
 
 function league_table() { ?>
 <h2>Current Status</h2>
