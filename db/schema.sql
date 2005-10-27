@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.11 2005-10-26 10:59:32 chris Exp $
+-- $Id: schema.sql,v 1.12 2005-10-27 14:59:15 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -16,6 +16,20 @@ create function pb_current_timestamp()
     end;
 ' language 'plpgsql';
 
+-- users, but call the table person rather than user so we don't have to quote
+-- its name in every statement....
+create table person (
+    id serial not null primary key,
+    name text,
+    email text not null,
+    password text,
+    website text,
+    numlogins integer not null default 0
+);
+
+create unique index person_email_idx on person(email);
+
+-- MP's constituents who have signed up
 create table constituent (
     id serial not null primary key,
 -- For old-style signups. TODO: Remove this when everyone switched over
@@ -40,19 +54,6 @@ create unique index constituent_person_id_constituency_idx on constituent(person
 create table secret (
     secret text not null
 );
-
--- users, but call the table person rather than user so we don't have to quote
--- its name in every statement....
-create table person (
-    id serial not null primary key,
-    name text,
-    email text not null,
-    password text,
-    website text,
-    numlogins integer not null default 0
-);
-
-create unique index person_email_idx on person(email);
 
 -- Stores randomly generated tokens and serialised hash arrays associated
 -- with them.

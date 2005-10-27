@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.9 2005-10-15 16:47:03 matthew Exp $
+// $Id: subscribe.php,v 1.10 2005-10-27 14:59:15 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -58,12 +58,18 @@ function do_subscribe() {
     $area_info = ycml_get_area_info($wmc_id);
     $rep_info = ycml_get_mp_info($wmc_id);
 
-    /* Get the user to log in. */
-    $r = array();
-    $r['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
-    $r['reason_email'] = _("You'll then be signed up to get emails from $rep_info[name] in the $area_info[name] constituency.");
-    $r['reason_email_subject'] = _("Subscribe to HearFromYourMP");
-    $person = person_signon($r, $q_email, $q_name);
+    /* Check for authentication forwarded from WriteToThem.com */
+    $external_auth = auth_verify_with_shared_secret($q_email, OPTION_AUTH_SHARED_SECRET, get_http_var('sign'));
+    if ($external_auth) {
+        $person = person_get_or_create($q_email, $q_name);
+    } else {
+        /* Otherwise get the user to log in. */
+        $r = array();
+        $r['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
+        $r['reason_email'] = _("You'll then be signed up to get emails from $rep_info[name] in the $area_info[name] constituency.");
+        $r['reason_email_subject'] = _("Subscribe to HearFromYourMP");
+        $person = person_signon($r, $q_email, $q_name);
+    }
     $person_id = $person->id();
 
     $already_signed = db_getOne("select id from constituent where 

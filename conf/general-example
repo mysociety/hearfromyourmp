@@ -14,7 +14,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.1 2005-07-15 23:20:44 matthew Exp $
+ * $Id: general-example,v 1.2 2005-10-27 14:59:15 francis Exp $
  * 
  */
 
@@ -25,14 +25,14 @@ define('OPTION_PHP_MAINDB', 'YCML');
 
 // Base domain of the website. This is used to distinguish internal from
 // external referrers, for instance.
-define('OPTION_WEB_DOMAIN', '');
+define('OPTION_WEB_DOMAIN', 'www.---.com');
 
 // Top-level URL of current website
-define('OPTION_BASE_URL', '');
-define('OPTION_ADMIN_URL', '');
+define('OPTION_BASE_URL', 'http://www.---.com');
+define('OPTION_ADMIN_URL', 'https://secure.---.com');
 
 // Domain name for emails to current website
-define('OPTION_EMAIL_DOMAIN', '');
+define('OPTION_EMAIL_DOMAIN', '---.com');
 define('OPTION_CONTACT_EMAIL', 'contact@'.OPTION_EMAIL_DOMAIN);
 // Prefix of return-path local part. All mail for EMAIL_PREFIX(.*)@EMAIL_DOMAIN
 // must be delivered to the bounce processing scripts.
@@ -47,4 +47,7 @@ define('OPTION_YCML_STAGING', 0);
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
 define('OPTION_DADEM_URL', 'http://services.mysociety.org/dadem');
+
+// For passing authentication to HearFromYourMP
+define('OPTION_AUTH_SHARED_SECRET', 'long string of random bytes');
 
