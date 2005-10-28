@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.13 2005-10-27 14:59:15 francis Exp $
+// $Id: index.php,v 1.14 2005-10-28 15:50:39 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -35,5 +35,5 @@ function front_page() { ?>
 <?
         $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
-        print "<p align='center'><a href='/league'>Current status</a>: $people people have signed up in $consts constituencies.</p>";
+        print "<p align='center'>$people people have signed up in $consts constituencies &mdash; <a href='/league'>Full details</a></p>";
 } ?>
