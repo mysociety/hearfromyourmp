@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.2 2005-10-27 15:36:35 matthew Exp $
+// $Id: league.php,v 1.3 2005-10-28 10:42:30 ycml Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -31,7 +31,8 @@ function csv_league_table() {
     $q = db_query('SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments
+    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
+    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
@@ -79,7 +80,8 @@ function league_table() { ?>
     $q = db_query('SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments
+    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
+    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
@@ -101,6 +103,7 @@ function league_table() { ?>
         if ($c_id != -1) $row .= '</a>';
         $row .= '</td>';
         $row .= '<td align="center">' . $r['count'] . '</td>';
+	$row .= '<td align="center">' . $r['emails_to_mp'] . '</td>';
         $row .= '<td align="center">' . $r['messages'] . '</td>';
         $row .= '<td align="center">' . $r['comments'] . '</td>';
         $row .= '<td>' . prettify($r['latest']) . '</td>';
@@ -125,6 +128,7 @@ function table_header($sort) {
     $cols = array(
         'c'=>'Constituency', 
         's'=>'Signups',
+	'e'=>'Emails sent asking MP to post',
         'm'=>'Messages sent',
         'r'=>'Comments',
         'l'=>'Latest signup'
