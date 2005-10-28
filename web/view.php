@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.17 2005-10-28 15:54:46 ycml Exp $
+# $Id: view.php,v 1.18 2005-10-28 18:25:20 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -71,6 +71,7 @@ function view_messages($c_id) {
     $area_info = ycml_get_area_info($c_id);
     $rep_info = ycml_get_mp_info($c_id);
     $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
+    $nothanks = db_getRow('SELECT status,website FROM mp_nothanks WHERE constituency = ?', $c_id);
     $q = db_query('SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
@@ -81,6 +82,24 @@ function view_messages($c_id) {
 <p>The MP for this constituency is <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>"><?=$rep_info['name'] ?></a>, <?=$rep_info['party'] ?>.
 So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.</p>
 <?
+    if ($nothanks['status'] == 't') {
+        $mp_website = $nothanks['website']; ?>
+<p>Unfortunately, <?=$rep_info['name'] ?> has said they are not interested in using this
+service<?
+        if ($mp_website)
+            print ', and asks that we encourage users to visit their website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+?>. You can still contact them directly via our service
+<a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
+
+<p>In accordance with our site policy we will continue to allow signups for
+<?=$area_info['name'] ?>. As our FAQ says &quot;There is one list per
+constituency, not per MP, and we will continue to accept subscribers
+regardless of whether your current MP chooses to use the site or not.
+If your MP changes for any reason, we will hand access to the list
+over to their successor.</p>
+<?
+        return;
+    }
     $out = '';
     while ($r = db_fetch_array($q)) {
         $out .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>. $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';

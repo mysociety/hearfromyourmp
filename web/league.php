@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.4 2005-10-28 15:54:46 ycml Exp $
+// $Id: league.php,v 1.5 2005-10-28 18:25:20 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -86,7 +86,8 @@ function league_table() { ?>
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
-    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
+    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp,
+    (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
@@ -108,9 +109,13 @@ function league_table() { ?>
         if ($c_id != -1) $row .= '</a>';
         $row .= '</td>';
         $row .= '<td align="center">' . $r['count'] . '</td>';
-	$row .= '<td align="center">' . $r['emails_to_mp'] . '</td>';
-        $row .= '<td align="center">' . $r['messages'] . '</td>';
-        $row .= '<td align="center">' . $r['comments'] . '</td>';
+        if ($r['nothanks']) {
+            $row .= '<td colspan="3" align="center"><a href="' . OPTION_BASE_URL . '/view/' . $c_id . '">This MP has asked not to use this service</a></td>';
+        } else {
+            $row .= '<td align="center">' . $r['emails_to_mp'] . '</td>';
+            $row .= '<td align="center">' . $r['messages'] . '</td>';
+            $row .= '<td align="center">' . $r['comments'] . '</td>';
+        }
         $row .= '<td>' . prettify($r['latest']) . '</td>';
         $rows[$k] = $row;
     }

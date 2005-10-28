@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.11 2005-10-28 10:17:35 matthew Exp $
+// $Id: subscribe.php,v 1.12 2005-10-28 18:25:20 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -87,20 +87,29 @@ function do_subscribe() {
                 ));
         db_commit();
     
-        $count = db_getOne("select count(*) from constituent where constituency = ?", array( $wmc_id ) );
-        if ($count == 20) {
-            # Time to send first email
-        } elseif ($count == 50) {
-            # Time to send second email
-        } elseif ($count % 100 == 0) {
-            # Send another reminder email?
-        }
+        $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
+        $nothanks = db_getRow('SELECT status,website FROM mp_nothanks WHERE constituency = ?', $wmc_id);
 ?>
-<p class="loudmessage" align="center"><?=sprintf("Thanks! You're the %s person to sign up to get emails from %s in the %s constituency.
-When the service launches fully, we'll be emailing every MP with 25 subscribers or more to ask them to send a message.
-In the mean time, you can find out lots and lots more information about %s on our sister site
-<a href=\"http://www.theyworkforyou.com/mp/?c=%s\">TheyWorkForYou</a>.",
-    english_ordinal($count), $rep_info['name'], $area_info['name'], $rep_info['name'], urlencode($area_info['name'])) ?></p>
+<p class="loudmessage"><?
+        print sprintf("Thanks! You're the %s person to sign up to get emails from %s in the %s constituency. ", english_ordinal($count), $rep_info['name'], $area_info['name']);
+        if ($nothanks['status'] == 't') {
+            $mp_website = $nothanks['website']; ?>
+Unfortunately, <?=$rep_info['name'] ?> has said they are not interested in using this
+service<?
+            if ($mp_website)
+                print ', and asks that we encourage users to visit their website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+?>. You can still contact them directly via our service
+<a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
+
+<p>In accordance with our site policy we will continue to allow signups for
+<?=$area_info['name'] ?>. As our FAQ says &quot;There is one list per
+constituency, not per MP, and we will continue to accept subscribers
+regardless of whether your current MP chooses to use the site or not.
+If your MP changes for any reason, we will hand access to the list
+over to their successor.</p>
+<?      } ?>
+<p>Find out lots of information about <?=$rep_info['name'] ?> on our sister site
+<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>.</p>
 <p><?
         if ($return = get_http_var('r')) {
             print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';

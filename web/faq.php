@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.3 2005-10-21 17:26:40 matthew Exp $
+// $Id: faq.php,v 1.4 2005-10-28 18:25:20 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -90,6 +90,20 @@ get more than one mail a week no matter how fast people sign up.
 Eventually we believe that the mailing lists will grow naturally to a
 size where it is non-sensical for MPs not to engage.
 
+<dt>I am an MP, or work in an MP's office. How do I take part in the testing?
+<dd>Contact us and we'll tell you how to get involved. All you have to do
+really is compose a first message to your constituents, and we'll help you
+send it out.
+
+<dt>Does the mailing list belong to the MP? What happens if my MP changes?
+<dd>There is one list per constituency, not per MP, and we will continue to
+accept subscribers regardless of whether your current MP chooses to use the
+site or not. If your MP changes for any reason, we will hand access to the
+list over to their successor. If your constituency boundaries change, we will
+use your postcode to calculate your new constituency, and move you to the
+right list. We will not disclose your email address to the MP,
+unless you write to them.
+
 <dt>How much of the UK does HearFromYourMP cover?
 <dd>All of it. All of Blighty. Gor bless 'er. Brings a tear to your eye.
 
@@ -127,12 +141,14 @@ It goes without saying that we'd never give or sell your email
 addresses to anyone else.
 
 <dt>Is this open source?
-<dd>Yep, all our code is open source under the Aferro GPL. We use some
+<dd>Yep, all our code is open source under the Aferro GPL. You can
+<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">find
+it here</a> (in the 'ycml' directory). We use some
 licensed data to do postcode and constituency lookups though, I'm
 afraid. If you are interested in translating it to another country,
 we'll be glad to do what we can to help.
 
-<dt>I want contact someone in charge, or request a new/different feature &mdash;
+<dt>I want to contact someone in charge, or request a new/different feature &mdash;
 what should I do?
 <dd>Write to us at <a href="mailto:team&#64;hearfromyourmp.com">team&#64;hearfromyourmp.com</a>,
 tell us what you want, or build it yourself as a volunteer. :)
