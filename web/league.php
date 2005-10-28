@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.3 2005-10-28 10:42:30 ycml Exp $
+// $Id: league.php,v 1.4 2005-10-28 15:54:46 ycml Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -56,16 +56,21 @@ function csv_league_table() {
 
 function league_table() { ?>
 <h2>Current Status</h2>
-<p><strong>Site in testing &mdash; most MPs, even those with more than 25 people signed up, have not yet been emailed requests to post</strong></p>
 <?
 
     $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
     $left = 646 - $consts;
+    $morethan = db_getAll('SELECT constituency FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency HAVING count(*)>=25');
+    $morethan = count($morethan);
+    # This way is far too slow:
+    # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
+    $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM mp_threshold_alert');
     print "<ul><li>$people people have signed up in $consts constituencies";
     print "<li>$people_lastday people in the last day";
     print "<li>There are $left constituencies with nobody signed up";
+    print "<li>$morethan constituencies have 25 or more subscribers, $morethan_emailed have been sent emails";
     print '</ul>';
 
     $sort = get_http_var('s');
