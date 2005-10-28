@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.15 2005-10-27 15:36:35 matthew Exp $
+# $Id: view.php,v 1.16 2005-10-28 10:43:54 ycml Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -78,7 +78,7 @@ function view_messages($c_id) {
                     WHERE constituency = ? ORDER BY message.posted', $c_id);
 ?>
 <h2><?=$area_info['name'] ?></h2>
-<p>The MP for this constituency is <?=$rep_info['name'] ?>, <?=$rep_info['party'] ?>.
+<p>The MP for this constituency is <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>"><?=$rep_info['name'] ?></a>, <?=$rep_info['party'] ?>.
 So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.</p>
 <?
     $out = '';
