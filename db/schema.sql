@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.12 2005-10-27 14:59:15 francis Exp $
+-- $Id: schema.sql,v 1.13 2005-10-28 18:24:53 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -177,3 +177,12 @@ create table mp_threshold_alert (
 
 create index mp_threshold_alert_constituency_idx
     on mp_threshold_alert(constituency);
+
+create table mp_nothanks (
+    constituency integer not null,
+    status boolean not null,
+    website text
+);
+
+create unique index mp_nothanks_constituency_idx on mp_nothanks(constituency);
+ 
