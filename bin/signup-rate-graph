@@ -1,0 +1,33 @@
+#!/bin/bash
+# signup-rate-graph:
+# Plot graph of HearFromYourMP signup rate.
+# For now, run me as user ycml@very and go to 
+# http://very.unfortu.net/~ycml/ycml-signups.png
+#
+# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+# Email: francsi@mysociety.org. WWW: http://www.mysociety.org/
+# 
+# $Id: signup-rate-graph,v 1.1 2005-10-31 16:41:44 francis Exp $
+
+SOURCE=/tmp/ycml-signup-rate-graph-data-$RANDOM$RANDOM
+GPSCRIPT=/tmp/ycml-signup-rate-graph-script-$RANDOM$RANDOM
+
+echo "select date(creation_time), count(*) from constituent
+    where constituency is not null group by
+    date(creation_time) order by date(creation_time);" | psql -A -F " " ycml ycml | egrep -v "date|rows" >$SOURCE
+
+cat >$GPSCRIPT <<END 
+    set xdata time;
+    set timefmt "%Y-%m-%d";
+    # set xrange ["2001-06-21":"2005-10-11"];
+    set format x "%b %y"
+    set xlabel "Date"
+    set ylabel "signups / day"
+    set terminal png
+    plot "$SOURCE" using 1:2 title 'HearFromYourMP sign up rate' with lines;
+END
+
+echo "source $SOURCE"
+echo "gpscript $GPSCRIPT"
+
+gnuplot < $GPSCRIPT > ~ycml/public_html/ycml-signups.png
