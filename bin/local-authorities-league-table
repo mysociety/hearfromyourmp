@@ -1,0 +1,75 @@
+#!/usr/local/bin/php -q
+<?php
+/*
+ * local-authorities-league-table:
+ * 
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: local-authorities-league-table,v 1.1 2005-11-02 16:58:01 chris Exp $
+ * 
+ */
+
+require_once "../conf/general";
+require_once '../phplib/fns.php';
+require_once "../phplib/alert.php";
+require_once '../../phplib/db.php';
+require_once '../../phplib/mapit.php';
+require_once '../../phplib/utility.php';
+
+function verbose($str) {
+    global $verbose;
+    if ($verbose) 
+        fwrite(STDERR, "local-authorities-league-table: $str\n");
+}
+function error($str) {
+    fwrite(STDERR, "local-authorities-league-table: ERROR: $str\n");
+}
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcgi';
+
+$switches = $options[0];
+$args = $options[1];
+$verbose = 0; 
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+Display league table of local authorities with YCML signers, by the number of
+such signers.
+
+Usage: send-comment-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+
+/* Map area ID to type, name and number of subscribers. */
+$area = array();
+
+$q = db_query('select postcode from constituent where constituency <> 0');
+while (list($pc) = db_fetch_row($q)) {
+    $a = mapit_get_voting_areas($pc);
+    $i = mapit_get_voting_areas_info($a);
+    foreach ($a as $areaid) {
+        if (preg_match('/^(CTY|DIS|MTD|UTA|LBO|LGD|COI)$/', $i[$a]['type'])) {
+            if (array_key_exists($area, $a))
+                ++$area[$a]['count'];
+            else {
+                $area[$a] = $i[$a];
+                $area[$a]['count'] = 1;
+            }
+        }
+    }
+}
+
+?>
