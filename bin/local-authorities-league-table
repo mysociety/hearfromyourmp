@@ -2,11 +2,14 @@
 <?php
 /*
  * local-authorities-league-table:
+ * Print a league table of local authorities, by number of YCML signups.
+ *
+ * TODO: add wards
  * 
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: local-authorities-league-table,v 1.1 2005-11-02 16:58:01 chris Exp $
+ * $Id: local-authorities-league-table,v 1.2 2005-11-02 17:29:00 chris Exp $
  * 
  */
 
@@ -57,19 +60,30 @@ db_connect();
 $area = array();
 
 $q = db_query('select postcode from constituent where constituency <> 0');
+$n = 0;
 while (list($pc) = db_fetch_row($q)) {
     $a = mapit_get_voting_areas($pc);
-    $i = mapit_get_voting_areas_info($a);
-    foreach ($a as $areaid) {
-        if (preg_match('/^(CTY|DIS|MTD|UTA|LBO|LGD|COI)$/', $i[$a]['type'])) {
-            if (array_key_exists($area, $a))
-                ++$area[$a]['count'];
+    foreach ($a as $type => $id) {
+        if (preg_match('/^(CTY|DIS|MTD|UTA|LBO|LGD|COI)$/', $type)) {
+            if (array_key_exists($id, $area))
+                ++$area[$id]['count'];
             else {
-                $area[$a] = $i[$a];
-                $area[$a]['count'] = 1;
+                $area[$id] = mapit_get_voting_area_info($id);
+                $area[$id]['count'] = 1;
             }
         }
     }
+}
+
+$ids = array_keys($area);
+usort($ids, create_function('$a, $b', 'global $area; return $area[$b]["count"] - $area[$a]["count"];'));
+
+print "Number Type Name\n";
+print "------ ---- --------------------------------------------------\n";
+for ($i = 0; $i < 25; ++$i) {
+    $id = $ids[$i];
+    printf("% 5d  %s  %s\n", $area[$id]['count'], $area[$id]['type'], $area[$id]['name']);
+    
 }
 
 ?>
