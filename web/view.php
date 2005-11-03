@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.22 2005-11-03 16:56:05 chris Exp $
+# $Id: view.php,v 1.23 2005-11-03 17:06:39 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -305,7 +305,7 @@ function comment_form($P) {
 <? /* NO THREADING <input type="hidden" name="replyid" value=""> */ ?>
 <h2>Post a reply</h2>
 <p><label for="text">Message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
-<p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> Email me future comments to this message</p>
+<p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> <label for="emailreplies">Email me future comments to this message</label></p>
 <input type="submit" name="Preview" value="Preview">
 <? if ($counter>0) print '<input type="submit" name="Post" value="Post">'; ?>
 </form>
