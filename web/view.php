@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.21 2005-11-03 16:53:13 chris Exp $
+# $Id: view.php,v 1.22 2005-11-03 16:56:05 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -195,7 +195,7 @@ function comment_show_one($r) {
     $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
     $content = make_clickable($content);
     $content = str_replace('@', '&#64;', $content);
-    $comment .= ":</p>\n<div>" . $content . '</div>';
+    $comment .= ":</p>\n<div><p>$content</p></div>";
     return $comment;
 }
 
@@ -242,7 +242,7 @@ function view_post_comment_form() {
             $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
             $content = make_clickable($content); /* XXX ? */
             $content = str_replace('@', '&#64;', $content);
-            print "<div>$content</p></div>";
+            print "<div><p>$content</p></div>";
         }
         
         return false;
