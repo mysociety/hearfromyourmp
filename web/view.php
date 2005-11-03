@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.24 2005-11-03 17:12:47 chris Exp $
+# $Id: view.php,v 1.25 2005-11-03 17:23:45 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -229,10 +229,10 @@ function view_post_comment_form() {
         return false;
     }
 
-    /* Need to make sure that this person hasn't posted two comments already on
-     * this calendar day. */
-    if (db_getOne("select count(id) from comment where person_id = ? and date > date_trunc('hour', current_timestamp)", $P->id()) >= 2) {
-        print '<div class="error">Sorry, but you have already posted two comments today.</div>';
+    /* Need to make sure that this person hasn't posted two comments already in
+     * the last 24 hours. */
+    if (db_getOne("select count(id) from comment where person_id = ? and date > current_timestamp - '24 hours'::interval", $P->id()) >= 2) {
+        print '<div class="error">Sorry, but you have already posted two comments in the last 24 hours.</div>';
 
         if (!is_null($q_text) && strlen($q_text) > 0) {
             /* Show them the text of their comment so that they can save it. */
@@ -304,7 +304,7 @@ function comment_form($P) {
 <input type="hidden" name="message" value="<?=$q_message ?>">
 <? /* NO THREADING <input type="hidden" name="replyid" value=""> */ ?>
 <h2>Post a reply</h2>
-<p><em>Note that you may post at most two replies in any given day</em></p>
+<p><em>Note that you may post at most two replies in any given 24-hour period</em></p>
 <p><label for="text">Message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
 <p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> <label for="emailreplies">Email me future comments to this message</label></p>
 <input type="submit" name="Preview" value="Preview">
