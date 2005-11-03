@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.19 2005-11-01 23:22:28 matthew Exp $
+# $Id: view.php,v 1.20 2005-11-03 16:38:16 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -226,6 +226,13 @@ function view_post_comment_form() {
     $constituency = $r['constituency'];
     if (!person_allowed_to_reply($P->id(), $constituency, $q_message)) {
         print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
+        return false;
+    }
+
+    /* Need to make sure that this person hasn't posted two comments already on
+     * this calendar day. */
+    if (db_getOne("select count(id) from comment where person_id = ? and date > date_trunc('hour', current_timestamp)", $P->id()) >= 2) {
+        print '<div class="error">Sorry, but you have already posted two comments today.</div>';
         return false;
     }
 
