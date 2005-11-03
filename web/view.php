@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.20 2005-11-03 16:38:16 chris Exp $
+# $Id: view.php,v 1.21 2005-11-03 16:53:13 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -233,6 +233,18 @@ function view_post_comment_form() {
      * this calendar day. */
     if (db_getOne("select count(id) from comment where person_id = ? and date > date_trunc('hour', current_timestamp)", $P->id()) >= 2) {
         print '<div class="error">Sorry, but you have already posted two comments today.</div>';
+
+        if (!is_null($q_text) && strlen($q_text) > 0) {
+            /* Show them the text of their comment so that they can save it. */
+            print '<p>Here is the text of your comment. You can save this page (using File | Save) or cut-and-paste the text into another program if you would like to keep your comment and post it at a later date:</p>';
+            $content = htmlspecialchars($q_text);
+            $content = preg_replace('#\r#', '', $content);
+            $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+            $content = make_clickable($content); /* XXX ? */
+            $content = str_replace('@', '&#64;', $content);
+            print "<div>$content</p></div>";
+        }
+        
         return false;
     }
 
