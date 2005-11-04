@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.6 2005-11-04 11:15:44 chris Exp $
+ * $Id: send-mp-threshold-alerts,v 1.7 2005-11-04 12:38:49 chris Exp $
  * 
  */
 
@@ -79,15 +79,13 @@ function send_mp_threshold_alerts() {
                                         - '1 week'::interval)
                 and (max(num_subscribers) is null
                     or mp_threshold(count(constituent.id)::integer, -1)
-                        > mp_threshold(max(num_subscribers)::integer, -1))");
+                        > mp_threshold(max(num_subscribers)::integer, -1))
+                and (select status from mp_nothanks
+                    where mp_nothanks.constituency = constituent.constituency)
+                        is null");
 
     while (list($constituency, $current, $current_thr, $whenlast, $last,
                     $last_thr, $posted, $next_thr) = db_fetch_row($q)) {
-
-        # XXX: I'm sure this could be done in the big SQL above, but I
-        # couldn't work out how :)
-        if (db_getOne('select status from mp_nothanks where constituency = ?', $constituency))
-            continue;
         $area_info = ycml_get_area_info($constituency);
         $rep_info = ycml_get_mp_info($constituency);
                     
