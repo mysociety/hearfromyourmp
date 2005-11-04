@@ -1,0 +1,114 @@
+#!/usr/local/bin/php -q
+<?php
+/*
+ * send-mp-message-confirmations:
+ * Run from cron regularly to send copies of MP messages to their registered
+ * addresses for confirmation.
+ * 
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: send-mp-message-confirmations,v 1.1 2005-11-04 13:08:11 chris Exp $
+ * 
+ */
+
+require_once '../conf/general';
+require_once '../phplib/fns.php';
+require_once '../../phplib/cli.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcgi';
+
+$switches = $options[0];
+$args = $options[1];
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $cli_is_verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+YCML MP message confirmation sending script
+
+Usage: send-mp-message-confirmations [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_mp_message_confirmations();
+
+function send_mp_message_confirmations() {
+    verbose("sending MP message confirmations");
+
+    db_query("lock table message in share mode");
+
+    $q = db_query("
+            select id, constituency, subject, content, confirmation_email
+            from message left join constituency
+                on message.constituency = constituency.id
+            where state = 'new'");
+
+    while (list($id, $constituency, $subject, $content, $email)
+            = db_fetch_row($q)) {
+        $rep_info = ycml_get_mp_info($constituency);
+        if (is_null($email)) {
+            if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+                error("no confirmation email address available for ${rep_info['name']} MP and no DaDem email contact either");
+                continue;
+            } else {
+                warning("no confirmation email address available for ${rep_info['name']} MP; using DaDem address ${rep_info['email']}");
+                db_query('insert into constituency (id, confirmation_email) values (?, ?)', array($constituency, $rep_info['email']));
+                $confirmation_email = $rep_info['email'];
+            }
+        }
+
+        $token = auth_token_store('confirm', array('id' => $id));
+        $url = OPTION_BASE_URL . "/C/$token";
+
+        verbose("sending mail about message #$id as from ${rep_info['name']} MP...");
+        $r = evel_send(array(
+                'From' => 'team@hearfromyourmp.com',
+                'To' => $email,
+                '_unwrapped_body' <<<EOF
+
+Hi,
+
+We've received a message to send to HearFromYourMP subscribers as from
+${rep_info['name']} MP. We've reproduced the message below; please could you
+check that the message text is correct and that it appears as it should on your
+screen, by clicking the link below, which will show you the text of the message
+as subscribers will see it, and clicking the "Yes, send it" button if all is
+well.
+
+$url
+
+If there is anything wrong with the message, please get in touch with us by
+replying to this message.
+
+Here is the text of the message:
+
+Subject: $subject
+
+$content
+
+EOF
+            ), $confirmation_email);
+        if (rabx_is_error($r)) {
+            error("failed to send message: " . $r->text);
+        } else {
+            verbose("sent");
+            db_query("update message set state = 'ready' where id = ?", $id);
+        }
+    }
+    
+    db_commit();
+}
+
+?>
