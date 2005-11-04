@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: message.php,v 1.1 2005-11-04 15:18:32 chris Exp $
+ * $Id: message.php,v 1.2 2005-11-04 15:20:14 chris Exp $
  * 
  */
 
@@ -48,8 +48,13 @@ bottom of the page:</p>
     ?>
 </p></blockquote>
 <form method="POST">
+<p>If this message looks OK, then please click
 <input type="hidden" name="t" value="<?=htmlspecialchars($q_t)?>">
 <input type="submit" name="post" value="Yes, send it">
+and we'll send it to your subscibers immediately. Otherwise, please get in
+touch with us at
+<a href="mailto:<?=htmlspecialchars(OPTION_CONTACT_EMAIL)?>"><?=htmlspecialchars(OPTION_CONTACT_EMAIL)?></a>
+and we'll get back to you as soon as possible.</p>
 </form>
     <?
     page_footer();
