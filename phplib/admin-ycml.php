@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.9 2005-10-15 10:52:15 matthew Exp $
+ * $Id: admin-ycml.php,v 1.10 2005-11-04 10:48:05 chris Exp $
  * 
  */
 
@@ -290,8 +290,8 @@ class ADMIN_PAGE_YCML_MAIN {
 
     function post_message($constituency, $subject, $message) {
         $message = str_replace("\r", '', $message);
-        db_query('INSERT INTO message (constituency, subject, content)
-                    VALUES (?, ?, ?)',
+        db_query("INSERT INTO message (constituency, subject, content, state)
+                    VALUES (?, ?, ?, 'new')",
                     array($constituency, $subject, $message));
         db_commit();
         print '<p><em>Message posted!</em></p>';
