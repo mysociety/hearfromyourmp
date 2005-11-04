@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.13 2005-10-28 18:24:53 matthew Exp $
+-- $Id: schema.sql,v 1.14 2005-11-04 10:40:17 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -88,7 +88,12 @@ create table message (
     constituency integer not null,
     posted timestamp not null default current_timestamp,
     subject text not null,
-    content text not null
+    content text not null,
+    -- Messages start in state 'new'; then they are mailed to the MP's
+    -- registered address for approval, moving in to state 'ready'. Once the
+    -- MP's assistant clicks on the link in the confirmation mail, they move
+    -- to 'approved' and are sent.
+    state text not null default ('new') check (state in ('new', 'ready', 'approved'))
 );
 
 create table comment (
@@ -103,6 +108,8 @@ create table comment (
     posted_by_mp boolean not null default false
 );
 create index comment_refs_idx on comment(refs);
+create index comment_person_id_idx on comment(person_id);
+create index comment_date_idx on comment(date);
 
 create table message_sent (
     person_id integer references person(id),

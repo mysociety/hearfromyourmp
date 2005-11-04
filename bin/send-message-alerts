@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-message-alerts,v 1.4 2005-10-14 17:34:45 matthew Exp $
+ * $Id: send-message-alerts,v 1.5 2005-11-04 10:40:13 chris Exp $
  *
  */
 
@@ -60,11 +60,13 @@ function send_message_alerts() {
 
     // Search for alert
     $q = db_query("
-            select message.id as message_id, message.constituency, message.subject, message.content,
-                    person.id as person_id, person.name, person.email,
+            select message.id as message_id, message.constituency,
+                    message.subject, message.content, person.id as person_id,
+                    person.name, person.email,
                     constituent.id as constituent_id, constituent.postcode
             from message, constituent, person
             where
+                message.state = 'approved' and
                 message.constituency = constituent.constituency and
                 constituent.person_id = person.id and
                 posted >= creation_time and

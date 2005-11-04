@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.25 2005-11-03 17:23:45 chris Exp $
+# $Id: view.php,v 1.26 2005-11-04 10:40:20 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -47,7 +47,7 @@ page_footer();
 # ---
 
 function view_constituencies() {
-    $q = db_query('SELECT DISTINCT constituency FROM message');
+    $q = db_query("SELECT DISTINCT constituency FROM message where state = 'approved'");
     $out = array();
     while ($r = db_fetch_array($q)) {
         $out[] = $r['constituency'];
@@ -72,11 +72,11 @@ function view_messages($c_id) {
     $rep_info = ycml_get_mp_info($c_id);
     $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
     $nothanks = db_getRow('SELECT status,website FROM mp_nothanks WHERE constituency = ?', $c_id);
-    $q = db_query('SELECT *, extract(epoch from posted) as posted,
+    $q = db_query("SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
                     FROM message
-                    WHERE constituency = ? ORDER BY message.posted', $c_id);
+                    WHERE state = 'approved' and constituency = ? ORDER BY message.posted", $c_id);
 ?>
 <h2><?=$area_info['name'] ?></h2>
 <p>The MP for this constituency is <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>"><?=$rep_info['name'] ?></a>, <?=$rep_info['party'] ?>.
@@ -122,8 +122,8 @@ function view_message($message) {
     $rep_info = ycml_get_mp_info($c_id);
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
         . ' MP at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
-    $next = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted > ?', array($c_id, $r['posted']) );
-    $prev = db_getOne('SELECT id FROM message WHERE constituency = ? AND posted < ?', array($c_id, $r['posted']) );
+    $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
+    $prev = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted < ?", array($c_id, $r['posted']) );
     print '<p align="right">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
     print '<a href="/view/' . $c_id . '">View all</a>';
@@ -200,7 +200,7 @@ function comment_show_one($r) {
 }
 
 function message_get($id) {
-    $r = db_getRow('SELECT *,extract(epoch from posted) as epoch FROM message WHERE id = ?', $id);
+    $r = db_getRow("SELECT *,extract(epoch from posted) as epoch FROM message WHERE state = 'approved' and id = ?", $id);
     if (!$r)
         err('Unknown message ID');
     return $r;

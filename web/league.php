@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.5 2005-10-28 18:25:20 matthew Exp $
+// $Id: league.php,v 1.6 2005-11-04 10:40:20 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -28,12 +28,12 @@ function csv_league_table() {
     elseif ($sort=='r') $order = 'comments DESC';
     elseif ($sort=='s') $order = 'count DESC';
 
-    $q = db_query('SELECT COUNT(id) AS count,constituency,
+    $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
+    (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
+    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency" . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
     while ($r = db_fetch_array($q)) {
@@ -82,13 +82,13 @@ function league_table() { ?>
     elseif ($sort=='r') $order = 'comments DESC';
     elseif ($sort=='s') $order = 'count DESC';
 
-    $q = db_query('SELECT COUNT(id) AS count,constituency,
+    $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE constituency = constituent.constituency) AS messages,
+    (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp,
     (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency' . 
+    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency" . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
     while ($r = db_fetch_array($q)) {
