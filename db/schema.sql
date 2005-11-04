@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.15 2005-11-04 13:05:36 matthew Exp $
+-- $Id: schema.sql,v 1.16 2005-11-04 13:28:50 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -15,6 +15,16 @@ create function pb_current_timestamp()
         return current_timestamp;
     end;
 ' language 'plpgsql';
+
+-- information about a constituency (and its MP)
+create table constituency (
+    -- MaPit area_id
+    id integer not null primary key,
+    -- Email to which confirmation requests for posted messages are sent;
+    -- roughly, "the email address of the person who may post messages to the
+    -- site pp an MP".
+    confirmation_email text not null
+);
 
 -- users, but call the table person rather than user so we don't have to quote
 -- its name in every statement....
