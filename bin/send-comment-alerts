@@ -7,24 +7,16 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-comment-alerts,v 1.1 2005-08-26 15:35:29 matthew Exp $
+ * $Id: send-comment-alerts,v 1.2 2005-11-04 11:15:44 chris Exp $
  *
  */
 
 require_once "../conf/general";
 require_once '../phplib/fns.php';
 require_once "../phplib/alert.php";
+require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
-
-function verbose($str) {
-    global $verbose;
-    if ($verbose) 
-        fwrite(STDERR, "send-comment-alerts: $str\n");
-}
-function error($str) {
-    fwrite(STDERR, "send-comment-alerts: ERROR: $str\n");
-}
 
 $short_opts = '';
 $long_opts = array('verbose','help');
@@ -32,9 +24,8 @@ require_once '../../phplib/phpcgi';
 
 $switches = $options[0];
 $args = $options[1];
-$verbose = 0; 
 foreach ($switches as $switch) {
-    if ($switch[0]=='--verbose') $verbose = 1;
+    if ($switch[0]=='--verbose') $cli_is_verbose = 1;
     if ($switch[0]=='--help') {
 ?>
 
