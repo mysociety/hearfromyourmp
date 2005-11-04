@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.26 2005-11-04 10:40:20 chris Exp $
+# $Id: view.php,v 1.27 2005-11-04 12:41:43 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -71,7 +71,7 @@ function view_messages($c_id) {
     $area_info = ycml_get_area_info($c_id);
     $rep_info = ycml_get_mp_info($c_id);
     $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
-    $nothanks = db_getRow('SELECT status,website FROM mp_nothanks WHERE constituency = ?', $c_id);
+    $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $c_id);
     $q = db_query("SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
@@ -83,12 +83,16 @@ function view_messages($c_id) {
 So far, <?=$signed_up . ' ' . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.</p>
 <?
     if ($nothanks['status'] == 't') {
+        $mp_gender = $nothanks['gender'];
+        if ($mp_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
+        elseif ($mp_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
+        else { $nomi = 'they are'; $accu = 'them'; $geni = 'their'; }
         $mp_website = $nothanks['website']; ?>
-<p>Unfortunately, <?=$rep_info['name'] ?> has said they are not interested in using this
+<p>Unfortunately, <?=$rep_info['name'] ?> has said <?=$nomi ?> not interested in using this
 service<?
         if ($mp_website)
-            print ', and asks that we encourage users to visit their website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
-?>. You can still contact them directly via our service
+            print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+?>. You can still contact <?=$accu ?> directly via our service
 <a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
 
 <p>In accordance with our site policy we will continue to allow signups for
@@ -96,7 +100,7 @@ service<?
 constituency, not per MP, and we will continue to accept subscribers
 regardless of whether your current MP chooses to use the site or not.
 If your MP changes for any reason, we will hand access to the list
-over to their successor.</p>
+over to their successor.&quot;</p>
 <?
         return;
     }

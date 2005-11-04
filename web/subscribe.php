@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.12 2005-10-28 18:25:20 matthew Exp $
+// $Id: subscribe.php,v 1.13 2005-11-04 12:41:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -88,17 +88,21 @@ function do_subscribe() {
         db_commit();
     
         $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
-        $nothanks = db_getRow('SELECT status,website FROM mp_nothanks WHERE constituency = ?', $wmc_id);
+        $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
 ?>
 <p class="loudmessage"><?
         print sprintf("Thanks! You're the %s person to sign up to get emails from %s in the %s constituency. ", english_ordinal($count), $rep_info['name'], $area_info['name']);
         if ($nothanks['status'] == 't') {
+            $mp_gender = $nothanks['gender'];
+            if ($mp_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
+            elseif ($mp_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
+            else { $nomi = 'they are'; $accu = 'them'; $geni = 'their'; }
             $mp_website = $nothanks['website']; ?>
-Unfortunately, <?=$rep_info['name'] ?> has said they are not interested in using this
+Unfortunately, <?=$rep_info['name'] ?> has said <?=$nomi ?> not interested in using this
 service<?
             if ($mp_website)
-                print ', and asks that we encourage users to visit their website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
-?>. You can still contact them directly via our service
+                print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+?>. You can still contact <?=$accu ?> directly via our service
 <a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
 
 <p>In accordance with our site policy we will continue to allow signups for
@@ -106,7 +110,7 @@ service<?
 constituency, not per MP, and we will continue to accept subscribers
 regardless of whether your current MP chooses to use the site or not.
 If your MP changes for any reason, we will hand access to the list
-over to their successor.</p>
+over to their successor.&quot;</p>
 <?      } ?>
 <p>Find out lots of information about <?=$rep_info['name'] ?> on our sister site
 <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>.</p>
