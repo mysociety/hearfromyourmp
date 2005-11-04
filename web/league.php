@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.6 2005-11-04 10:40:20 chris Exp $
+// $Id: league.php,v 1.7 2005-11-04 16:01:11 sandpit Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -91,6 +91,7 @@ function league_table() { ?>
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency" . 
     ($order ? ' ORDER BY ' . $order : '') );
     $rows = array();
+    $ids = array();
     while ($r = db_fetch_array($q)) {
         $rows[] = array_map('htmlspecialchars', $r);
         if ($r['constituency'])
