@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.10 2005-11-04 10:48:05 chris Exp $
+ * $Id: admin-ycml.php,v 1.11 2005-11-04 22:14:42 matthew Exp $
  * 
  */
 
@@ -447,178 +447,76 @@ class ADMIN_PAGE_YCML_LATEST {
     }
 }
 
-class ADMIN_PAGE_PB_ABUSEREPORTS {
-    function ADMIN_PAGE_PB_ABUSEREPORTS() {
-        $this->id = 'pbabusereports';
+class ADMIN_PAGE_YCML_ABUSEREPORTS {
+    function ADMIN_PAGE_YCML_ABUSEREPORTS() {
+        $this->id = 'ycmlabusereports';
         $this->navname = _('Abuse reports');
     }
 
     function display($self_link) {
         db_connect();
-
-        if (array_key_exists('prev_url', $_POST)) {
-            $do_discard = false;
-            if (get_http_var('discardReports'))
-                $do_discard = true;
-            foreach ($_POST as $k => $v) {
-                if ($do_discard && preg_match('/^ar_([1-9]\d*)$/', $k, $a))
-                    db_query('delete from abusereport where id = ?', $a[1]);
-                // Don't think delete pledge is safe as a button here
-                # if (preg_match('/^delete_(comment|pledge|signer)_([1-9]\d*)$/', $k, $a)) {
-                if (preg_match('/^delete_(comment)_([1-9]\d*)$/', $k, $a)) {
-                    if ($a[1] == 'comment') {
-                        pledge_delete_comment($a[2]);
-                    } else if ($a[1] == 'pledge') {
-                        // pledge_delete_pledge($a[2]);
-                    } else {
-                        // pledge_delete_signer($a[2]);
-                    }
-                    print "<em>Deleted "
-                            . htmlspecialchars($a[1])
-                            . " #" . htmlspecialchars($a[2]) . "</em><br>";
-                }
+        $do_discard = false;
+        if (get_http_var('discardReports'))
+            $do_discard = true;
+        foreach ($_POST as $k => $v) {
+            if ($do_discard && preg_match('/^ar_([1-9]\d*)$/', $k, $a))
+                db_query('delete from abusereport where id = ?', $a[1]);
+            if (preg_match('/^delete_comment_([0-9a-f]{8})$/', $k, $a)) {
+                db_query('select delete_comment(?)', $a[1]);
+                print "<em>Deleted comment"
+                        . " #" . htmlspecialchars($a[1]) . "</em><br>";
             }
-
-            db_commit();
-
         }
-
+        db_commit();
         $this->showlist($self_link);
     }
 
     function showlist($self_link) {
-        global $q_what;
-        importparams(
-                array('what',       '/^(comment|pledge|signer)$/',      '',     'comment')
-            );
-
-        print "<p><strong>See reports on:</strong> ";
-
-        $ww = array('comment', 'signer', 'pledge');
-        $i = 0;
-        foreach ($ww as $w) {
-            if ($w != $q_what)
-                print "<a href=\"$self_link&amp;what=$w\">";
-            print "${w}s ("
-                    . db_getOne('select count(id) from abusereport where what = ?', $w)
-                    . ")";
-            if ($w != $q_what)
-                print "</a>";
-            if ($i < sizeof($ww) - 1)
-                print " | ";
-            ++$i;
-        }
-
-        $this->do_one_list($self_link, $q_what);
-    }
-
-    function do_one_list($self_link, $what) {
-
         $old_id = null;
-        $q = db_query('select id, what_id, reason, ipaddr, extract(epoch from whenreported) as epoch from abusereport where what = ? order by what_id, whenreported desc', $what);
+        $q = db_query('select id, comment_id, reason, ipaddr, extract(epoch from whenreported) as epoch from abusereport order by whenreported desc');
 
         if (db_num_rows($q) > 0) {
 
-            print '<form name="discardreportsform" method="POST" action="'.$this->self_link.'"><input type="hidden" name="prev_url" value="'
-                        . htmlspecialchars($self_link) . '">';
+            print '<form name="discardreportsform" method="POST" action="'.$this->self_link.'">';
             print '
     <p><input type="submit" name="discardReports" value="Discard selected abuse reports"></p>
     <table class="abusereporttable">
     ';
-            while (list($id, $what_id, $reason, $ipaddr, $t) = db_fetch_row($q)) {
-                if ($what_id !== $old_id) {
+            while (list($id, $comment_id, $reason, $ipaddr, $t) = db_fetch_row($q)) {
+                if ($comment_id !== $old_id) {
                 
-                    /* XXX should group by pledge and then by signer/comment, but
-                     * can't be arsed... */
                     print '<tr style="background-color: #eee;"><td colspan="4">';
-
-                    if ($what == 'pledge')
-                        $pledge_id = $what_id;
-                    elseif ($what == 'signer')
-                        $pledge_id = db_getRow('select pledge_id from signers where id = ?', $what_id);
-                    elseif ($what == 'comment')
-                        $pledge_id = db_getOne('select pledge_id from comment where id = ?', $what_id);
-                    
-                    $pledge = db_getRow('
-                                    select *,
-                                        extract(epoch from creationtime) as createdepoch,
-                                        extract(epoch from date) as deadlineepoch
-                                    from pledges
-                                    where id = ?', $pledge_id);
-                        
-                    /* Info on the pledge. Print for all categories. */
                     print '<table>';
-                    print '<tr><td><b>Pledge:</b> ';
-                    $pledge_obj = new Pledge($pledge);
-                    print $pledge_obj->h_sentence(array());
-                    print ' <a href="'.$pledge_obj->url_main().'">'.$pledge_obj->ref().'</a> ';
-                    print '<a href="?page=pb&amp;pledge='.$pledge_obj->ref().'">(admin)</a> ';
-                            
-                    /* Print signer/comment details under pledge. */
-                    if ($what == 'signer') {
-                        $signer = db_getRow('
-                                        select signers.*, person.email,
-                                            extract(epoch from signtime) as epoch
-                                        from signers
-                                        left join person on signers.person_id = person.id
-                                        where signers.id = ?', $what_id);
+                    $comment = db_getRow('
+                                        select comment.id, extract(epoch from date) as date,
+                                            content, posted_by_mp, name, email, website
+                                        from comment, person
+                                        where comment.person_id = person.id
+                                            and comment.id = ?', $comment_id);
 
-                        print '</td></tr>';
-                        print '<tr class="break"><td><b>Signer:</b> '
-                                . (is_null($signer['name'])
-                                        ? "<em>not known</em>"
-                                        : htmlspecialchars($signer['name']))
-                                . ' ';
-
-                        if (!is_null($signer['email']))
-                            print '<a href="mailto:'
-                                    . htmlspecialchars($signer['email'])
-                                    . '">'
-                                    . htmlspecialchars($signer['email'])
-                                    . '</a> ';
-
-                        if (!is_null($signer['mobile']))
-                            print htmlspecialchars($signer['mobile']);
-
-                        print '<b>Signed at:</b> ' . date('Y-m-d H:m', $signer['epoch']);
-                    } elseif ($what == 'comment') {
-                        $comment = db_getRow('
-                                        select id,
-                                            extract(epoch from whenposted)
-                                                as whenposted,
-                                            text, name, website
-                                        from comment
-                                        where id = ?', $what_id);
-
-                        print '</td></tr>';
-                        print '<tr class="break">';
-                        print '<td><b>Comment:</b> ';
-                        comments_show_one($comment, true);
-                    }
-
-                    if ($what == "comment") {
-                        print " <input type=\"submit\" name=\"delete_${what}_${what_id}\" value=\"Delete this $what\">";
-                    }
+                    print '<tr class="break">';
+                    print '<td>' . comment_show_one($comment, true);
+                    print " <input type=\"submit\" name=\"delete_comment_${comment_id}\" value=\"Delete this comment\">";
                     print '</td></tr>';
                     print '</table>';
-                    $old_id = $what_id;
+                    $old_id = $comment_id;
                 }
 
                 print '<tr><td>'
-                            . '<input type="checkbox" name="ar_' . $id . '" value="1">'
+                        . '<input type="checkbox" name="ar_' . $id . '" value="1">'
                         . '</td><td><b>Abuse report:</b> '
-                            . date('Y-m-d H:i', $t)
-                            . ' from '
-                            . $ipaddr
+                        . date('Y-m-d H:i', $t)
+                        . ' from '
+                        . $ipaddr
                         . '</td><td><b>Reason: </b>'
-                            . htmlspecialchars($reason)
+                        . htmlspecialchars($reason)
                         . '</td></tr>';
             }
 
             print '</table>';
-            print '<p><input type="submit" name="discardReports" value="' . _('Discard selected abuse reports') . '"></form>';
+            print '<p><input type="submit" name="discardReports" value="Discard selected abuse reports"></form>';
         } else {
-            print '<p>No abuse reports of this type.</p>';
+            print '<p>No abuse reports.</p>';
         }
     }
 }

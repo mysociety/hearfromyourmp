@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.28 2005-11-04 13:05:37 matthew Exp $
+# $Id: view.php,v 1.29 2005-11-04 22:14:43 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -187,27 +187,6 @@ function comment_show($cc, $first, $last) {
         $html .= "</li>";
     }
     return $html;
-}
-
-function comment_show_one($r) {
-    $ds = prettify($r['date']);
-    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
-    if ($r['posted_by_mp']) $comment .= '<strong>';
-    if ($r['website'])
-        $comment .= '<a href="' . $r['website'] . '">';
-    $comment .= $r['name'];
-    if ($r['website'])
-        $comment .= '</a>';
-    if ($r['posted_by_mp']) $comment .= ' MP';
-    $comment .= ', ';
-    $comment .= $ds;
-    if ($r['posted_by_mp']) $comment .= '</strong>';
-    $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
-    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
-    $content = make_clickable($content);
-    $content = str_replace('@', '&#64;', $content);
-    $comment .= ":</p>\n<div><p>$content</p></div>";
-    return $comment;
 }
 
 function message_get($id) {

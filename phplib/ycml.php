@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.4 2005-10-21 17:26:39 matthew Exp $
+ * $Id: ycml.php,v 1.5 2005-11-04 22:14:42 matthew Exp $
  * 
  */
 
@@ -58,6 +58,32 @@ function ycml_show_error($message) {
     print _('<h2>Sorry!  Something\'s gone wrong.</h2>') .
         "\n<p>" . $message . '</p>';
     page_footer();
+}
+
+function comment_show_one($r, $noabuse = false) {
+    if (is_string($r['posted_by_mp']))
+        $r['posted_by_mp'] = ($r['posted_by_mp']=='t') ? true : false;
+    $ds = prettify($r['date']);
+    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
+    if ($r['posted_by_mp']) $comment .= '<strong>';
+    if ($r['website'])
+        $comment .= '<a href="' . $r['website'] . '">';
+    $comment .= $r['name'];
+    if ($r['website'])
+        $comment .= '</a>';
+    if ($r['posted_by_mp']) $comment .= ' MP';
+    $comment .= ', ';
+    $comment .= $ds;
+    if ($r['posted_by_mp']) $comment .= '</strong>';
+    $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
+    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = make_clickable($content);
+    $content = str_replace('@', '&#64;', $content);
+    $comment .= ':';
+    if (!$noabuse)
+        $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
+    $comment .= "</p>\n<div><p>$content</p></div>";
+    return $comment;
 }
 
 ?>

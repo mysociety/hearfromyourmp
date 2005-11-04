@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.13 2005-11-04 12:41:43 matthew Exp $
+// $Id: subscribe.php,v 1.14 2005-11-04 22:14:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -45,7 +45,7 @@ if (get_http_var('subscribe')) {
 page_footer();
 
 function do_subscribe() {
-    global $q_email, $q_name, $q_postcode;
+    global $q_email, $q_name, $q_postcode, $q_h_postcode;
     $errors = importparams(
                 array('name',      "/./", 'Please enter a name'),
                 array('email',      "importparams_validate_email"),
@@ -76,32 +76,51 @@ function do_subscribe() {
     $already_signed = db_getOne("select id from constituent where 
         constituency = ? and person_id = ?
         for update", array( $wmc_id, $person_id ) );
+    if ($already_signed) { ?>
+<p class="loudmessage" align="center">You have already signed up to HearFromYourMP in this constituency!</p>
+<?  #    return;
+    }
+
     if (!$already_signed) {
-        db_query("insert into constituent (
-                    person_id, constituency,
-                    postcode, creation_ipaddr
-                )
-                values (?, ?, ?, ?)", array(
-                    $person_id, $wmc_id,
-                    $q_postcode, $_SERVER['REMOTE_ADDR']
-                ));
-        db_commit();
-    
-        $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
-        $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
+    db_query("insert into constituent (
+                person_id, constituency,
+                postcode, creation_ipaddr
+            )
+            values (?, ?, ?, ?)", array(
+                $person_id, $wmc_id,
+                $q_postcode, $_SERVER['REMOTE_ADDR']
+            ));
+    db_commit();
+    }
+    $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
+    $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
+
+    $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . $q_postcode);
+    preg_match_all('#<title>(.*?)</title>\s+<link>(.*?)</link>#', $local_pledges, $m, PREG_SET_ORDER);
+    $local_num = count($m) - 1;
+    if ($local_num>5) $local_num = 5;
+    if ($local_num) {
+        print '<div id="pledges"><h2>Recent pledges local to ' . canonicalise_postcode($q_h_postcode) . '</h2>';
+        print '<p style="margin-top:0; text-align:right; font-size: 89%">From <a href="http://www.pledgebank.com/">PledgeBank</a></p> <ul>';
+        for ($p=1; $p<=$local_num; ++$p) {
+            print '<li><a href="' . $m[$p][2] . '">' . $m[$p][1] . '</a>';
+        }
+        print '</ul><p align="center"><a href="http://www.pledgebank.com/alert?postcode='.$q_h_postcode.'">Get emails about local pledges</a></p></div>';
+    }
 ?>
 <p class="loudmessage"><?
-        print sprintf("Thanks! You're the %s person to sign up to get emails from %s in the %s constituency. ", english_ordinal($count), $rep_info['name'], $area_info['name']);
-        if ($nothanks['status'] == 't') {
-            $mp_gender = $nothanks['gender'];
-            if ($mp_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
-            elseif ($mp_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
-            else { $nomi = 'they are'; $accu = 'them'; $geni = 'their'; }
-            $mp_website = $nothanks['website']; ?>
+    print sprintf("<strong>Thanks! You're the %s person to sign up to get emails from %s in the %s constituency.</strong> ",
+        english_ordinal($count), $rep_info['name'], $area_info['name']);
+    if ($nothanks['status'] == 't') {
+        $mp_gender = $nothanks['gender'];
+        if ($mp_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
+        elseif ($mp_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
+        else { $nomi = 'they are'; $accu = 'them'; $geni = 'their'; }
+        $mp_website = $nothanks['website']; ?>
 Unfortunately, <?=$rep_info['name'] ?> has said <?=$nomi ?> not interested in using this
 service<?
-            if ($mp_website)
-                print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+        if ($mp_website)
+            print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
 ?>. You can still contact <?=$accu ?> directly via our service
 <a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
 
@@ -111,20 +130,16 @@ constituency, not per MP, and we will continue to accept subscribers
 regardless of whether your current MP chooses to use the site or not.
 If your MP changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
-<?      } ?>
-<p>Find out lots of information about <?=$rep_info['name'] ?> on our sister site
+<?  } ?>
+<p>Find out lots of information about <?=$rep_info['name'] ?>, including
+speeches made and questions asked in Parliament, on our sister site
 <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>.</p>
 <p><?
-        if ($return = get_http_var('r')) {
-            print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
-        } else {
-            print '<a href="/">HearFromYourMP home page</a></p>';
-        } ?></p><?
-    } else { ?>
-<p class="loudmessage" align="center">You have already signed up to HearFromYourMP in this constituency!</p>
-<?
-    }
-
+    if ($return = get_http_var('r')) {
+        print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
+    } else {
+        print '<a href="/">HearFromYourMP home page</a></p>';
+    } ?></p><?
 }
 
 ?>

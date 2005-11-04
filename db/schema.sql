@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.16 2005-11-04 13:28:50 chris Exp $
+-- $Id: schema.sql,v 1.17 2005-11-04 22:14:41 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -204,3 +204,25 @@ create table mp_nothanks (
 
 create unique index mp_nothanks_constituency_idx on mp_nothanks(constituency);
  
+-- table of abuse reports on comments, pledges and signers.
+create table abusereport (
+    id serial not null primary key,
+    comment_id text not null references comment(id),
+    reason text,
+    whenreported timestamp not null default pb_current_timestamp(),
+    ipaddr text,
+    email text
+);
+
+create index abusereport_comment_id_idx on abusereport(comment_id);
+
+create function delete_comment(text)
+    returns void as '
+    begin
+        delete from abusereport where comment_id = $1;
+        delete from alert_sent where comment_id = $1;
+        delete from comment where id = $1;
+        return;
+    end
+' language 'plpgsql';
+
