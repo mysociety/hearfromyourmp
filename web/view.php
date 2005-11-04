@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.27 2005-11-04 12:41:43 matthew Exp $
+# $Id: view.php,v 1.28 2005-11-04 13:05:37 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -31,11 +31,9 @@ if ($q_mode == 'post') {
     view_post_comment_form();
 } elseif ($q_message) {
     # Show thread for particular message.
-    page_header('Viewing particular message');
     view_message($q_message);
 } elseif ($q_constituency) {
     # Show list of messages for this particular constituency.
-    page_header('Viewing constituency page');
     view_messages($q_constituency);
 } else {
     # Main page. Show nothing? Or list of constituencies?
@@ -77,6 +75,7 @@ function view_messages($c_id) {
                         AND visible<>0) as numposts
                     FROM message
                     WHERE state = 'approved' and constituency = ? ORDER BY message.posted", $c_id);
+    page_header($rep_info['name'] . ', ' . $area_info['name']);
 ?>
 <h2><?=$area_info['name'] ?></h2>
 <p>The MP for this constituency is <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>"><?=$rep_info['name'] ?></a>, <?=$rep_info['party'] ?>.
@@ -124,13 +123,15 @@ function view_message($message) {
     $content = str_replace('@', '&#64;', $content);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
+    $area_info = ycml_get_area_info($c_id);
+    page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
-        . ' MP at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
+        . ', MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
     $prev = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted < ?", array($c_id, $r['posted']) );
     print '<p align="right">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
-    print '<a href="/view/' . $c_id . '">View all</a>';
+    print '<a href="/view/' . $c_id . '">Messages for this constituency</a>';
     if ($next) print ' | <a href="/view/message/' . $next . '">Next message</a>';
     print '</p>';
     print '</div>';
@@ -153,8 +154,14 @@ function view_message($message) {
         } else {
             print '<p id="formreplace">You are not subscribed to HearFromYourMP in this constituency, or subscribed after this message was posted.</p>';
         }
-    } else {
-        print '<p id="formreplace">If you are subscribed to HearFromYourMP in this constituency, <a href="/view/message/'.$message.'/reply">log in</a> to post a reply. If you are a member of this constituency, <a href="/subscribe?r=/view/message/' . $message . '">sign up</a> in order to post your own comments.</p>';
+    } else { ?>
+<p id="formreplace">If you are subscribed to HearFromYourMP in this constituency,
+<a href="/view/message/<?=$message ?>/reply">log in</a> to post a reply.
+<br>Otherwise, if you live in the UK, 
+<a href="/subscribe?r=/view/message/<?=$message ?>">sign up</a> in order to
+HearFromYourMP.
+</p>
+<?
     }
 }
 
@@ -302,7 +309,7 @@ function comment_form($P) {
     else
         $counter = $q_counter + 1;
 ?>
-<form action="/view" method="post" accept-charset="utf-8">
+<form id="commentform" action="/view" method="post" accept-charset="utf-8">
 <input type="hidden" name="mode" value="post">
 <input type="hidden" name="counter" value="<?=$counter ?>">
 <input type="hidden" name="message" value="<?=$q_message ?>">
