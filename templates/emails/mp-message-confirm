@@ -1,0 +1,15 @@
+Subject: Confirm your message to constituents
+
+Please read through the following message, and, if all is fine, click the link at the bottom of this mail to send it on its way. If there is anything wrong with the message, please reply to this mail to get in touch with the HearFromYourMP team.
+
+-------------------
+
+<?=$values['content']?>
+
+-------------------
+
+To send this message to constituents, click the link below. THE MESSAGE WILL NOT BE SENT UNLESS YOU DO SO!
+
+<?=$values['confirm_url']?>
+
+<?=$values['signature']?>
