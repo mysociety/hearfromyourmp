@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.14 2005-11-04 22:14:43 matthew Exp $
+// $Id: subscribe.php,v 1.15 2005-11-07 16:39:57 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -95,7 +95,7 @@ function do_subscribe() {
     $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
 
-    $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . $q_postcode);
+    $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . urlencode($q_postcode));
     preg_match_all('#<title>(.*?)</title>\s+<link>(.*?)</link>#', $local_pledges, $m, PREG_SET_ORDER);
     $local_num = count($m) - 1;
     if ($local_num>5) $local_num = 5;
