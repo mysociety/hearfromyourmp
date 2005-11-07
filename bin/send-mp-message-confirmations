@@ -8,12 +8,13 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-message-confirmations,v 1.2 2005-11-04 13:29:01 chris Exp $
+ * $Id: send-mp-message-confirmations,v 1.3 2005-11-07 16:49:36 sandpit Exp $
  * 
  */
 
 require_once '../conf/general';
 require_once '../phplib/fns.php';
+require_once '../../phplib/auth.php';
 require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
@@ -50,7 +51,7 @@ function send_mp_message_confirmations() {
     db_query("lock table message in share mode");
 
     $q = db_query("
-            select id, constituency, subject, content, confirmation_email
+            select message.id, constituency, subject, content, confirmation_email
             from message left join constituency
                 on message.constituency = constituency.id
             where state = 'new'");
@@ -69,39 +70,19 @@ function send_mp_message_confirmations() {
             }
         }
 
-        $token = auth_token_store('confirm', array('id' => $id));
+        $token = auth_token_store('message', array('id' => $id));
         $url = OPTION_BASE_URL . "/M/$token";
 
-        verbose("sending mail about message #$id as from ${rep_info['name']} MP...");
-        $r = evel_send(array(
-                'From' => 'team@hearfromyourmp.com',
-                'To' => $email,
-                '_unwrapped_body' <<<EOF
+        verbose("sending mail about message #$id as from ${rep_info['name']} MP to $email...");
 
-Hi,
+        $row = array(
+                'content' => $content,
+                'confirm_url' => $url
+            );
 
-We've received a message to send to HearFromYourMP subscribers as from
-${rep_info['name']} MP. We've reproduced the message below; please could you
-check that the message text is correct and that it appears as it should on your
-screen, by clicking the link below, which will show you the text of the message
-as subscribers will see it, and clicking the "Yes, send it" button if all is
-well.
-
-$url
-
-If there is anything wrong with the message, please get in touch with us by
-replying to this message.
-
-Here is the text of the message:
-
-Subject: $subject
-
-$content
-
-EOF
-            ), $confirmation_email);
-        if (rabx_is_error($r)) {
-            error("failed to send message: " . $r->text);
+        $f = ycml_send_email_template($email, 'mp-message-confirm', $row);
+        if (!$f) {
+            error("failed to send confirmation email to $email for message #$id");
         } else {
             verbose("sent");
             db_query("update message set state = 'ready' where id = ?", $id);
