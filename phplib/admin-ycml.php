@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.11 2005-11-04 22:14:42 matthew Exp $
+ * $Id: admin-ycml.php,v 1.12 2005-11-09 18:09:48 sandpit Exp $
  * 
  */
 
@@ -195,8 +195,23 @@ class ADMIN_PAGE_YCML_MAIN {
 ?>
  type="submit" value="Use this account">
 </form>
+<h3>Set confirmation email address for this MP</h3>
+<p>This is the email address to which a confirmation request will be sent for
+each message posted. This is independent of the address for the MP's own login,
+if any. This must be set before messages can be posted:</p>
+<?
+            $confirmation_email = db_getOne('select confirmation_email from constituency where id = ?', $id);
+            if (is_null($confirmation_email))
+                $confirmation_email = '';
+            ?>
+<form method="post">
+<input type="hidden" name="constituency_id" value="<?=htmlspecialchars($id)?>">
+<input type="text" name="confirmation_email" value="<?=htmlspecialchars($confirmation_email)?>" size="30">
+<input type="submit" name="setConfirmationEmail" value="Set confirmation email address">
+</form>
+            
 <h3>Post a message as this MP</h3>
-<?          if ($is_mp) { ?>
+<?          if ($confirmation_email) { ?>
 <form method="post">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
@@ -316,6 +331,24 @@ class ADMIN_PAGE_YCML_MAIN {
                     array($P->id(), $constituency, '', $_SERVER['REMOTE_ADDR']));
             db_commit();
             print '<p><em>MP created</em></p>';
+        } elseif (get_http_var('setConfirmationEmail')) {
+            $id = get_http_var('constituency_id');
+            $email = get_http_var('confirmation_email');
+            if (!is_null($id) && !is_null($email)) {
+                if (validate_email($email)) {
+                    $q = db_query('update constituency set confirmation_email = ? where id = ?', array($email, $id));
+                    if (0 == db_affected_rows())
+                        db_query('insert into constituency (id, confirmation_email) values (?, ?)', array($id, $email));
+                    db_commit();
+                    print '<p><em>Confirmation email address set to '
+                            . htmlspecialchars($email)
+                            . '</em></p>';
+                } else {
+                    print '<p><em>"'
+                            . htmlspecialchars($email)
+                            . '" is not a valid email address</em></p>';
+                }
+            }
         } elseif (get_http_var('selectMP')) {
             $c_id = get_http_var('selectMP');
             if (ctype_digit($c_id)) {
