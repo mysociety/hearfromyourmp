@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: message.php,v 1.4 2005-11-07 16:50:40 sandpit Exp $
+ * $Id: message.php,v 1.5 2005-11-09 18:23:56 sandpit Exp $
  * 
  */
 
@@ -14,7 +14,7 @@ require_once '../phplib/ycml.php';
 require_once '../../phplib/importparams.php';
 
 importparams(
-        array('t',              '/.+$/',            '', null),
+        array('t',              '/.+$/',            '', null)
     );
 
 if (is_null($q_t)) {
