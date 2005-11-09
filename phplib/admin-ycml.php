@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.12 2005-11-09 18:09:48 sandpit Exp $
+ * $Id: admin-ycml.php,v 1.13 2005-11-09 18:37:24 sandpit Exp $
  * 
  */
 
@@ -223,7 +223,8 @@ if any. This must be set before messages can be posted:</p>
 <input type="submit" value="Post">
 </form>
 <?          } else { ?>
-<p>You cannot post a message until this constituency has an MP account. Please create or choose one.</p>
+<p>You cannot post a message until a confirmation email address is set for
+this constituency.</p>
 <?          }
         }
 
