@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-message-confirmations,v 1.4 2005-11-11 11:54:41 chris Exp $
+ * $Id: send-mp-message-confirmations,v 1.5 2005-11-11 12:13:25 sandpit Exp $
  * 
  */
 
@@ -78,7 +78,7 @@ function send_mp_message_confirmations() {
         $row = array(
                 'content' => $content,
                 'confirm_url' => $url,
-                'subscribers' => db_getOne('select count(id) from constituent where constituency = ?', $constituency);
+                'subscribers' => db_getOne('select count(id) from constituent where constituency = ?', $constituency)
             );
 
         $f = ycml_send_email_template($email, 'mp-message-confirm', $row);
