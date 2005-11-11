@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.14 2005-11-11 12:11:42 sandpit Exp $
+ * $Id: admin-ycml.php,v 1.15 2005-11-11 13:07:53 sandpit Exp $
  * 
  */
 
@@ -305,12 +305,25 @@ this constituency.</p>
     }
 
     function post_message($constituency, $subject, $message) {
-        $message = str_replace("\r", '', $message);
-        db_query("INSERT INTO message (constituency, subject, content, state)
-                    VALUES (?, ?, ?, 'new')",
-                    array($constituency, $subject, $message));
-        db_commit();
-        print '<p><em>Message posted!</em></p>';
+
+        if (get_http_var('confirm')) {
+            $message = str_replace("\r", '', $message);
+            db_query("INSERT INTO message (constituency, subject, content, state)
+                        VALUES (?, ?, ?, 'new')",
+                        array($constituency, $subject, $message));
+            db_commit();
+            print '<p><em>Message posted!</em></p>';
+            return 1;
+        } else {
+            /* Show preview of message. */
+            print '<h2>Preview of message</h2>';
+            print '<p><strong>Subject:</strong> ' . htmlspecialchars($subject) . '</p>';
+            print '<div><p>'
+                . str_replace('@', '&#64;', make_clickable(preg_replace('#\n{2,}#', "</p>\n<p>", preg_replace('#\r#', '', htmlspecialchars($message)))))
+                . '</p></div>';
+            print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
+            return 0;
+        }
     }
 
     function display($self_link) {
@@ -320,7 +333,8 @@ this constituency.</p>
         $subject = get_http_var('subject');
         $message = get_http_var('message');
         if ($subject && $message) {
-            $this->post_message($constituency, $subject, $message);
+            if (!$this->post_message($constituency, $subject, $message))
+                return;
         } elseif (get_http_var('createMP')) {
             $reps = dadem_get_representatives($constituency);
             $rep_info = dadem_get_representative_info($reps[0]);
