@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: government-office-regions-league-table,v 1.1 2005-11-10 14:14:47 chris Exp $
+ * $Id: government-office-regions-league-table,v 1.2 2005-11-11 12:34:57 francis Exp $
  * 
  */
 
@@ -22,7 +22,7 @@ require_once '../../phplib/utility.php';
 
 $short_opts = '';
 $long_opts = array('verbose','help');
-require_once '../../phplib/phpcgi';
+require_once '../../phplib/phpcli.php';
 
 $switches = $options[0];
 $args = $options[1];
