@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.13 2005-11-09 18:37:24 sandpit Exp $
+ * $Id: admin-ycml.php,v 1.14 2005-11-11 12:11:42 sandpit Exp $
  * 
  */
 
@@ -212,7 +212,7 @@ if any. This must be set before messages can be posted:</p>
             
 <h3>Post a message as this MP</h3>
 <?          if ($confirmation_email) { ?>
-<form method="post">
+<form method="post" accept-charset="UTF-8">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
 <td><input type="text" id="subject" name="subject" value="" size="40"></td>
