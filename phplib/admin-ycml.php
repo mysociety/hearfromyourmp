@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.15 2005-11-11 13:07:53 sandpit Exp $
+ * $Id: admin-ycml.php,v 1.16 2005-11-13 17:10:08 matthew Exp $
  * 
  */
 
@@ -55,7 +55,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
         $mps = db_getOne('SELECT COUNT(*) FROM constituent WHERE is_mp');
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-        $messages = db_getOne('SELECT COUNT(*) FROM message');
+        $messages = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
         $alerts = db_getOne('SELECT COUNT(*) FROM alert');
         $comments = db_getOne('SELECT COUNT(*) FROM comment');
         print "$signups constituency signups from $people1/$people2 people to $consts constituencies<br>$mps MPs have sent $messages message".($messages!=1?'s':'').", and there have been $comments comments<br>$alerts alerts";
@@ -290,7 +290,7 @@ this constituency.</p>
         if ($id>0) {
             print '<h3>Messages</h3>';
             $q = db_query('select * from message 
-                    where constituency = ? order by posted', $id);
+                    where constituency = ? and state=\'approved\' order by posted', $id);
 
             $n = 0;
             while ($r = db_fetch_array($q)) {

@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.29 2005-11-04 22:14:43 matthew Exp $
+# $Id: view.php,v 1.30 2005-11-13 17:10:10 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -119,6 +119,7 @@ function view_message($message) {
     $r = message_get($message);
     $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
     $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
     $content = make_clickable($content);
     $content = str_replace('@', '&#64;', $content);
     $c_id = $r['constituency'];
@@ -188,6 +189,30 @@ function comment_show($cc, $first, $last) {
     }
     return $html;
 }
+
+/*
+// comment out from CVS conflict
+function comment_show_one($r) {
+    $ds = prettify($r['date']);
+    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
+    if ($r['posted_by_mp']) $comment .= '<strong>';
+    if ($r['website'])
+        $comment .= '<a href="' . $r['website'] . '">';
+    $comment .= $r['name'];
+    if ($r['website'])
+        $comment .= '</a>';
+    if ($r['posted_by_mp']) $comment .= ' MP';
+    $comment .= ', ';
+    $comment .= $ds;
+    if ($r['posted_by_mp']) $comment .= '</strong>';
+    $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
+    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = make_clickable($content);
+    $content = str_replace('@', '&#64;', $content);
+    $comment .= ":</p>\n<div>" . $content . '</div>';
+    return $comment;
+}
+*/
 
 function message_get($id) {
     $r = db_getRow("SELECT *,extract(epoch from posted) as epoch FROM message WHERE state = 'approved' and id = ?", $id);
