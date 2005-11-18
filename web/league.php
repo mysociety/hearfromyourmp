@@ -5,36 +5,34 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.7 2005-11-04 16:01:11 sandpit Exp $
+// $Id: league.php,v 1.8 2005-11-18 09:59:19 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
+
+$sort = get_http_var('s');
+if (!$sort || preg_match('/[^csmelr]/', $sort)) $sort = 's';
+$sort_orders = array('l'=>'latest DESC', 'c'=>'constituency', 'm'=>'messages DESC',
+                     'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_mp DESC');
+
 if (array_key_exists('csv', $_GET)) {
     header('Content-Type: text/csv');
-    csv_league_table();
+    csv_league_table($sort);
 } else {
     page_header();
-    league_table();
+    league_table($sort);
     page_footer();
 }
 
-function csv_league_table() {
-    $sort = get_http_var('s');
-    if (!$sort || preg_match('/[^csmlr]/', $sort)) $sort = 's';
-    $order = '';
-    if ($sort=='l') $order = 'latest DESC';
-    elseif ($sort=='c') $order = 'constituency';
-    elseif ($sort=='m') $order = 'messages DESC';
-    elseif ($sort=='r') $order = 'comments DESC';
-    elseif ($sort=='s') $order = 'count DESC';
-
+function csv_league_table($sort) {
+    global $sort_orders;
     $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency" . 
-    ($order ? ' ORDER BY ' . $order : '') );
+    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
+    $sort_orders[$sort] );
     $rows = array();
     while ($r = db_fetch_array($q)) {
         $rows[] = $r;
@@ -54,7 +52,8 @@ function csv_league_table() {
     }
 }
 
-function league_table() { ?>
+function league_table($sort) {
+    global $sort_orders; ?>
 <h2>Current Status</h2>
 <?
 
@@ -73,29 +72,20 @@ function league_table() { ?>
     print "<li>$morethan constituencies have 25 or more subscribers, $morethan_emailed have been sent emails";
     print '</ul>';
 
-    $sort = get_http_var('s');
-    if (!$sort || preg_match('/[^csmlr]/', $sort)) $sort = 's';
-    $order = '';
-    if ($sort=='l') $order = 'latest DESC';
-    elseif ($sort=='c') $order = 'constituency';
-    elseif ($sort=='m') $order = 'messages DESC';
-    elseif ($sort=='r') $order = 'comments DESC';
-    elseif ($sort=='s') $order = 'count DESC';
-
     $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp,
     (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency" . 
-    ($order ? ' ORDER BY ' . $order : '') );
+    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
+    $sort_orders[$sort] );
     $rows = array();
     $ids = array();
     while ($r = db_fetch_array($q)) {
         $rows[] = array_map('htmlspecialchars', $r);
         if ($r['constituency'])
-        $ids[] = $r['constituency'];
+            $ids[] = $r['constituency'];
     }
 
     $areas_info = mapit_get_voting_areas_info($ids);
@@ -140,8 +130,8 @@ function table_header($sort) {
         'c'=>'Constituency', 
         's'=>'Signups',
 	'e'=>'Emails sent asking MP to post',
-        'm'=>'Messages sent',
-        'r'=>'Comments',
+        'm'=>'Messages sent by MP',
+        'r'=>'Comments left by constituents',
         'l'=>'Latest signup'
     );
     foreach ($cols as $s => $col) {
