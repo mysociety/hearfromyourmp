@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.10 2005-11-13 14:26:54 chris Exp $
+ * $Id: send-mp-threshold-alerts,v 1.11 2005-11-18 10:39:06 chris Exp $
  * 
  */
 
@@ -52,9 +52,9 @@ function send_mp_threshold_alerts() {
     $q = db_query("
             select constituent.constituency,
                 -- current # subscribers
-                count(constituent.id),
+                count(distinct(constituent.id)),
                 -- current most recent threshold passed
-                mp_threshold(count(constituent.id)::integer, -1),
+                mp_threshold(count(distinct(constituent.id))::integer, -1),
                 -- when last sent
                 max(whensent),
                 -- number of subscribers when alert last sent
@@ -64,7 +64,7 @@ function send_mp_threshold_alerts() {
                 -- null if no message sent
                 max(posted),
                 -- next threshold
-                mp_threshold(count(constituent.id)::integer, +1)
+                mp_threshold(count(distinct(constituent.id))::integer, +1)
             from constituent left join message
                     on constituent.constituency = message.constituency
                 left join mp_threshold_alert
@@ -73,12 +73,12 @@ function send_mp_threshold_alerts() {
             where constituent.constituency is not null
             group by constituent.constituency
             having max(posted) is null
-                and count(constituent.id) >= 25
+                and count(distinct(constituent.id)) >= 25
                 and (max(whensent) is null
                     or max(whensent) < current_timestamp
                                         - '1 week'::interval)
                 and (max(num_subscribers) is null
-                    or mp_threshold(count(constituent.id)::integer, -1)
+                    or mp_threshold(count(distinct(constituent.id))::integer, -1)
                         > mp_threshold(max(num_subscribers)::integer, -1))
                 and (select status from mp_nothanks
                     where mp_nothanks.constituency = constituent.constituency)
