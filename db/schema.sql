@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.17 2005-11-04 22:14:41 matthew Exp $
+-- $Id: schema.sql,v 1.18 2005-11-18 15:30:23 ycml Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -226,3 +226,7 @@ create function delete_comment(text)
     end
 ' language 'plpgsql';
 
+create table constituency_cache (
+    id integer not null primary key,
+    name text not null
+);

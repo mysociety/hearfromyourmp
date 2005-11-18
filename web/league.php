@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.10 2005-11-18 15:06:50 matthew Exp $
+// $Id: league.php,v 1.11 2005-11-18 15:30:23 ycml Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -34,16 +34,25 @@ function csv_league_table($sort) {
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
-    $rows = array();
+
+    $cache = db_getAll('SELECT id,name FROM constituency_cache');
+    foreach ($cache as $r) {
+    	$areas_info[$r['id']] = array('name'=>$r['name']);
+    }
+
+    $rows = array(); $ids = array();
     while ($r = db_fetch_array($q)) {
         if ($r['constituency'] && va_is_fictional_area($r['constituency']))
             continue;
         $rows[] = $r;
-        if ($r['constituency'])
+        if ($r['constituency'] && !$areas_info[$r['constituency']])
             $ids[] = $r['constituency'];
     }
 
-    $areas_info = mapit_get_voting_areas_info($ids);
+    if (count($ids)) {
+        $areas_info2 = mapit_get_voting_areas_info($ids);
+        $areas_info = array_merge($areas_info, $areas_info2);
+    }
 
     foreach ($rows as $k=>$r) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
@@ -83,17 +92,25 @@ function league_table($sort) {
     (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
-    $rows = array();
-    $ids = array();
+
+    $cache = db_getAll('SELECT id,name FROM constituency_cache');
+    foreach ($cache as $r) {
+    	$areas_info[$r['id']] = array('name'=>$r['name']);
+    }
+
+    $rows = array(); $ids = array();
     while ($r = db_fetch_array($q)) {
         if ($r['constituency'] && va_is_fictional_area($r['constituency']))
             continue;
         $rows[] = array_map('htmlspecialchars', $r);
-        if ($r['constituency'])
+        if ($r['constituency'] && !$areas_info[$r['constituency']])
             $ids[] = $r['constituency'];
     }
 
-    $areas_info = mapit_get_voting_areas_info($ids);
+    if (count($ids)) {
+        $areas_info2 = mapit_get_voting_areas_info($ids);
+        $areas_info = array_merge($areas_info, $areas_info2);
+    }
 
     foreach ($rows as $k=>$r) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
