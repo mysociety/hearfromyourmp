@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.4 2005-10-28 18:25:20 matthew Exp $
+// $Id: faq.php,v 1.5 2005-11-18 15:06:50 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -134,7 +134,7 @@ The main rule is simple though &mdash;
 don't be an arse and you'll get by fine.
 
 <dt>Are you going to send me evil spam?
-<dd>No, you'll only ever get mail from your MP, plus perhaps the a rare
+<dd>No, you'll only ever get mail from your MP, plus perhaps the rare
 email asking whether you want to make use of new services within
 HearFromYourMP (we are thinking of adding councillors, you see).
 It goes without saying that we'd never give or sell your email
