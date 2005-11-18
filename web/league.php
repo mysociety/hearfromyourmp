@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.11 2005-11-18 15:30:23 ycml Exp $
+// $Id: league.php,v 1.12 2005-11-18 15:46:07 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -69,10 +69,11 @@ function league_table($sort) {
 <h2>Current Status</h2>
 <?
 
-    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
+    # -1 to account for test constituency
+    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
-    $left = 647 - $consts; # 646 normal, 1 ZZ99ZZ
+    $left = 646 - $consts;
     $morethan = db_getAll('SELECT constituency FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency HAVING count(*)>=25');
     $morethan = count($morethan);
     # This way is far too slow:
