@@ -5,10 +5,11 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.8 2005-11-18 09:59:19 matthew Exp $
+// $Id: league.php,v 1.9 2005-11-18 11:00:09 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
+require_once '../../phplib/votingarea.php';
 
 $sort = get_http_var('s');
 if (!$sort || preg_match('/[^csmelr]/', $sort)) $sort = 's';
@@ -35,6 +36,8 @@ function csv_league_table($sort) {
     $sort_orders[$sort] );
     $rows = array();
     while ($r = db_fetch_array($q)) {
+        if ($r['constituency'] && va_is_fictional_area($r['constituency']))
+            continue;
         $rows[] = $r;
         if ($r['constituency'])
             $ids[] = $r['constituency'];
@@ -83,6 +86,8 @@ function league_table($sort) {
     $rows = array();
     $ids = array();
     while ($r = db_fetch_array($q)) {
+        if ($r['constituency'] && va_is_fictional_area($r['constituency']))
+            continue;
         $rows[] = array_map('htmlspecialchars', $r);
         if ($r['constituency'])
             $ids[] = $r['constituency'];

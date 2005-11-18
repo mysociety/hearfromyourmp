@@ -5,10 +5,11 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.4 2005-11-04 10:40:19 chris Exp $
+// $Id: about.php,v 1.5 2005-11-18 11:00:09 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
+require_once '../../phplib/votingarea.php';
 page_header();
 front_page();
 page_footer();
@@ -17,6 +18,7 @@ function front_page() { ?>
 <?  $q = db_query("SELECT id,subject,constituency FROM message where state = 'approved' ORDER BY posted DESC LIMIT 5");
     $out = '';
     while ($r = db_fetch_array($q)) {
+        if (va_is_fictional_area($r['constituency'])) continue;
         $area_info = ycml_get_area_info($r['constituency']);
         $rep_info = ycml_get_mp_info($r['constituency']);
         $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
@@ -28,6 +30,7 @@ function front_page() { ?>
         ORDER BY date DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
+        if (va_is_fictional_area($r['constituency'])) continue;
         $area_info = ycml_get_area_info($r['constituency']);
         $rep_info = ycml_get_mp_info($r['constituency']);
         $ds = prettify($r['date']);
