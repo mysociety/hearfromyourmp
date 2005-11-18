@@ -1,0 +1,10 @@
+#
+# rotatelogs.rules:
+# Rules for included/excluded error log lines.
+#
+# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+# Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+#
+# $Id: rotatelogs.rules,v 1.1 2005-11-18 10:10:33 chris Exp $
+#
+
