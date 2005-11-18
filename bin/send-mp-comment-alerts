@@ -1,0 +1,107 @@
+#!/usr/local/bin/php -q
+<?php
+/* 
+ * send-mp-comment-alerts:
+ * Run from cron daily to send new comment email alerts to MPs.
+ *
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+ *
+ * $Id: send-mp-comment-alerts,v 1.1 2005-11-18 17:37:19 matthew Exp $
+ *
+ */
+
+require_once "../conf/general";
+require_once '../phplib/fns.php';
+require_once "../phplib/alert.php";
+require_once '../../phplib/cli.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+
+$short_opts = '';
+$long_opts = array('verbose','help');
+require_once '../../phplib/phpcli.php';
+
+$switches = $options[0];
+$args = $options[1];
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $cli_is_verbose = 1;
+    if ($switch[0]=='--help') {
+?>
+
+HearFromYourMP MP comment summary sending script.
+
+Usage: send-mp-comment-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_mp_comment_alerts();
+
+// send_mp_comment_alerts sends alerts for a summary of new comments to MPs
+function send_mp_comment_alerts() {
+    verbose("sending MP comment summaries");
+
+    // Search for alert
+    $q = db_query("
+            select comment.id as comment_id, comment.content, extract(epoch from comment.date) as epoch,
+                message.id as message_id, message.constituency, message.subject,
+                person.name
+            from comment, message, person
+            where comment.message = message.id and
+                comment.person_id = person.id and
+                comment.visible > 0 and
+                (select whenqueued from comment_sent where
+                    comment_sent.comment_id = comment.id) is null
+            order by constituency,message_id,date
+            ");
+
+    $comments = array();
+    while ($row = db_fetch_array($q)) {
+        verbose("${row['constituency']} MP has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['name']})");
+
+        # Grab a lock, making sure alert hasn't been deleted meanwhile
+        $stillthere = db_getOne('select id from comment where id = ? for update', $row['comment_id']);
+        if (!$stillthere) continue;
+
+        # Check to see if the alert has been sent meanwhile
+        $alreadysent = db_getOne('select comment_id from comment_sent where comment_id = ?', 
+                 $row['comment_id']);
+        if ($alreadysent) continue;
+
+        $date = prettify($row['epoch']);
+        $comments[$row['constituency']][$row['message_id']][$row['comment_id']] = "$row[name] wrote at $date: $row[content]";
+        $subjects[$row['message_id']] = $row['subject'];
+    }
+
+    foreach ($comments as $constituency_id => $messages) {
+        $email = db_getOne('select confirmation_email from constituency where id = ?', $constituency_id);
+        foreach ($messages as $message_id => $comments) {
+            $body .= $subjects[$message_id] . "\n\n"; # . str_repeat('-', strlen($subjects[$message_id])) . "\n\n";
+            $body .= '* ' . join("\n\n* ", array_values($comments)) . "\n\n";
+            $body .= 'View or reply to these comments: ' . ycml_make_view_url($message_id, $email) . "\n\n";
+            # Store that alert has been sent
+            foreach (array_keys($comments) as $comment_id) {
+                db_query("insert into comment_sent (comment_id) values (?)", $comment_id);
+            }
+        }
+        # Send email
+        $f = ycml_send_email_template($email, 'alert-mp-comment', array('content'=>$body) );
+        if (!$f) {
+            # Revert record that it has been sent
+            db_rollback();
+            error("Failed to send comments alert to $constituency_id MP");
+        } else {
+            # Commit that it has been sent
+            db_commit();
+        }
+    }
+    verbose("finished sending MP comment alerts");
+}
+
