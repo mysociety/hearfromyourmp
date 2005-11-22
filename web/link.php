@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: link.php,v 1.1 2005-11-22 16:38:48 francis Exp $
+// $Id: link.php,v 1.2 2005-11-22 16:42:06 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -15,7 +15,7 @@ page_footer();
 
 function link_box() {
     $html = '
-<form style="text-align: left position: relative; background-color: #d9ecff;
+<form style="text-align: left; position: relative; background-color: #d9ecff;
         color: #000000; font-family: Georgia, serif; display:table;
         margin: 0 0 0 0; border: solid 2px #c06db3; padding: 0 0 0 0;"
         action="http://www.hearfromyourmp.com/subscribe">
