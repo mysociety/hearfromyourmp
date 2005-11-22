@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: link.php,v 1.2 2005-11-22 16:42:06 francis Exp $
+// $Id: link.php,v 1.3 2005-11-22 16:45:53 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -16,7 +16,7 @@ page_footer();
 function link_box() {
     $html = '
 <form style="text-align: left; position: relative; background-color: #d9ecff;
-        color: #000000; font-family: Georgia, serif; display:table;
+        color: #000000; font-family: Georgia, serif; display:table; _width: 24em;
         margin: 0 0 0 0; border: solid 2px #c06db3; padding: 0 0 0 0;"
         action="http://www.hearfromyourmp.com/subscribe">
     <p style="padding: 0.5em 0.5em 0.5em 0.5em; margin: 0 0 0 0;">
@@ -42,10 +42,12 @@ function link_to_us_page() { ?>
 <h2>How to link to us</h2>
 
 <p>You can add a simple box to your website which people can use to sign
-up to hear from their MP. It'll look like this.
+up to hear from their MP. It'll look like this.</p>
+
 <?=link_box()?>
 
-<p>To add it to your site, copy the HTML code given below into your own webpage. </p>
+<p>To add it to your site, copy the HTML code given below into your own webpage.</p>
+
 <pre class="htmlsource"><?=htmlspecialchars(link_box())?></pre>
 
 <p>Feel free to hack around with the design as much as you like. Any questions,
