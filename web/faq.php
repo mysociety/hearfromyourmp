@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.5 2005-11-18 15:06:50 matthew Exp $
+// $Id: faq.php,v 1.6 2005-11-22 15:20:14 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -54,7 +54,7 @@ services that we run whilst you're waiting.
 signed up again it didn't tell me that it
 knew who I was until after I'd confirmed my email address. Why? This seems
 silly.
-<dd>If we said "We recognize your email address, don't bother" before
+<dd>If we said "We recognise your email address, don't bother" before
 getting you to confirm it, nasty people could type in email addresses
 at random to work out who'd signed up to the lists. We don't want this
 to happen, so we make our users confirm their address before giving out
@@ -63,7 +63,7 @@ any such information.
 <dt>Will it fill my inbox with ranting rubbish from other constituents?
 <dd>No &mdash; only the MP can send messages to all list subscribers. If they
 choose to send rubbish, you can either unsubscribe, or have a full and
-frank discussion about why they shouldn't send faceless propoganda on
+frank discussion about why they shouldn't send faceless propaganda on
 the discussion thread that comes attached to each email.
 
 <dt>How does this discussion forum work then? Where is it?
@@ -76,7 +76,7 @@ a comment yourself.
 
 <dt>How are you going to stop the forums descending into ranting, partisan nonsense?
 <dd>We have various approaches to this. First, we have a strict moderation
-policy &mdash; disucssion must be constructive, non-partisan and friendly,
+policy &mdash; discussion must be constructive, non-partisan and friendly,
 or we'll have no compunction about removing posts. Secondly, users are
 limited to two forum posts per day, a method pioneered by Steve Clift
 at e-democracy.org, and proven to keep people behaving themselves.
@@ -88,7 +88,7 @@ each MP will be mailed whenever their mailing lists get to 25, 50,
 100, 200, 300, 500 etc. etc. They won't be harrassed &mdash; they'll never
 get more than one mail a week no matter how fast people sign up.
 Eventually we believe that the mailing lists will grow naturally to a
-size where it is non-sensical for MPs not to engage.
+size where it is nonsensical for MPs not to engage.
 
 <dt>I am an MP, or work in an MP's office. How do I take part in the testing?
 <dd>Contact us and we'll tell you how to get involved. All you have to do
