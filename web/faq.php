@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.6 2005-11-22 15:20:14 chris Exp $
+// $Id: faq.php,v 1.7 2005-11-22 16:38:48 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -106,6 +106,9 @@ unless you write to them.
 
 <dt>How much of the UK does HearFromYourMP cover?
 <dd>All of it. All of Blighty. Gor bless 'er. Brings a tear to your eye.
+
+<dt>Can I link to you from my website?
+<dd>Yes, and we provide <a href="link">special code</a> to make it easy for you.
 
 <dt>Who are you?
 <dd>This site was built by <a href="http://www.mysociety.org/">mySociety</a>. mySociety is a charitable

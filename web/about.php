@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.5 2005-11-18 11:00:09 chris Exp $
+// $Id: about.php,v 1.6 2005-11-22 16:38:48 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -64,7 +64,7 @@ post will contain the MP's email. There'll be no tiresome login &ndash; you
 can just start talking about what they've said. Safe, easy and
 democratic.</p>
 
-<p align="center"><strong>Sign up now - the first test constituencies have already begun.</strong></p>
+<p align="center"><strong>Sign up now - the first MPs have already begun to send messages.</strong></p>
 EOF;
     signup_form();
     print '</div>';
