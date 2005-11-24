@@ -5,7 +5,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: ycml.css,v 1.13 2005-11-22 16:38:48 francis Exp $
+ * $Id: ycml.css,v 1.14 2005-11-24 20:14:51 matthew Exp $
  *
  */
 
@@ -16,8 +16,8 @@ body, html {
     margin: 0;
     padding: 0;
     color: #000000;
-    background-color: #ffffff;
     background: url("/shoup.png") 100% 50% no-repeat;
+    background-color: #ffffff;
     background-attachment: fixed;
     min-height: 329px;
 }
