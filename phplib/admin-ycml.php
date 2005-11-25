@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.16 2005-11-13 17:10:08 matthew Exp $
+ * $Id: admin-ycml.php,v 1.17 2005-11-25 13:26:28 matthew Exp $
  * 
  */
 
@@ -51,14 +51,36 @@ class ADMIN_PAGE_YCML_SUMMARY {
     }
     function display() {
         $signups = db_getOne('SELECT COUNT(*) FROM constituent');
-        $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
+        $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
         $mps = db_getOne('SELECT COUNT(*) FROM constituent WHERE is_mp');
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-        $messages = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
+        $messages_approved = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
+        $messages_ready = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'ready\'');
+        $messages_notresponded = db_getAll("SELECT * FROM message WHERE state='ready' AND posted < now()-interval '1 day'");
+        $notresponded_details = '';
+        if (count($messages_notresponded)) {
+            $notresponded_details = ':<ul>';
+            foreach ($messages_notresponded as $row) {
+                $area_info = ycml_get_area_info($row['constituency']);
+                $rep_info = ycml_get_mp_info($row['constituency']);
+                $notresponded_details .= "<li>$rep_info[name], $area_info[name], $row[posted], subject '$row[subject]'";
+            }
+            $notresponded_details .= '</ul>';
+        }
+        $messages_notresponded = count($messages_notresponded);
+        $messages_new = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'new\'');
         $alerts = db_getOne('SELECT COUNT(*) FROM alert');
         $comments = db_getOne('SELECT COUNT(*) FROM comment');
-        print "$signups constituency signups from $people1/$people2 people to $consts constituencies<br>$mps MPs have sent $messages message".($messages!=1?'s':'').", and there have been $comments comments<br>$alerts alerts";
+
+        print "$signups constituency signups from $people2 people
+            (though $people1 person entries) to $consts constituencies<br>
+            $mps MPs have sent $messages_approved message".
+            ($messages_approved!=1?'s':'').", and there have been 
+            $comments comments<br>
+            $messages_new messages are awaiting mailing out to MPs for confirmation,
+            $messages_ready messages are waiting for approval by MPs, $messages_notresponded of those were sent more than a day ago$notresponded_details
+            <br>$alerts alerts";
     }
 }
 
@@ -72,6 +94,7 @@ class ADMIN_PAGE_YCML_MAIN {
         print '<table border="1" cellpadding="5" cellspacing="0"><tr>';
         $cols = array(
             'c'=>'Constituency', 
+            'r'=>'Representative',
             's'=>'Signups',
             'l'=>'Latest signup'
         );
@@ -97,18 +120,13 @@ class ADMIN_PAGE_YCML_MAIN {
 
         $q = db_query('SELECT COUNT(id) AS count,constituency,EXTRACT(epoch FROM MAX(creation_time)) AS latest FROM constituent GROUP BY constituency' . 
             ($order ? ' ORDER BY ' . $order : '') );
-        $rows = array();
-        while ($r = db_fetch_array($q)) {
-            $rows[] = array_map('htmlspecialchars', $r);
-            if ($r['constituency'])
-                $ids[] = $r['constituency'];
-        }
-
-        $areas_info = mapit_get_voting_areas_info($ids);
+        list($areas_info, $rows) = ycml_get_all_areas_info($q, false);
+        $reps_info = ycml_get_all_reps_info(array_keys($areas_info));
 
         foreach ($rows as $k=>$r) {
             $c_id = $r['constituency'] ? $r['constituency'] : -1;
             $c_name = array_key_exists($c_id, $areas_info) ? $areas_info[$c_id]['name'] : '&lt;Unknown / bad postcode&gt;';
+            $r_name = array_key_exists($c_id, $reps_info) ? $reps_info[$c_id]['name'] : 'Unknown';
             $row = "";
             $row .= '<td>';
             if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
@@ -117,6 +135,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $row .= '<br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
                 <a href="?page=ycmllatest&amp;constituency='.$c_id.'">timeline</a>';
             $row .= '</td>';
+            $row .= "<td>$r_name</td>";
             $row .= '<td align="center">' . $r['count'] . '</td>';
             $row .= '<td>' . prettify($r['latest']) . '</td>';
             $rows[$k] = $row;

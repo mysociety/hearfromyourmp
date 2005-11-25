@@ -5,16 +5,16 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.12 2005-11-18 15:46:07 matthew Exp $
+// $Id: league.php,v 1.13 2005-11-25 13:26:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
-require_once '../../phplib/votingarea.php';
 
 $sort = get_http_var('s');
-if (!$sort || preg_match('/[^csmelr]/', $sort)) $sort = 's';
+if (!$sort || preg_match('/[^csmelrp]/', $sort)) $sort = 's';
 $sort_orders = array('l'=>'latest DESC', 'c'=>'constituency', 'm'=>'messages DESC',
-                     'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_mp DESC');
+                     'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_mp DESC',
+                     'p'=>'constituency');
 
 if (array_key_exists('csv', $_GET)) {
     header('Content-Type: text/csv');
@@ -35,24 +35,7 @@ function csv_league_table($sort) {
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
 
-    $cache = db_getAll('SELECT id,name FROM constituency_cache');
-    foreach ($cache as $r) {
-    	$areas_info[$r['id']] = array('name'=>$r['name']);
-    }
-
-    $rows = array(); $ids = array();
-    while ($r = db_fetch_array($q)) {
-        if ($r['constituency'] && va_is_fictional_area($r['constituency']))
-            continue;
-        $rows[] = $r;
-        if ($r['constituency'] && !$areas_info[$r['constituency']])
-            $ids[] = $r['constituency'];
-    }
-
-    if (count($ids)) {
-        $areas_info2 = mapit_get_voting_areas_info($ids);
-        $areas_info = array_merge($areas_info, $areas_info2);
-    }
+    list($areas_info, $rows) = ycml_get_all_areas_info($q);
 
     foreach ($rows as $k=>$r) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
@@ -65,7 +48,7 @@ function csv_league_table($sort) {
 }
 
 function league_table($sort) {
-    global $sort_orders; ?>
+    global $reps_info, $sort_orders; ?>
 <h2>Current Status</h2>
 <?
 
@@ -94,34 +77,34 @@ function league_table($sort) {
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
 
-    $cache = db_getAll('SELECT id,name FROM constituency_cache');
-    foreach ($cache as $r) {
-    	$areas_info[$r['id']] = array('name'=>$r['name']);
-    }
+    list($areas_info, $rows) = ycml_get_all_areas_info($q);
+    $reps_info = ycml_get_all_reps_info(array_keys($areas_info));
 
-    $rows = array(); $ids = array();
-    while ($r = db_fetch_array($q)) {
-        if ($r['constituency'] && va_is_fictional_area($r['constituency']))
-            continue;
-        $rows[] = array_map('htmlspecialchars', $r);
-        if ($r['constituency'] && !$areas_info[$r['constituency']])
-            $ids[] = $r['constituency'];
+    if ($sort=='p') {
+        function by_mp($a, $b) {
+            global $reps_info;
+            $a_id = $a['constituency'] ? $a['constituency'] : -1;
+            $b_id = $b['constituency'] ? $b['constituency'] : -1;
+            $a_name = $reps_info[$a_id]['name'];
+            $b_name = $reps_info[$b_id]['name'];
+            return strcmp($a_name, $b_name);
+        }
+        usort($rows, 'by_mp');
     }
-
-    if (count($ids)) {
-        $areas_info2 = mapit_get_voting_areas_info($ids);
-        $areas_info = array_merge($areas_info, $areas_info2);
-    }
-
     foreach ($rows as $k=>$r) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
         $c_name = $areas_info[$c_id]['name'];
+        $r_name = $reps_info[$c_id]['name'];
+        if (OPTION_YCML_STAGING) {
+            $r_name = spoonerise($r_name);
+        }
         $row = "";
         $row .= '<td>';
         if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
         $row .= $c_name;
         if ($c_id != -1) $row .= '</a>';
         $row .= '</td>';
+        $row .= "<td>$r_name</td>";
         $row .= '<td align="center">' . $r['count'] . '</td>';
         if ($r['nothanks']) {
             $row .= '<td colspan="3" align="center"><a href="' . OPTION_BASE_URL . '/view/' . $c_id . '">This MP has asked not to use this service</a></td>';
@@ -151,6 +134,7 @@ function table_header($sort) {
     print '<table border="0" cellpadding="4" cellspacing="0"><tr>';
     $cols = array(
         'c'=>'Constituency', 
+        'p'=>'MP',
         's'=>'Signups',
 	'e'=>'Emails sent asking MP to post',
         'm'=>'Messages sent by MP',
