@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.17 2005-11-25 13:26:28 matthew Exp $
+ * $Id: admin-ycml.php,v 1.18 2005-11-25 16:27:16 francis Exp $
  * 
  */
 
@@ -15,6 +15,7 @@ require_once "fns.php";
 require_once "../../phplib/db.php";
 require_once "../../phplib/mapit.php";
 require_once "../../phplib/dadem.php";
+require_once '../../phplib/votingarea.php';
 require_once "../../phplib/utility.php";
 require_once "../../phplib/importparams.php";
 require_once "../../phplib/person.php";

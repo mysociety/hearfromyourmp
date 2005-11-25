@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.31 2005-11-18 11:18:14 matthew Exp $
+# $Id: view.php,v 1.32 2005-11-25 16:27:17 francis Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -19,6 +19,7 @@ require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
 require_once '../../phplib/mapit.php';
+require_once '../../phplib/votingarea.php';
 
 importparams(
     array('constituency', '/^\d+$/', 'Invalid constituency', null),
