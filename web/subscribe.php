@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.15 2005-11-07 16:39:57 matthew Exp $
+// $Id: subscribe.php,v 1.16 2005-11-25 14:56:23 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -66,9 +66,10 @@ function do_subscribe() {
         /* Otherwise get the user to log in. */
         $r = array();
         $r['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
-        $r['reason_email'] = _("You'll then be signed up to get emails from $rep_info[name] in the $area_info[name] constituency.");
-        $r['reason_email_subject'] = _("Subscribe to HearFromYourMP");
+        $r['rep_name'] = $rep_info['name'];
+        $r['area_name'] = $area_info['name'];
         $r['instantly_send_email'] = true;
+        $r['template'] = 'confirm-subscribe';
         $person = person_signon($r, $q_email, $q_name);
     }
     $person_id = $person->id();

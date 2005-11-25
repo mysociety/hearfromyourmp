@@ -1,0 +1,25 @@
+Subject: Subscribe to HearFromYourMP
+
+Hello <?=$values['user_name']?>,
+
+Please click on the link below to confirm that you wish to subscribe
+to HearFromYourMP:
+
+<?=$values['url']?>
+
+This will enable you to receive emails from
+<?=$values['rep_name']?> in the <?=$values['area_name']?> constituency
+and leave comments, should they choose to use our service.
+
+If your email program does not let you click on this link, just
+copy and paste it into your web browser and hit return. If you have
+changed your mind and don't want to subscribe, then do nothing -
+you will not be subscribed.
+
+Please feel free to email us on team@hearfromyourmp.com with any
+comments, problems or suggestions.
+
+We will never give away or sell your email address to anyone else
+without your permission.
+
+<?=$values['signature']?>
