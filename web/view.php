@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.34 2005-11-28 11:45:59 chris Exp $
+# $Id: view.php,v 1.35 2005-11-28 11:55:54 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -45,7 +45,27 @@ page_footer();
 
 # ---
 
+/* mini_signup_form
+ * Small signup form. */
+function mini_signup_form() {
+    if (!is_null(person_if_signed_on())) return;
+    ?>
+<form method="post" action="/subscribe" name="mini_subscribe" accept-charset="utf-8">
+<div id="miniSubscribeBox">
+<input type="hidden" name="subscribe" id="subscribe" value="1">
+<label for="name">Name:</label> <input type="text" name="name" id="name" size="20">
+<label for="email">Email:</label> <input type="text" name="email" id="email" size="25">
+<label for="postcode">UK Postcode:</label> <input type="text" name="postcode" id="postcode" size="10">
+<input type="submit" value="Sign up">
+</div>
+</form>
+    <?
+}
+
+/* view_constituencies
+ * Page listing all constituencies having messages. */
 function view_constituencies() {
+    mini_signup_form();
     $q = db_query("SELECT DISTINCT constituency FROM message where state = 'approved'");
     $out = array();
     while ($r = db_fetch_array($q)) {
@@ -67,6 +87,8 @@ function view_constituencies() {
     }
 }
 
+/* view_messages CONSTITUENCY
+ * Page listing all messages in CONSTITUENCY. */
 function view_messages($c_id) {
     $area_info = ycml_get_area_info($c_id);
     $rep_info = ycml_get_mp_info($c_id);
@@ -85,6 +107,7 @@ function view_messages($c_id) {
     $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
     
     page_header($rep_info['name'] . ', ' . $area_info['name']);
+    mini_signup_form();
 ?>
 <h2><?=$area_info['name'] ?></h2>
 <?  if ($rep_info['id'] == '2000005') {
@@ -150,6 +173,8 @@ We will automatically email them <?=$emails_sent_to_mp>0?'again ':'' ?>when the 
     }
 }
 
+/* view_message MESSAGE
+ * Page displaying the given MESSAGE and comments. */
 function view_message($message) {
     $r = message_get($message);
     $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
@@ -161,6 +186,7 @@ function view_message($message) {
     $rep_info = ycml_get_mp_info($c_id);
     $area_info = ycml_get_area_info($c_id);
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
+    mini_signup_form();
     print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
         . ', MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
