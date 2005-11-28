@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.33 2005-11-28 11:42:53 chris Exp $
+# $Id: view.php,v 1.34 2005-11-28 11:45:59 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -55,6 +55,7 @@ function view_constituencies() {
         $areas_info = mapit_get_voting_areas_info($out);
         $out = array();
         foreach ($areas_info as $c_id => $array) {
+            if (va_is_fictional_area($c_id)) continue;
             $out[$array['name']] = "<li><a href=\"/view/$c_id\">$array[name]</a></li>\n";
         }
         ksort($out);
