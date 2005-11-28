@@ -5,7 +5,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: ycml.css,v 1.14 2005-11-24 20:14:51 matthew Exp $
+ * $Id: ycml.css,v 1.15 2005-11-28 12:03:21 sandpit Exp $
  *
  */
 
@@ -62,6 +62,25 @@ label {
     cursor: pointer;
     font-weight: bold;
     display: block;
+}
+
+/* Inline version of big subscribe box. */
+#miniSubscribeBox {
+    font-size: 80%;
+    margin: 1em;
+    background-color: #b3daff;
+    border: solid 1px #c06db3;
+    padding: 6px;
+    text-align: center;
+}
+
+#miniSubscribeBox label {
+    display: inline;
+    padding-left: 0.5em;
+}
+
+#miniSubscribeBox input {
+    padding-right: 0.5em;
 }
 
 h1 {
