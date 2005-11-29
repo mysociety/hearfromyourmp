@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.16 2005-11-25 14:56:23 matthew Exp $
+// $Id: subscribe.php,v 1.17 2005-11-29 00:56:11 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -63,14 +63,37 @@ function do_subscribe() {
     if ($external_auth) {
         $person = person_get_or_create($q_email, $q_name);
     } else {
-        /* Otherwise get the user to log in. */
-        $r = array();
-        $r['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
-        $r['rep_name'] = $rep_info['name'];
-        $r['area_name'] = $area_info['name'];
-        $r['instantly_send_email'] = true;
-        $r['template'] = 'confirm-subscribe';
-        $person = person_signon($r, $q_email, $q_name);
+        $person = person_if_signed_on();
+        if (!$person) {
+            /* Otherwise get the user to log in. */
+            $template_data = array();
+            $template_data['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
+            $template_data['rep_name'] = $rep_info['name'];
+            $template_data['area_name'] = $area_info['name'];
+            $template_data['user_name'] = $q_name;
+            $template_data['user_email'] = $q_email;
+            $token = auth_token_store('login', array(
+                'email' => $q_email,
+                'name' => $q_name,
+                'stash' => stash_request(),
+                'direct' => 1
+            ));
+            db_commit();
+            $url = OPTION_BASE_URL . "/L/$token";
+            $template_data['url'] = $url;
+            ycml_send_email_template($q_email, 'confirm-subscribe', $template_data);
+            page_header("Now check your email");
+?>
+<p id="loudmessage">
+Now check your email!<br>
+We've sent you an email, and you'll need to click the link in it before you can
+continue
+</p>
+<?
+            page_footer(array('nonav' => 1));
+            exit();
+            /* NOTREACHED */
+        }
     }
     $person_id = $person->id();
 
