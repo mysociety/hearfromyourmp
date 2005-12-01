@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.12 2005-11-18 12:01:36 matthew Exp $
+ * $Id: send-mp-threshold-alerts,v 1.13 2005-12-01 16:52:53 chris Exp $
  * 
  */
 
@@ -58,6 +58,10 @@ function send_mp_threshold_alerts($type) {
     }
 
     db_query("lock table mp_threshold_alert in share mode");
+
+    /* Find out how many MPs have used the service, in an attempt to convince
+     * others through peer pressure. */
+    $num_mps_using = db_getOne('select count(distinct constituency) from message');
     
     $q = db_query("
             select constituent.constituency,
@@ -118,7 +122,8 @@ function send_mp_threshold_alerts($type) {
                 'constituency_name' => $area_info['name'],
                 'next_threshold' => $next_thr,
                 'mp_name' => $rep_info['name'],
-                'mp_forename' => preg_replace('/\s.*$/', '', $rep_info['name']) /* XXX */
+                'mp_forename' => preg_replace('/\s.*$/', '', $rep_info['name']), /* XXX */
+                'mps_using' => $num_mps_using
             );
 
         if (ycml_send_email_template($rep_info['email'], $template, $pp)) {
