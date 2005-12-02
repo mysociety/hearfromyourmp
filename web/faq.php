@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.7 2005-11-22 16:38:48 francis Exp $
+// $Id: faq.php,v 1.8 2005-12-02 17:34:45 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -157,7 +157,7 @@ what should I do?
 tell us what you want, or build it yourself as a volunteer. :)
 
 <dt>You guys are so cool &mdash; how can we thank you?
-<dd>Gin and chocolates, marked C/O Tom Steinberg, 18 Victoria Park Square,
+<dd>Gin and chocolates, marked c/o Tom Steinberg, 18 Victoria Park Square,
 London E2 9PF. I'll make sure the rest of the gang get their share.
 Honest.
 
