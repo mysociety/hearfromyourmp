@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.6 2005-11-22 16:38:48 francis Exp $
+// $Id: about.php,v 1.7 2005-12-02 17:02:20 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -37,8 +37,11 @@ function front_page() { ?>
         $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
     }
     if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
+
+    $num = db_getOne("select count(*) from message where state='approved'");
     print <<<EOF
 <div id="indented">
+
 <p><em>&ldquo;So, the voting is over. The politicians vanish to Westminster, and
 everything carries on as before, right?&rdquo;</em></p>
 
@@ -51,20 +54,21 @@ relationships between constituents and their MPs.</p>
 
 <p>If you enter your details, we'll add you to a queue of other
 people in your constituency. When enough have signed up, your MP will
-get sent an email. It'll say &ldquo;20 of your constituents would like to
-hear what you're up to &ndash; hit reply to let them know&rdquo;. If they don't
-reply, nothing will happen, until they get an email which says there
-are now 100 people; 200 people; 500 people &ndash; until it is nonsensical
+get sent an email. It'll say &ldquo;25 of your constituents would like to
+hear what you're up to. Hit reply to let them know&rdquo;. If they don't
+reply, nothing will happen, until your MP gets a further email which says
+there are now 50, then 75, 100, 150 &ndash; until it is nonsensical
 not to reply and start talking.</p>
 
-<p>When your MP replies, it won't be one-way spam, and it won't be an
-inbox-filling free-for-all. Instead, each email will have a link at
-the bottom, which will take you straight to a forum where the first
-post will contain the MP's email. There'll be no tiresome login &ndash; you
-can just start talking about what they've said. Safe, easy and
-democratic.</p>
+<p>When your MP sends you mail it won't be one-way spam, and it won't be
+an inbox-filling free-for-all. Instead, each email comes with a link
+at the bottom, which takes you straight to a web page containing a
+copy of the email your MP wrote, along with any comments by other
+constituents. To leave your thoughts, you just enter your text and hit
+enter. There's no tiresome login &ndash; you can just start talking about
+what they've said. Safe, easy and democratic.</p>
 
-<p align="center"><strong>Sign up now - the first MPs have already begun to send messages.</strong></p>
+<p align="center"><strong>Sign up now - $num MPs have already sent out messages.</strong></p>
 EOF;
     signup_form();
     print '</div>';
