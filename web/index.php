@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.17 2005-11-29 12:58:30 sandpit Exp $
+// $Id: index.php,v 1.18 2005-12-02 18:05:55 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -32,10 +32,10 @@ function front_page() { ?>
     <br><em>(for example OX1 3DR)</em>
     </div>
 </form>
-<p style="text-align: center;"><a href="/about"><big>Tell me more</big></a></p>
+<p style="text-align: center;"><a href="/about"><big>How this site works</big></a></p>
 <?
         $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         # Minus one in the next row to account for test constituency
         $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
-        print "<p align='center'>$people people have signed up in $consts constituencies &mdash; <a href='/league'>Full details</a></p>";
+        print "<p align='center'>$people people have signed up in $consts constituencies &mdash; <a href='/league'>League table</a></p>";
 } ?>

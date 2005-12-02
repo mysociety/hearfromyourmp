@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.17 2005-11-29 00:56:11 matthew Exp $
+// $Id: subscribe.php,v 1.18 2005-12-02 18:05:55 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -120,14 +120,14 @@ continue
     $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
 
     $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . urlencode($q_postcode));
-    preg_match_all('#<title>(.*?)</title>\s+<link>(.*?)</link>#', $local_pledges, $m, PREG_SET_ORDER);
+    preg_match_all('#<link>(.*?)</link>\s+<description>(.*?)</description>#', $local_pledges, $m, PREG_SET_ORDER);
     $local_num = count($m) - 1;
     if ($local_num>5) $local_num = 5;
     if ($local_num) {
         print '<div id="pledges"><h2>Recent pledges local to ' . canonicalise_postcode($q_h_postcode) . '</h2>';
-        print '<p style="margin-top:0; text-align:right; font-size: 89%">From <a href="http://www.pledgebank.com/">PledgeBank</a></p> <ul>';
+        print '<p style="margin-top:0; text-align:right; font-size: 89%">These are pledges near you made by users of <a href="http://www.pledgebank.com/">PledgeBank</a>, another mySociety site. We thought you might be interested. N.B. mySociety does not endorse specific pledges.</p> <ul>';
         for ($p=1; $p<=$local_num; ++$p) {
-            print '<li><a href="' . $m[$p][2] . '">' . $m[$p][1] . '</a>';
+            print '<li><a href="' . $m[$p][1] . '">' . $m[$p][2] . '</a>';
         }
         print '</ul><p align="center"><a href="http://www.pledgebank.com/alert?postcode='.$q_h_postcode.'">Get emails about local pledges</a></p></div>';
     }
@@ -158,12 +158,22 @@ over to their successor.&quot;</p>
 <p>Find out lots of information about <?=$rep_info['name'] ?>, including
 speeches made and questions asked in Parliament, on our sister site
 <a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>.</p>
-<p><?
-    if ($return = get_http_var('r')) {
-        print '<a href="' . htmlspecialchars($return). '">Continue to where you came from</a>';
-    } else {
-        print '<a href="/">HearFromYourMP home page</a></p>';
-    } ?></p><?
+<?  if ($nothanks['status'] != 't') {
+        $next_threshold = db_getOne('select mp_threshold(?, +1)', $count);
+        $next_next_threshold = db_getOne('select mp_threshold(?, +1)', $next_threshold);
+?>
+<h2>What happens next?</h2>
+<p>The mailing list for <?=$area_info['name']?> will keep growing until there
+are <?=$next_threshold?> people signed up. We'll then atuomatically send your
+MP an email asking them to talk to you.</p>
+<p>When you get the email, it'll contain a link, right underneath the MP's words.
+To talk about what they said all you'll have to do is click on the link, and start
+talking with other local people, and, if you're lucky, your MP as well.</p>
+<p>If your MP doesn't respond to the next email we send them, we'll remind them again
+when there are <?=$next_next_threshold?> people signed up.</p>
+<?  }
+    if ($return = get_http_var('r'))
+        print '<p><a href="' . htmlspecialchars($return). '">Continue to where you came from</a></p>';
 }
 
 ?>
