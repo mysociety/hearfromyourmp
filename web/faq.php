@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.8 2005-12-02 17:34:45 chris Exp $
+// $Id: faq.php,v 1.9 2005-12-02 17:50:56 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -144,7 +144,7 @@ It goes without saying that we'd never give or sell your email
 addresses to anyone else.
 
 <dt>Is this open source?
-<dd>Yep, all our code is open source under the Aferro GPL. You can
+<dd>Yep, all our code is open source under the Affero GPL. You can
 <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">find
 it here</a> (in the 'ycml' directory). We use some
 licensed data to do postcode and constituency lookups though, I'm
