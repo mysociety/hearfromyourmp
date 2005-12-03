@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.18 2005-11-25 16:27:16 francis Exp $
+ * $Id: admin-ycml.php,v 1.19 2005-12-03 01:06:17 matthew Exp $
  * 
  */
 
@@ -185,12 +185,14 @@ class ADMIN_PAGE_YCML_MAIN {
         $subscribers = db_num_rows($q);
 
         $out = array();
-        print "<h2>The constituency of $area_info[name]</h2>";
+        print "<div style='float:left; width:47%;'><h2 style='margin:0'>$area_info[name]";
         if ($id>0)
-            print "<p>The MP for this constituency is <strong>$rep_info[name]</strong> ($rep_info[party]). Subscribed so far: <strong>$subscribers</strong>.";
+            print ", $rep_info[name] ($rep_info[party]),<br>$subscribers subscribed";
+        print '</h2>';
 
         if ($id>0) {
             $is_mp = db_getOne('SELECT is_mp FROM constituent WHERE constituency=? AND is_mp', $id);
+            $no_thanks = db_getOne('SELECT status FROM mp_nothanks WHERE constituency=?', $id)=='t' ? true : false;
             $all = db_getAll('SELECT constituent.id,is_mp,person.name,person.email FROM constituent,person
                               WHERE constituent.person_id=person.id AND constituency=?
                               ORDER BY person.name', array($id));
@@ -200,6 +202,41 @@ class ADMIN_PAGE_YCML_MAIN {
                 if ($r['is_mp']=='t') $choices .= ' selected';
                 $choices .= ' value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
             }
+            $confirmation_email = db_getOne('select confirmation_email from constituency where id = ?', $id);
+            if (is_null($confirmation_email))
+                $confirmation_email = '';
+            $sent_messages = db_getOne("select count(*) from message where constituency=? and state='approved'", $id);
+?>
+<p>Alert status: <strong>
+<?          if ($no_thanks) {
+                print 'Not interested - <input type="submit" disabled value="Change">';
+            } else {
+                if ($sent_messages) {
+                    print 'Previous user';
+                } else {
+                    print 'New user';
+                }
+                print ' - <input type="submit" disabled value="Not interested">';
+            }
+?></strong></p>
+<h3>Post a message as this MP</h3>
+<?          if ($confirmation_email && !$no_thanks) { ?>
+<form method="post" accept-charset="UTF-8">
+<table cellpadding="3" cellspacing="0" border="0">
+<tr><th><label for="subject">Subject:</label></th>
+<td><input type="text" id="subject" name="subject" value="" size="40"></td>
+</tr>
+<tr valign="top"><th><label for="message">Message:</label></th>
+<td><textarea id="message" name="message" rows="10" cols="58"></textarea></td>
+</tr></table>
+<input type="submit" value="Post">
+</form>
+<?          } elseif (!$confirmation_email) { ?>
+<p>You cannot post a message until a confirmation email address is set for
+this constituency.</p>
+<?          } elseif ($no_thanks) { ?>
+<p>This MP has asked not to use our service!</p>
+<?          }
 ?>
 <h3>Create or set login for this MP</h3>
 <form method="post">
@@ -220,36 +257,45 @@ class ADMIN_PAGE_YCML_MAIN {
 each message posted. This is independent of the address for the MP's own login,
 if any. This must be set before messages can be posted:</p>
 <?
-            $confirmation_email = db_getOne('select confirmation_email from constituency where id = ?', $id);
-            if (is_null($confirmation_email))
-                $confirmation_email = '';
             ?>
 <form method="post">
 <input type="hidden" name="constituency_id" value="<?=htmlspecialchars($id)?>">
 <input type="text" name="confirmation_email" value="<?=htmlspecialchars($confirmation_email)?>" size="30">
 <input type="submit" name="setConfirmationEmail" value="Set confirmation email address">
 </form>
-            
-<h3>Post a message as this MP</h3>
-<?          if ($confirmation_email) { ?>
-<form method="post" accept-charset="UTF-8">
-<table cellpadding="3" cellspacing="0" border="0">
-<tr><th><label for="subject">Subject:</label></th>
-<td><input type="text" id="subject" name="subject" value="" size="40"></td>
-</tr>
-<tr valign="top"><th><label for="message">Message:</label></th>
-<td><textarea id="message" name="message" rows="10" cols="70"></textarea></td>
-</tr></table>
-<input type="submit" value="Post">
-</form>
-<?          } else { ?>
-<p>You cannot post a message until a confirmation email address is set for
-this constituency.</p>
-<?          }
+<?    
         }
 
 ?>
-<h3>Subscribers</h3>
+</div>
+<div style="float:left; width:47%">
+<?      if ($id>0) {
+            $query = db_getAll('select * from mp_threshold_alert where constituency=?', $id);
+            if (count($query)) {
+                print '<h3>Alerts sent</h3> <table><tr><th>Subscribers</th><th>When</th></tr>';
+                foreach ($query as $r) {
+                    print "<tr><td>$r[num_subscribers]</td><td>$r[whensent]</td></tr>";
+                }
+                print '</table>';
+            }
+            $query = db_getAll('select id,state,subject from message 
+                    where constituency = ? order by posted', $id);
+            if (count($query)) {
+                print '<h3>Messages</h3> <table cellpadding="3" cellspacing="0" border="0"><tr><th>State</th><th>Subject</th><th></th></tr>';
+                foreach ($query as $r) {
+                    print "<tr><td>$r[state]</td><td>";
+                    if ($r['state']=='approved') print '<a href="http://www.hearfromyourmp.com/view/message/'.$r['id'].'">';
+                    print $r['subject'];
+                    if ($r['state']=='approved') print '</a>';
+                    print '</td><td><input type="submit" value="Resend confirmation email"';
+                    if ($r['state'] != 'ready') print ' disabled';
+                    print '></tr>';
+                }
+                print '</table>';
+            }
+        }
+?>
+<h3 style="clear:both">Subscribers</h3>
 <?      while ($r = db_fetch_array($q)) {
             $is_mp = ($r['is_mp'] == 't') ? true : false;
             $r = array_map('htmlspecialchars', $r);
@@ -302,26 +348,9 @@ this constituency.</p>
             }
             print '</table>';
         } else {
-            print '<p>Nobody has signed up to this pledge.</p>';
+            print '<p>Nobody has signed up to this constituency.</p>';
         }
-        print '<p>';
-        
-        // Messages
-        if ($id>0) {
-            print '<h3>Messages</h3>';
-            $q = db_query('select * from message 
-                    where constituency = ? and state=\'approved\' order by posted', $id);
-
-            $n = 0;
-            while ($r = db_fetch_array($q)) {
-                if ($n++)
-                    print '<hr>';
-                print '<b>' . htmlspecialchars($r['subject']) . '</b><br>' . htmlspecialchars($r['content']);
-            }
-            if ($n == 0) {
-                print "No messages yet.";
-            }
-        }
+        print '</div>';
     }
 
     function post_message($constituency, $subject, $message) {
