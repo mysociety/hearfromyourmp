@@ -15,7 +15,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.1 2005-11-23 12:19:30 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.2 2005-12-05 12:59:43 francis Exp $';
 
 use strict;
 require 5.8.0;
@@ -128,17 +128,15 @@ sub do_basic_signup_test() {
     # Confirm email
     my $confirmation_email = $wth->email_get_containing(
         '%To: '.email_n(1).'%%');
-    die "Pledge confirmation link not found\n" if ($confirmation_email !~ m#^(http://.*$)#m);
+    die "Pledge confirmation link not found\n" if ($confirmation_email !~ m#^\s+(http://.*$)#m);
     my $confirmation_url = $1;
     $wth->email_check_url($confirmation_url);
     print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
     $wth->log_watcher_check();
     $wth->browser_get($confirmation_url);
-    $wth->browser_check_contents("Would you like to set a HearFromYourMP password"); 
-    $wth->browser_submit_form(form_name => 'loginNoPassword', fields => {} );
     $wth->browser_check_contents("You're the 1st person to sign up to get emails"); 
 
-    print $wth->browser_content();
+    #print $wth->browser_content();
 }
 
 #############################################################################
