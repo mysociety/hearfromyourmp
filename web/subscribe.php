@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.18 2005-12-02 18:05:55 matthew Exp $
+// $Id: subscribe.php,v 1.19 2005-12-07 19:45:29 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -164,7 +164,7 @@ speeches made and questions asked in Parliament, on our sister site
 ?>
 <h2>What happens next?</h2>
 <p>The mailing list for <?=$area_info['name']?> will keep growing until there
-are <?=$next_threshold?> people signed up. We'll then atuomatically send your
+are <?=$next_threshold?> people signed up. We'll then automatically send your
 MP an email asking them to talk to you.</p>
 <p>When you get the email, it'll contain a link, right underneath the MP's words.
 To talk about what they said all you'll have to do is click on the link, and start
