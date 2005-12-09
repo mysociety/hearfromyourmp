@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-comment-alerts,v 1.1 2005-11-18 17:37:19 matthew Exp $
+ * $Id: send-mp-comment-alerts,v 1.2 2005-12-09 11:32:13 ycml Exp $
  *
  */
 
@@ -75,13 +75,14 @@ function send_mp_comment_alerts() {
                  $row['comment_id']);
         if ($alreadysent) continue;
 
-        $date = prettify($row['epoch']);
+        $date = preg_replace('#&nbsp;\s*#', ' ', prettify($row['epoch']));
         $comments[$row['constituency']][$row['message_id']][$row['comment_id']] = "$row[name] wrote at $date: $row[content]";
         $subjects[$row['message_id']] = $row['subject'];
     }
 
     foreach ($comments as $constituency_id => $messages) {
         $email = db_getOne('select confirmation_email from constituency where id = ?', $constituency_id);
+	$body = '';
         foreach ($messages as $message_id => $comments) {
             $body .= $subjects[$message_id] . "\n\n"; # . str_repeat('-', strlen($subjects[$message_id])) . "\n\n";
             $body .= '* ' . join("\n\n* ", array_values($comments)) . "\n\n";
