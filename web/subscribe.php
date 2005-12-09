@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.19 2005-12-07 19:45:29 chris Exp $
+// $Id: subscribe.php,v 1.20 2005-12-09 14:37:32 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -154,11 +154,7 @@ constituency, not per MP, and we will continue to accept subscribers
 regardless of whether your current MP chooses to use the site or not.
 If your MP changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
-<?  } ?>
-<p>Find out lots of information about <?=$rep_info['name'] ?>, including
-speeches made and questions asked in Parliament, on our sister site
-<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>.</p>
-<?  if ($nothanks['status'] != 't') {
+<?  } else {
         $next_threshold = db_getOne('select mp_threshold(?, +1)', $count);
         $next_next_threshold = db_getOne('select mp_threshold(?, +1)', $next_threshold);
 ?>
@@ -172,7 +168,14 @@ talking with other local people, and, if you're lucky, your MP as well.</p>
 <p>If your MP doesn't respond to the next email we send them, we'll remind them again
 when there are <?=$next_next_threshold?> people signed up.</p>
 <?  }
-    if ($return = get_http_var('r'))
+?>
+<p><strong>While you wait, why not
+<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">follow
+what <?=$rep_info['name'] ?> does in Parliament</a>, including speeches made, questions
+asked, and general information about them, on our sister site
+<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>?</strong></p>
+
+<?  if ($return = get_http_var('r'))
         print '<p><a href="' . htmlspecialchars($return). '">Continue to where you came from</a></p>';
 }
 
