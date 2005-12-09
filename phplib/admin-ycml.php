@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.19 2005-12-03 01:06:17 matthew Exp $
+ * $Id: admin-ycml.php,v 1.20 2005-12-09 14:23:06 matthew Exp $
  * 
  */
 
@@ -207,18 +207,22 @@ class ADMIN_PAGE_YCML_MAIN {
                 $confirmation_email = '';
             $sent_messages = db_getOne("select count(*) from message where constituency=? and state='approved'", $id);
 ?>
+<form method="post">
 <p>Alert status: <strong>
-<?          if ($no_thanks) {
-                print 'Not interested - <input type="submit" disabled value="Change">';
-            } else {
+<?          if ($no_thanks) { ?>
+<input type="hidden" name="change_alert_state" value="interested">
+Not interested - <input type="submit" value="Change">
+<?          } else {
                 if ($sent_messages) {
                     print 'Previous user';
                 } else {
                     print 'New user';
-                }
-                print ' - <input type="submit" disabled value="Not interested">';
-            }
-?></strong></p>
+                } ?>
+<input type="hidden" name="change_alert_state" value="not_interested">
+ - <input type="submit" value="Not interested">
+ <input type="checkbox" name="female" value="1"> Female?
+<?          }
+?></strong></p></form>
 <h3>Post a message as this MP</h3>
 <?          if ($confirmation_email && !$no_thanks) { ?>
 <form method="post" accept-charset="UTF-8">
@@ -287,9 +291,9 @@ if any. This must be set before messages can be posted:</p>
                     if ($r['state']=='approved') print '<a href="http://www.hearfromyourmp.com/view/message/'.$r['id'].'">';
                     print $r['subject'];
                     if ($r['state']=='approved') print '</a>';
-                    print '</td><td><input type="submit" value="Resend confirmation email"';
+                    print '</td><td><form method="post"><input type="hidden" name="resend_confirmation" value="'.$r['id'].'"><input type="submit" value="Resend confirmation email"';
                     if ($r['state'] != 'ready') print ' disabled';
-                    print '></tr>';
+                    print '></form></tr>';
                 }
                 print '</table>';
             }
@@ -421,6 +425,23 @@ if any. This must be set before messages can be posted:</p>
                 db_commit();
                 print '<p><em>MP selected</em></p>';
             }
+        } elseif ($change_state = get_http_var('change_alert_state')) {
+            if ($change_state == 'interested') {
+                db_query('UPDATE mp_nothanks SET status=? WHERE constituency = ?', array(false, $constituency));
+                print '<p><em>Removed from the not interested list</p>';
+            } else {
+                if (db_getOne('SELECT status FROM mp_nothanks WHERE constituency = ?', $constituency)=='f') {
+                    db_query('UPDATE mp_nothanks SET status=? WHERE constituency=?', array(true, $constituency));
+                } else {
+                    $gender = get_http_var('female') ? 'f' : 'm';
+                    db_query('INSERT INTO mp_nothanks (constituency, status, website, gender) VALUES (?,?,?,?)', array($constituency, true, null, $gender));
+                }
+                print '<p><em>Added to the not interested list</em></p>';
+            }
+            db_commit();
+        } elseif ($m_id = get_http_var('resend_confirmation')) {
+            db_query("UPDATE message SET state='new' WHERE id=?", $m_id);
+            print '<p><em>Message set for reconfirmation</em></p>';
         }
 
         // Display page
