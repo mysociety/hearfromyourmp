@@ -7,7 +7,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francsi@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: signup-rate-graph,v 1.2 2005-12-01 17:37:45 francis Exp $
+# $Id: signup-rate-graph,v 1.3 2005-12-10 10:23:20 francis Exp $
 
 SOURCE=/tmp/ycml-signup-rate-graph-data-$RANDOM$RANDOM
 GPSCRIPT=/tmp/ycml-signup-rate-graph-script-$RANDOM$RANDOM
@@ -21,16 +21,21 @@ cat >$GPSCRIPT <<END
     set xdata time;
     set timefmt "%Y-%m-%d";
     # set xrange ["2001-06-21":"2005-10-11"];
-    set format x "%b %y"
-    set xlabel "Date"
+    set format x "%b"
+    set xlabel "2005-2006"
+    # unset xlabel
     set ylabel "cumulative signups"
-    set y2label "signups / day"
+    set y2label "signups / day, aggregated over calendar day"
+    set xtics nomirror
     set y2tics nomirror
-    set terminal png
+    set terminal png font 'Vera.ttf' 9
+    set nokey
+    unset border
     n = 0;
-    plot "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCE" using 1:3 title 'HearFromYourMP total signups' with lines, "$SOURCE" using 1:2 title 'HearFromYourMP sign up rate' with lines axes x1y2
+    plot "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCE" using 1:3 with lines, "$SOURCE" using 1:2 with lines axes x1y2
 END
 echo "gpscript $GPSCRIPT"
 
+export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
 gnuplot < $GPSCRIPT > ~/public_html/ycml-signups.png
 
