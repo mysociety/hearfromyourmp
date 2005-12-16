@@ -1,0 +1,19 @@
+Subject: <?=$values['subscribers']?> of your constituents would like to hear from you
+
+Dear <?=$values['mp_forename']?>,
+
+We know that you've said in the past you're not interested in making
+use of www.HearFromYourMP.com . However, we thought we'd just send you
+this reminder in case you'd changed your mind.
+
+There are now <?=$values['subscribers']?> people in your constituency who'd like to hear from
+you - all you have to do is hit reply and type a message to talk to
+them.
+
+Thus far <?=$values['mps_using']?> MPs have sent messages through the service, and it has over
+<?=$values['num_people']?> people signed up nationwide. It's free, popular, and growing. Why
+not have a go?
+
+All the best,
+
+The HearFromYourMP.com team

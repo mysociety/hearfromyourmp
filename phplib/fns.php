@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.10 2005-11-25 22:23:42 ycml Exp $
+// $Id: fns.php,v 1.11 2005-12-16 10:44:25 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -90,7 +90,7 @@ function ycml_get_all_reps_info($ids) {
             $reps_info[$r['id']] = array('name'=>$r['rep_name']);
     }
 
-    $ids = array_diff($ids, array_keys($reps_info));
+    $ids = array_values(array_diff($ids, array_keys($reps_info)));
     if (count($ids)) {
         $reps = dadem_get_representatives($ids);
         dadem_check_error($reps);
@@ -174,4 +174,10 @@ function ycml_send_email_internal($to, $spec) {
 
 function ycml_make_view_url($message_id, $email) {
     return person_make_signon_url(null, $email, 'GET', OPTION_BASE_URL . '/view/message/' . $message_id, null);
+}
+
+function ycml_constituency_lookup($c) {
+    $c = strtolower(str_replace(array('_','.'), array(' ','&amp;'), $c));
+    $id = db_getOne('SELECT id FROM constituency_cache WHERE name ILIKE ?', $c);
+    return $id;
 }

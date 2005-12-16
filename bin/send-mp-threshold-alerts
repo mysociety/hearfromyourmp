@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.13 2005-12-01 16:52:53 chris Exp $
+ * $Id: send-mp-threshold-alerts,v 1.14 2005-12-16 10:44:23 matthew Exp $
  * 
  */
 
@@ -44,6 +44,7 @@ Usage: send-mp-threshold-alerts [--verbose]
 db_connect();
 send_mp_threshold_alerts('never-posted');
 send_mp_threshold_alerts('has-posted');
+send_mp_threshold_alerts('not-interested');
 
 function send_mp_threshold_alerts($type) {
     verbose("sending MP threshold alerts");
@@ -51,17 +52,28 @@ function send_mp_threshold_alerts($type) {
         $having = 'max(posted) is null';
         $timespan = '1 week';
         $template = 'alert-mp-threshold';
+        $nothanks = 'is null';
     } elseif ($type == 'has-posted') {
         $having = 'max(posted) is not null';
         $timespan = '1 month';
         $template = 'alert-mp-threshold-posted';
+        $nothanks = 'is null';
+    } elseif ($type == 'not-interested') {
+        $having = 'max(posted) is null';
+        $timespan = '1 year';
+        $template = 'alert-mp-threshold-not-interested';
+        $nothanks = '';
+    } else {
+        err('Invalid type!');
+        exit;
     }
 
     db_query("lock table mp_threshold_alert in share mode");
 
-    /* Find out how many MPs have used the service, in an attempt to convince
+    /* Find out how many MPs and people have used the service, in an attempt to convince
      * others through peer pressure. */
     $num_mps_using = db_getOne('select count(distinct constituency) from message');
+    $num_people = db_getOne('select count(distinct person_id) from constituent');
     
     $q = db_query("
             select constituent.constituency,
@@ -95,8 +107,7 @@ function send_mp_threshold_alerts($type) {
                     or mp_threshold(count(distinct(constituent.id))::integer, -1)
                         > mp_threshold(max(num_subscribers)::integer, -1))
                 and (select status from mp_nothanks
-                    where mp_nothanks.constituency = constituent.constituency)
-                        is null");
+                    where mp_nothanks.constituency = constituent.constituency) $nothanks");
 
     while (list($constituency, $current, $current_thr, $whenlast, $last,
                     $last_thr, $posted, $next_thr) = db_fetch_row($q)) {
@@ -123,10 +134,12 @@ function send_mp_threshold_alerts($type) {
                 'next_threshold' => $next_thr,
                 'mp_name' => $rep_info['name'],
                 'mp_forename' => preg_replace('/\s.*$/', '', $rep_info['name']), /* XXX */
-                'mps_using' => $num_mps_using
+                'mps_using' => $num_mps_using,
+                'num_people' => $num_people
             );
 
-        if (ycml_send_email_template($rep_info['email'], $template, $pp)) {
+        $success = ycml_send_email_template($rep_info['email'], $template, $pp);
+        if ($success) {
             verbose("mail successfully sent");
             db_query('
                     insert into mp_threshold_alert
