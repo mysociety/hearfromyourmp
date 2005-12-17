@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.14 2005-12-17 17:07:52 matthew Exp $
+// $Id: league.php,v 1.15 2005-12-17 17:09:12 ycml Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -63,7 +63,7 @@ function league_table($sort) {
     # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
     $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM mp_threshold_alert');
     print "<ul><li>$people people have signed up in ";
-    if ($consts==646) print 'all '
+    if ($consts==646) print 'all ';
     print "$consts constituencies";
     print "<li>$people_lastday people in the last day";
     if ($consts<645)
