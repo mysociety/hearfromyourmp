@@ -1,0 +1,13 @@
+# crontab.ugly:
+# Timed tasks for HearFromYourMP. Template file.
+#
+# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
+#
+# $Id: crontab.ugly,v 1.1 2005-12-19 13:36:22 francis Exp $
+
+5 8,10,12,14,16 * * * /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-threshold-alerts
+*/5 * * * * /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-message-confirmations
+*/5 * * * * /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-message-alerts
+5 2 * * * /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-comment-alerts
+
