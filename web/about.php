@@ -1,43 +1,23 @@
 <?
-// index.php:
+// about.php:
 // Main page of YCML.
 //
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.7 2005-12-02 17:02:20 matthew Exp $
+// $Id: about.php,v 1.8 2005-12-21 17:51:47 etienne Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../../phplib/votingarea.php';
 page_header();
-front_page();
+about_page();
 page_footer();
 
-function front_page() { ?>
-<?  $q = db_query("SELECT id,subject,constituency FROM message where state = 'approved' ORDER BY posted DESC LIMIT 5");
-    $out = '';
-    while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['constituency'])) continue;
-        $area_info = ycml_get_area_info($r['constituency']);
-        $rep_info = ycml_get_mp_info($r['constituency']);
-        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
-    }
-    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
-    $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
-        FROM comment,message,person
-        WHERE comment.message = message.id AND comment.person_id = person.id
-        ORDER BY date DESC LIMIT 5');
-    $out = '';
-    while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['constituency'])) continue;
-        $area_info = ycml_get_area_info($r['constituency']);
-        $rep_info = ycml_get_mp_info($r['constituency']);
-        $ds = prettify($r['date']);
-        $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
-    }
-    if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
-
+function about_page() { ?>
+<?  
+    print recent_messages();
+    print recent_replies();
     $num = db_getOne("select count(*) from message where state='approved'");
     print <<<EOF
 <div id="indented">
