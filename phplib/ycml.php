@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.5 2005-11-04 22:14:42 matthew Exp $
+ * $Id: ycml.php,v 1.6 2005-12-21 17:53:34 etienne Exp $
  * 
  */
 
@@ -84,6 +84,38 @@ function comment_show_one($r, $noabuse = false) {
         $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
     $comment .= "</p>\n<div><p>$content</p></div>";
     return $comment;
+}
+
+function recent_messages() {
+    $q = db_query("SELECT id,subject,constituency FROM message where state = 'approved' ORDER BY posted DESC LIMIT 5");
+    $out = '';
+    while ($r = db_fetch_array($q)) {
+        if (va_is_fictional_area($r['constituency'])) continue;
+        $area_info = ycml_get_area_info($r['constituency']);
+        $rep_info = ycml_get_mp_info($r['constituency']);
+        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
+    }
+//    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
+    if ($out) $out = '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
+    return $out;
+}
+
+function recent_replies() {
+  $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
+        FROM comment,message,person
+        WHERE comment.message = message.id AND comment.person_id = person.id
+        ORDER BY date DESC LIMIT 5');
+    $out = '';
+    while ($r = db_fetch_array($q)) {
+        if (va_is_fictional_area($r['constituency'])) continue;
+        $area_info = ycml_get_area_info($r['constituency']);
+        $rep_info = ycml_get_mp_info($r['constituency']);
+        $ds = prettify($r['date']);
+        $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
+    }
+//    if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
+    if ($out) $out = '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
+    return $out;
 }
 
 ?>
