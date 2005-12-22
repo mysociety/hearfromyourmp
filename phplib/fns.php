@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.11 2005-12-16 10:44:25 matthew Exp $
+// $Id: fns.php,v 1.12 2005-12-22 11:20:34 ycml Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -77,8 +77,8 @@ function ycml_get_mp_info($wmc_id) {
     if (OPTION_YCML_STAGING) {
         $rep_info['name'] = spoonerise($rep_info['name']);
     }
-    if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.writetothem.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
-        $rep_info['image'] = 'http://www.writetothem.com/mpphotos/' . $rep_info['id'] . '.jpg';
+    if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
+        $rep_info['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     return $rep_info;
 }
 
