@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.6 2005-12-21 17:53:34 etienne Exp $
+ * $Id: ycml.php,v 1.7 2005-12-22 10:31:43 etienne Exp $
  * 
  */
 
@@ -116,6 +116,19 @@ function recent_replies() {
 //    if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
     if ($out) $out = '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
     return $out;
+}
+
+function postcode_to_constituency_form() {
+?>
+<form method="get" action="/find_constituency" name="find_constituency_from_postcode" accept-charset="utf-8">
+<div id="find_constituency">
+<p style="text-align: center;"><a href="/about"><big>Has your MP sent any messages yet?</big></a></p>
+    <label for="postcode">UK Postcode:</label>
+    <input type="text" name="postcode" id="postcode" value="<?=htmlentities(get_http_var('postcode'))?>" size="10">
+    <input type="submit" value="Let's find out">
+</div>
+</form>
+<?
 }
 
 ?>
