@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.10 2005-12-22 10:52:52 etienne Exp $
+// $Id: faq.php,v 1.11 2005-12-22 11:06:52 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -91,7 +91,7 @@ Eventually we believe that the mailing lists will grow naturally to a
 size where it is nonsensical for MPs not to engage.
 
 <dt>I am an MP, or work in an MP's office. How do I take part in the testing?
-<dd><a href="/contact/">Contact us</a> and we'll tell you how to get
+<dd><a href="/contact">Contact us</a> and we'll tell you how to get
 involved. All you have to do really is compose a first message to your
 constituents, and we'll help you send it out.
 
@@ -129,7 +129,7 @@ partnership with West Sussex County Council.
 
 <dt>Do you need any help with the project?
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
-Please contact us if you want to get in touch.
+Please <a href="/contact">contact us</a> if you want to get in touch.
 
 <dt>What are the terms and conditions of usage?
 <dd>We've got a <a href="/terms">proper Ts&amp;Cs page</a>.
