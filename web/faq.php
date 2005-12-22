@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.9 2005-12-02 17:50:56 chris Exp $
+// $Id: faq.php,v 1.10 2005-12-22 10:52:52 etienne Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -91,9 +91,9 @@ Eventually we believe that the mailing lists will grow naturally to a
 size where it is nonsensical for MPs not to engage.
 
 <dt>I am an MP, or work in an MP's office. How do I take part in the testing?
-<dd>Contact us and we'll tell you how to get involved. All you have to do
-really is compose a first message to your constituents, and we'll help you
-send it out.
+<dd><a href="/contact/">Contact us</a> and we'll tell you how to get
+involved. All you have to do really is compose a first message to your
+constituents, and we'll help you send it out.
 
 <dt>Does the mailing list belong to the MP? What happens if my MP changes?
 <dd>There is one list per constituency, not per MP, and we will continue to
