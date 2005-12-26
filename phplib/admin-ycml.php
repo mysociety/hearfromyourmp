@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.21 2005-12-26 17:00:50 matthew Exp $
+ * $Id: admin-ycml.php,v 1.22 2005-12-26 17:23:23 matthew Exp $
  * 
  */
 
@@ -377,7 +377,7 @@ if any. This must be set before messages can be posted:</p>
                 . str_replace('@', '&#64;', make_clickable(preg_replace('#\n{2,}#', "</p>\n<p>", $preview)))
                 . '</p></div>';
             print '<h3>Email(ish)</h3>';
-            print '<pre>'.$preview.'</pre>';
+            print '<pre>     ' . wordwrap($preview, 64, "\n     ") . '</pre>';
             print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
             return 0;
         }
