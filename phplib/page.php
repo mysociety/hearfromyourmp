@@ -5,9 +5,10 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.12 2005-12-22 12:11:59 etienne Exp $
+// $Id: page.php,v 1.13 2006-01-04 11:04:36 chris Exp $
 
 require_once '../../phplib/person.php';
+require_once '../../phplib/tracking.php';
 
 /* page_header TITLE [PARAMS]
  * Print top part of HTML page, with the given TITLE. This prints up to the
@@ -82,6 +83,9 @@ function page_footer($params = array()) {
         $footer_outputted = 1;
 ?>
 </div></div>
+<?
+track_event();
+?>
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>.
 <a href="/privacy">Privacy policy</a>
 | <a href="/terms">Terms of use</a>
