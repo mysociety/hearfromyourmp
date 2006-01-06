@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.22 2005-12-26 17:23:23 matthew Exp $
+ * $Id: admin-ycml.php,v 1.23 2006-01-06 12:23:45 matthew Exp $
  * 
  */
 
@@ -19,32 +19,6 @@ require_once '../../phplib/votingarea.php';
 require_once "../../phplib/utility.php";
 require_once "../../phplib/importparams.php";
 require_once "../../phplib/person.php";
-
-class ADMIN_PAGE_YCML_LEFT {
-    function ADMIN_PAGE_YCML_LEFT() {
-        $this->navname = 'Constituencies with no signups';
-        $this->id = 'ycmlleft';
-    }
-    function display() {
-        $areas = mapit_get_areas_by_type('WMC');
-        $consts = db_getAll('SELECT DISTINCT(constituency) FROM constituent');
-        foreach ($consts as $const) {
-            $c_id = $const['constituency'];
-            $used[$c_id] = true;
-        }
-        foreach ($areas as $area_id) {
-            if (!array_key_exists($area_id, $used)) $empty[] = $area_id;
-        }
-        $areas_info = mapit_get_voting_areas_info($empty);
-        print '<ol>';
-        foreach ($areas_info as $area) {
-            $out[] = $area['name'];
-        }
-        sort($out);
-        print '<li>' . join('<li>', $out);
-        print '</ol>';
-    }
-}
 
 class ADMIN_PAGE_YCML_SUMMARY {
     function ADMIN_PAGE_YCML_SUMMARY() {
@@ -79,8 +53,11 @@ class ADMIN_PAGE_YCML_SUMMARY {
             $mps MPs have sent $messages_approved message".
             ($messages_approved!=1?'s':'').", and there have been 
             $comments comments<br>
-            $messages_new messages are awaiting mailing out to MPs for confirmation,
-            $messages_ready messages are waiting for approval by MPs, $messages_notresponded of those were sent more than a day ago$notresponded_details
+            $messages_new message" . ($messages_new!=1?'s are':' is') .
+            " awaiting mailing out to MPs for confirmation,
+            $messages_ready message" . ($messages_ready!=1?'s are':' is') .
+            " waiting for approval by MPs, $messages_notresponded of those " .
+            ($messages_notresponded!=1?'were':'was') . " sent more than a day ago$notresponded_details
             <br>$alerts alerts";
     }
 }
@@ -640,6 +617,71 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
         } else {
             print '<p>No abuse reports.</p>';
         }
+    }
+}
+
+class ADMIN_PAGE_YCML_SUBSCRIBERS {
+    function ADMIN_PAGE_YCML_SUBSCRIBERS() {
+        $this->id = 'subscribers';
+        $this->navname = 'HearFromYourMP Subscribers';
+    }
+    function display() {
+        $search = get_http_var('search');
+        $h_search = htmlspecialchars($search);
+?>
+<form method="post">
+Search for a subscriber: <input type="text" name="search" value="<?=$h_search ?>">
+<input type="submit" value="Go">
+</form>
+<?
+        if ($search) {
+            $q = db_getAll("select constituent.postcode, extract(epoch from constituent.creation_time) as creation_time,
+                                constituent.creation_ipaddr, constituent.constituency, person.name, person.email
+                            from constituent, person
+                            where constituent.person_id = person.id and
+                            (person.name ilike '%' || ? || '%' or
+                             person.email ilike '%' || ? || '%')
+                             order by email", array($search, $search));
+?>
+<h2>Results for search</h2>
+<table cellpadding="3" cellspacing="0" border="0">
+<tr><th>Name</th><th>Email</th><th>Postcode</th><th>Constituency</th><th>Signup</th><th>IP address</th></tr>
+<?
+            $constituencies = array();
+            foreach ($q as $r)
+                $constituencies[] = $r['constituency'];
+            $areas_info = mapit_get_voting_areas_info($constituencies);
+            
+            $c = 0;
+            foreach ($q as $r) {
+                $creation_time = prettify($r['creation_time']);
+                $constituency = $areas_info[$r['constituency']]['name'];
+                print '<tr';
+                if ($c=1-$c) print ' class="v"';
+                print "><td>$r[name]</td><td>$r[email]</td><td>$r[postcode]</td><td>$constituency</td><td>$creation_time</td><td>$r[creation_ipaddr]</td><tr>\n";
+            }
+            print '</table>';
+        }
+    }
+}
+
+class ADMIN_PAGE_YCML_MULTIPLE {
+    function ADMIN_PAGE_YCML_MULTIPLE() {
+        $this->id = 'multiple';
+        $this->navname = 'HearFromYourMP Multiple Signups';
+    }
+    function display() {
+        $q = db_getAll('select count(c.id) as count, person_id, p.name, p.email
+                        from constituent as c,person as p
+                        where person_id=p.id
+                        group by person_id, p.name, p.email
+                        having count(c.id)>1
+                        order by count(c.id) desc');
+        print '<table><tr><th>Count</th><th>Name</th><th>Email</th></tr>';
+        foreach ($q as $r) {
+            print "<tr><td>$r[count]</td><td>$r[name]</td><td>$r[email]</td></tr>\n";
+        }
+        print '</table>';
     }
 }
 
