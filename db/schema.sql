@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.20 2005-11-25 13:26:27 matthew Exp $
+-- $Id: schema.sql,v 1.21 2006-01-09 11:12:52 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -227,6 +227,7 @@ create function delete_comment(text)
     begin
         delete from abusereport where comment_id = $1;
         delete from alert_sent where comment_id = $1;
+        delete from comment_sent where comment_id = $1;
         delete from comment where id = $1;
         return;
     end
