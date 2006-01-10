@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.21 2006-01-09 11:12:52 chris Exp $
+-- $Id: schema.sql,v 1.22 2006-01-10 17:28:24 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -57,6 +57,7 @@ create table constituent (
 );
 
 create index constituent_person_id_idx on constituent(person_id);
+create index constituent_constituency_idx on constituent(constituency);
 create unique index constituent_person_id_constituency_idx on constituent(person_id, constituency);
 
 -- secret
@@ -236,5 +237,6 @@ create function delete_comment(text)
 create table constituency_cache (
     id integer not null primary key,
     name text not null,
-    rep_name text not null default ''
+    rep_name text not null default '',
+    rep_id integer not null default 0 
 );
