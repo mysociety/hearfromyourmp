@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.22 2006-01-10 17:28:24 francis Exp $
+-- $Id: schema.sql,v 1.23 2006-01-16 23:32:17 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -48,7 +48,7 @@ create table constituent (
 -- For new-style signups
     person_id integer not null references person(id),
 -- Constituency they've signed up to, plus postcode they used, and whether they're the current rep.
-    constituency integer not null default 0,
+    constituency integer, -- can be NULL if postcode is bad
     postcode text not null,
     is_mp boolean not null default false,
 -- Metadata
