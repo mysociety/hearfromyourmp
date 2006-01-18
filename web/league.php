@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.15 2005-12-17 17:09:12 ycml Exp $
+// $Id: league.php,v 1.16 2006-01-18 15:10:45 ycml Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -100,11 +100,17 @@ function league_table($sort) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
         $c_name = $areas_info[$c_id]['name'];
         $r_name = $reps_info[$c_id]['name'];
+        $r_id = $reps_info[$c_id]['id'];
         if (OPTION_YCML_STAGING) {
             $r_name = spoonerise($r_name);
         }
         $row = "";
         $row .= '<td>';
+#        if (file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$r_id.'.jpg'))
+#	    $row .= '<img src="/mpphotos/'.$r_id.'.jpg">';
+#        else
+#	    $row .= '&nbsp;';
+#	$row .= '</td> <td>';
         if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
         $row .= $c_name;
         if ($c_id != -1) $row .= '</a>';
