@@ -1,0 +1,70 @@
+#!/usr/bin/php -q
+<?php
+/*
+ * constituent-country-league-table:
+ * Print a league table of constituent countries, by number of YCML
+ * signups.
+ * 
+ * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: constituent-country-league-table,v 1.1 2006-01-20 10:32:45 matthew Exp $
+ * 
+ */
+
+chdir(dirname($_SERVER['SCRIPT_FILENAME']));
+require_once "../conf/general";
+require_once '../phplib/fns.php';
+require_once "../phplib/alert.php";
+require_once '../../phplib/cli.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/mapit.php';
+require_once '../../phplib/votingarea.php';
+require_once '../../phplib/utility.php';
+
+require_once '../../phplib/phpcli.php';
+
+db_connect();
+
+/* Map area ID to type, name and number of subscribers. */
+$area = array();
+
+$q = db_query('select postcode from constituent where constituency <> 0');
+$n = 0;
+while (list($pc) = db_fetch_row($q)) {
+    $a = mapit_get_voting_areas($pc);
+    if (rabx_is_error($a))
+        continue;
+    $id = $a['EUR'];
+    if (array_key_exists($id, $area))
+        ++$area[$id]['count'];
+    else {
+        $area[$id] = mapit_get_voting_area_info($id);
+        $area[$id]['count'] = 1;
+    }
+    ++$n;
+    fwrite(STDERR, "\r$n");
+}
+
+$count = array();
+foreach ($area as $id => $array) {
+    if ($array['name'] == 'Scotland')
+        $count['Scotland'] = $array['count'];
+    elseif ($array['name'] == 'Wales')
+        $count['Wales'] = $array['count'];
+    elseif ($array['name'] == 'Northern Ireland')
+        $count['Northern Ireland'] = $array['count'];
+    else
+        $count['England'] += $array['count'];
+}
+
+uasort($count, create_function('$a, $b', 'return $b-$a;'));
+
+print "Number Region\n";
+print "------ -------------------------------------------------------\n";
+foreach ($count as $name => $num) {
+    printf("%5d  %s\n", $num, $name);
+    
+}
+
+?>
