@@ -1,10 +1,12 @@
-Subject: Confirm your message to constituents
+Subject: Please confirm your message to constituents
 
 The following is a copy of the message you are about to send out via HearFromYourMP.
 
 PLEASE NOTE -- you MUST click the link at the bottom of this mail to send your message to the <?=$values['subscribers']?> constituents who are signed up. If you do not click we will not know for sure that you are happy with the way your message looks, and it will not be sent. This feature is to protect MPs from sending out messages they didn't mean to.
 
 -------------------
+
+Subject: <?=$values['subject']?>
 
 <?=$values['content']?>
 

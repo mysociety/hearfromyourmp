@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.9 2005-12-22 12:10:31 etienne Exp $
+// $Id: about.php,v 1.10 2006-02-11 22:36:49 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -18,7 +18,7 @@ function about_page() { ?>
 <?  
     print recent_messages();
     print recent_replies();
-    $num = db_getOne("select count(*) from message where state='approved'");
+    $num = db_getOne("select count(distinct constituency) from message where state='approved'");
     print <<<EOF
 <div id="indented">
 
@@ -66,7 +66,7 @@ constituents. To leave your thoughts, you just enter your text and hit
 enter. There's no tiresome login &ndash; you can just start talking about
 what they've said. Safe, easy and democratic.</p>
 
-<p align="center"><strong>Sign up now - $num MPs have already sent out messages.</strong></p>
+<p align="center"><strong>Sign up now &ndash; $num MPs have already sent out messages.</strong></p>
 EOF;
     signup_form();
     print <<<EOF
