@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.7 2005-12-22 10:31:43 etienne Exp $
+ * $Id: ycml.php,v 1.8 2006-02-24 16:56:06 matthew Exp $
  * 
  */
 
@@ -75,15 +75,21 @@ function comment_show_one($r, $noabuse = false) {
     $comment .= ', ';
     $comment .= $ds;
     if ($r['posted_by_mp']) $comment .= '</strong>';
-    $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
-    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
-    $content = make_clickable($content);
-    $content = str_replace('@', '&#64;', $content);
+    $content = comment_prettify($r['content']);
     $comment .= ':';
     if (!$noabuse)
         $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
     $comment .= "</p>\n<div><p>$content</p></div>";
     return $comment;
+}
+
+function comment_prettify($content) {
+    $content = htmlspecialchars($content);
+    $content = preg_replace('#\r#', '', $content);
+    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = make_clickable($content);
+    $content = str_replace('@', '&#64;', $content);
+    return $content;
 }
 
 function recent_messages() {

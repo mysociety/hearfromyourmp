@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.23 2006-01-06 12:23:45 matthew Exp $
+ * $Id: admin-ycml.php,v 1.24 2006-02-24 16:56:05 matthew Exp $
  * 
  */
 
@@ -349,11 +349,9 @@ if any. This must be set before messages can be posted:</p>
             print '<h2>Preview of message</h2>';
             print '<p><strong>Subject:</strong> ' . htmlspecialchars($subject) . '</p>';
             print '<h3>Web page</h3>';
-            $preview = preg_replace('#\r#', '', htmlspecialchars($message));
-            print '<div><p>'
-                . str_replace('@', '&#64;', make_clickable(preg_replace('#\n{2,}#', "</p>\n<p>", $preview)))
-                . '</p></div>';
+            print '<div><p>' . comment_prettify($message) . '</p></div>';
             print '<h3>Email(ish)</h3>';
+            $preview = preg_replace('#\r#', '', htmlspecialchars($message));
             print '<pre>     ' . wordwrap($preview, 64, "\n     ") . '</pre>';
             print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
             return 0;

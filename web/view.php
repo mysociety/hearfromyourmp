@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.36 2005-11-28 13:17:19 sandpit Exp $
+# $Id: view.php,v 1.37 2006-02-24 16:56:12 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -179,11 +179,8 @@ We will automatically email them <?=$emails_sent_to_mp>0?'again ':'' ?>when the 
  * Page displaying the given MESSAGE and comments. */
 function view_message($message) {
     $r = message_get($message);
-    $content = preg_replace('#\r#', '', htmlspecialchars($r['content']));
-    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
+    $content = comment_prettify($r['content']);
     $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
-    $content = make_clickable($content);
-    $content = str_replace('@', '&#64;', $content);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
     $area_info = ycml_get_area_info($c_id);
@@ -291,11 +288,7 @@ function view_post_comment_form() {
         if (!is_null($q_text) && strlen($q_text) > 0) {
             /* Show them the text of their comment so that they can save it. */
             print '<p>Here is the text of your comment. You can save this page (using File | Save) or cut-and-paste the text into another program if you would like to keep your comment and post it at a later date:</p>';
-            $content = htmlspecialchars($q_text);
-            $content = preg_replace('#\r#', '', $content);
-            $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
-            $content = make_clickable($content); /* XXX ? */
-            $content = str_replace('@', '&#64;', $content);
+            $content = comment_prettify($q_text);
             print "<div><p>$content</p></div>";
         }
         
@@ -312,11 +305,11 @@ function view_post_comment_form() {
     $preview = '';
     if (!is_null($q_counter)) {
         $website = $P->website_or_blank();
-        $preview = '<h3>Previewing your comment</h3> <ul id="comments"><li><p><em>Not yet</em> posted by <strong>';
+        $preview = '<h3>Previewing your comment</h3> <ul id="comments"><li><p><em>Not yet</em> posted by ';
         if ($website) $preview .= "<a href=\"$website\">";
         $preview .= $P->name();
         if ($website) $preview .= '</a>';
-        $preview .= '</strong>:</p> <div>' . $q_h_text . '</div></li></ul>';
+        $preview .= comment_prettify($q_text) . ':</p> <div>' . $q_h_text . '</div></li></ul>';
     }
 
     if (!preg_match('#[^\s]#', $q_text))
