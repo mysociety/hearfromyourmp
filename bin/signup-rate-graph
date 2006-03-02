@@ -5,7 +5,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francsi@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: signup-rate-graph,v 1.5 2006-03-02 15:02:34 francis Exp $
+# $Id: signup-rate-graph,v 1.6 2006-03-02 15:20:14 francis Exp $
 
 SOURCE=/tmp/ycml-signup-rate-graph-data-$RANDOM$RANDOM
 GPSCRIPT=/tmp/ycml-signup-rate-graph-script-$RANDOM$RANDOM
@@ -24,7 +24,7 @@ echo "select date(creation_time), count(*) from constituent
 cat >$GPSCRIPT <<END 
     set nokey
     unset border
-    set terminal png font 'Vera.ttf' 9
+    set terminal png font 'Vera.ttf' 9 size 1200,600
 
     set xdata time;
     set timefmt "%Y-%m-%d";
