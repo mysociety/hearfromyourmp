@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.13 2006-01-04 11:04:36 chris Exp $
+// $Id: page.php,v 1.14 2006-03-09 15:55:22 chris Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -76,7 +76,9 @@ print ' <span id="betatest">Beta&nbsp;Test</span>';
 
 /* page_footer PARAMS
  * Print bottom of HTML page. This closes the "content" <div>.  If
- * PARAMS['nonav'] is true then the footer navigation is not displayed. */
+ * PARAMS['nonav'] is true then the footer navigation is not displayed. If 
+ * PARAMS['track'] is set, then it is passed to track_event as extra
+ * user-tracking information to be associated with this page view. */
 function page_footer($params = array()) {
     static $footer_outputted = 0; 
     if (!$footer_outputted) {
@@ -84,7 +86,10 @@ function page_footer($params = array()) {
 ?>
 </div></div>
 <?
-track_event();
+    $extra = null;
+    if (array_key_exists('extra', $params))
+        $extra = $params['extra'];
+    track_event($extra);
 ?>
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>.
 <a href="/privacy">Privacy policy</a>
