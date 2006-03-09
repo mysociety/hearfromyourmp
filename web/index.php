@@ -5,14 +5,14 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.19 2005-12-17 17:07:52 matthew Exp $
+// $Id: index.php,v 1.20 2006-03-09 15:49:27 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../../phplib/utility.php';
 page_header();
-front_page();
-page_footer();
+$extra = front_page();
+page_footer(array('extra' => $extra));
 
 function front_page() { ?>
 <h2 align="center">Get email from your MP
@@ -32,12 +32,39 @@ function front_page() { ?>
     <br><em>(for example OX1 3DR)</em>
     </div>
 </form>
-<p style="text-align: center;"><a href="/about"><big>How this site works</big></a></p>
 <?
-        $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-        # Minus one in the next row to account for test constituency
-        $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
-        print "<p align='center'>$people people have signed up in ";
-        if ($consts==646) print 'all ';
-        print "$consts constituencies &mdash; <a href='/league'>League table</a></p>";
-} ?>
+    $pagestyle = 0;
+    if (rand(0, 1) >= 0.5) ?>
+<p style="text-align: center;"><a href="/about"><big>How this site works</big></a></p>
+<?  else {
+        $pagestyle = 1;
+        ?>
+<p>If you enter your details, we'll add you to a queue of other people in
+your constituency. When enough have signed up, your MP will get sent
+an email. It'll say "25 of your constituents would like to hear what
+you're up to. Hit reply to let them know". If they don't reply,
+nothing will happen, until your MP gets a further email which says
+there are now 50, then 75, 100, 150 &mdash; until it is nonsensical not to
+reply and start talking.</p>
+
+<p>When your MP sends you mail it won't be one-way spam, and it won't be
+an inbox-filling free-for-all. Instead, each email comes with a link
+at the bottom, which takes you straight to a web page containing a
+copy of the email your MP wrote, along with any comments by other
+constituents. To leave your thoughts, you just enter your text and hit
+enter. There's no tiresome login &mdash; you can just start talking about
+what they've said. Safe, easy and democratic.</p>
+
+<?  }
+
+    $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
+    # Minus one in the next row to account for test constituency
+    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
+    print "<p align='center'>$people people have signed up in ";
+    if ($consts==646) print 'all ';
+    print "$consts constituencies &mdash; <a href='/league'>League table</a></p>";
+
+    return "frontpagestyle=$pagestyle";
+}
+
+?>
