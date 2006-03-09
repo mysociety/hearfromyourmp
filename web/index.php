@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.20 2006-03-09 15:49:27 chris Exp $
+// $Id: index.php,v 1.21 2006-03-09 15:50:44 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -34,9 +34,9 @@ function front_page() { ?>
 </form>
 <?
     $pagestyle = 0;
-    if (rand(0, 1) >= 0.5) ?>
+    if (rand(0, 1) >= 0.5) { ?>
 <p style="text-align: center;"><a href="/about"><big>How this site works</big></a></p>
-<?  else {
+<?  } else {
         $pagestyle = 1;
         ?>
 <p>If you enter your details, we'll add you to a queue of other people in
