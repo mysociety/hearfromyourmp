@@ -14,7 +14,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.8 2006-01-17 11:11:27 chris Exp $
+ * $Id: general-example,v 1.9 2006-03-09 12:03:28 chris Exp $
  * 
  */
 
@@ -58,7 +58,6 @@ define('OPTION_HTTPD_ERROR_LOG', '/var/log/apache/error.log');
 
 // Tracking
 define('OPTION_TRACKING', 0);   // off by default
-/*define('OPTION_TRACKING_URL', 'http://path/to/web/bug');
+define('OPTION_TRACKING_URL', 'http://path/to/web/bug');
 define('OPTION_TRACKING_SECRET', 'really-secret-value');
-*/
 
