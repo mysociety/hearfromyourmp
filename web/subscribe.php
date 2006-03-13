@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.21 2006-03-13 13:14:32 francis Exp $
+// $Id: subscribe.php,v 1.22 2006-03-13 13:22:39 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -107,16 +107,16 @@ continue
     }
 
     if (!$already_signed) {
-    db_query("insert into constituent (
-                person_id, constituency,
-                postcode, creation_ipaddr
-            )
-            values (?, ?, ?, ?)", array(
-                $person_id, $wmc_id,
-                $q_postcode, $_SERVER['REMOTE_ADDR']
-            ));
-    db_commit();
-    $extra = "subscribed=1";
+        db_query("insert into constituent (
+                    person_id, constituency,
+                    postcode, creation_ipaddr
+                )
+                values (?, ?, ?, ?)", array(
+                    $person_id, $wmc_id,
+                    $q_postcode, $_SERVER['REMOTE_ADDR']
+                ));
+        db_commit();
+        $extra = "subscribed=1";
     }
     $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
