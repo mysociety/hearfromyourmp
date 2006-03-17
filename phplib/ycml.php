@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.8 2006-02-24 16:56:06 matthew Exp $
+ * $Id: ycml.php,v 1.9 2006-03-17 18:10:14 matthew Exp $
  * 
  */
 
@@ -109,7 +109,7 @@ function recent_messages() {
 function recent_replies() {
   $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
         FROM comment,message,person
-        WHERE comment.message = message.id AND comment.person_id = person.id
+        WHERE visible=1 AND comment.message = message.id AND comment.person_id = person.id
         ORDER BY date DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
