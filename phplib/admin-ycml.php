@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.24 2006-02-24 16:56:05 matthew Exp $
+ * $Id: admin-ycml.php,v 1.25 2006-03-17 11:27:51 matthew Exp $
  * 
  */
 
@@ -420,6 +420,7 @@ if any. This must be set before messages can be posted:</p>
             db_commit();
         } elseif ($m_id = get_http_var('resend_confirmation')) {
             db_query("UPDATE message SET state='new' WHERE id=?", $m_id);
+	    db_commit();
             print '<p><em>Message set for reconfirmation</em></p>';
         }
 
