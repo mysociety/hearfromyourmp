@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.9 2006-03-17 18:10:14 matthew Exp $
+ * $Id: ycml.php,v 1.10 2006-03-21 13:02:35 francis Exp $
  * 
  */
 
@@ -87,7 +87,7 @@ function comment_prettify($content) {
     $content = htmlspecialchars($content);
     $content = preg_replace('#\r#', '', $content);
     $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
-    $content = make_clickable($content);
+    $content = ms_make_clickable($content);
     $content = str_replace('@', '&#64;', $content);
     return $content;
 }
