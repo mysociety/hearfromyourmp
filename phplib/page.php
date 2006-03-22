@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.15 2006-03-22 15:25:51 chris Exp $
+// $Id: page.php,v 1.16 2006-03-22 15:45:34 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -87,7 +87,7 @@ function page_footer($params = array()) {
 </div></div>
 <?
     $extra = null;
-    if (array_key_exists('extra', $params))
+    if (array_key_exists('extra', $params) && $params['extra'])
         $extra = $params['extra'];
     track_event($extra);
 ?>
