@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.21 2006-03-09 15:50:44 chris Exp $
+// $Id: index.php,v 1.22 2006-03-27 15:58:40 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -33,11 +33,29 @@ function front_page() { ?>
     </div>
 </form>
 <?
-    $pagestyle = 0;
-    if (rand(0, 1) >= 0.5) { ?>
-<p style="text-align: center;"><a href="/about"><big>How this site works</big></a></p>
+    $pagestyle = rand(0, 2);
+    
+    if ($pagestyle == 0) {
+        ?>
+<ol>
+<li>Enter your details and we'll add you to a queue of other people in your
+constituency who also want a more genuine sort of interaction than just being
+sent newsletters.</li>
+<li>When 25 people in your constituency have signed up, we send an automatic
+email to your MP. That email says "25 of your constituents would like to hear
+what you're up to, and would like to discuss it.  Hit reply to let them
+know".</li>
+<li>If your MP doesn't reply to this message, nothing will happen until your MP
+gets a further email which says there are now 50, then 75, 100, 150, ...
+people.</li>
+<li>When your MP sends you an email, we provide a public space to discuss what
+has been said. Each email from your MP comes with a link at the bottom, which
+takes you straight to an extremely simple page for discussing what the MP has
+just said. To leave your thoughts, you just enter your text and hit enter.
+There's no tiresome login&mdash;you can just start talking about what they've
+said. Safe, easy and democratic.</li>
+</ol>
 <?  } else {
-        $pagestyle = 1;
         ?>
 <p>If you enter your details, we'll add you to a queue of other people in
 your constituency. When enough have signed up, your MP will get sent
@@ -56,6 +74,8 @@ enter. There's no tiresome login &mdash; you can just start talking about
 what they've said. Safe, easy and democratic.</p>
 
 <?  }
+
+    $pagestyle = "1.$pagestyle";
 
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     # Minus one in the next row to account for test constituency
