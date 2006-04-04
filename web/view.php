@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.39 2006-04-04 12:29:56 chris Exp $
+# $Id: view.php,v 1.40 2006-04-04 12:36:04 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -309,7 +309,7 @@ function view_post_comment_form() {
         if ($website) $preview .= "<a href=\"$website\">";
         $preview .= $P->name();
         if ($website) $preview .= '</a>';
-        $preview .= comment_prettify($q_text) . ':</p> <div>' . $q_h_text . '</div></li></ul>';
+        $preview .= ':</p> <div>' . comment_prettify($q_text) . '</div></li></ul>';
     }
 
     if (!preg_match('#[^\s]#', $q_text))
@@ -333,7 +333,7 @@ function view_post_comment_form() {
             alert_signup($P->id(), $q_message);
         db_commit();
 
-        print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '#comment' . $id . '">view it here</a>.</p>';
+        print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '">view it here</a>.</p>';
     }
 }
 
