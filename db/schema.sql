@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.23 2006-01-16 23:32:17 francis Exp $
+-- $Id: schema.sql,v 1.24 2006-04-04 12:28:50 chris Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -121,6 +121,12 @@ create table comment (
 create index comment_refs_idx on comment(refs);
 create index comment_person_id_idx on comment(person_id);
 create index comment_date_idx on comment(date);
+
+create sequence comment_id_seq;
+create function comment_next_id()
+    returns text as '
+select lpad(to_hex(nextval(''comment_id_seq'')), 8, ''0'')
+' language sql;
 
 -- For alerting MPs about comments made
 create table comment_sent (
