@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.38 2006-04-04 11:47:53 matthew Exp $
+# $Id: view.php,v 1.39 2006-04-04 12:29:56 chris Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -326,10 +326,8 @@ function view_post_comment_form() {
         }
 
         $posted_by_mp = constituent_is_mp($P->id(), $constituency);
-        $id = dechex(hexdec(db_getOne('select max(id) from comment'))+1);
-	$id = substr("00000000$id", -8);
         db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_mp)
-            values (?, ?, ?, ?, ?, ?, ?, ?)', array($id, $q_message, $refs, $P->id(),
+            values (comment_next_id(), ?, ?, ?, ?, ?, ?, ?)', array($q_message, $refs, $P->id(),
             $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_mp));
         if ($q_emailreplies)
             alert_signup($P->id(), $q_message);
