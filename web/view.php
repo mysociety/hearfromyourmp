@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.40 2006-04-04 12:36:04 matthew Exp $
+# $Id: view.php,v 1.41 2006-04-15 13:48:09 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -102,7 +102,7 @@ function view_messages($c_id) {
                     FROM message
                     WHERE state = 'approved' and constituency = ? ORDER BY message.posted", $c_id);
     $num_messages = db_num_rows($q);
-    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE comment.message = message.id AND message.constituency = ?', $c_id);
+    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.constituency = ?', $c_id);
     $emails_sent_to_mp = db_getOne('SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = ?', $c_id);
     $next_threshold = db_getOne('SELECT mp_threshold(?, +1);', $signed_up);
     $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND constituency = ?", $c_id);
