@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.22 2006-03-13 13:22:39 francis Exp $
+// $Id: subscribe.php,v 1.23 2006-04-26 18:04:01 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -121,7 +121,9 @@ continue
     $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
 
+/*
     $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . urlencode($q_postcode));
+    #$local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=sw1a1aa');
     preg_match_all('#<link>(.*?)</link>\s+<description>(.*?)</description>#', $local_pledges, $m, PREG_SET_ORDER);
     $local_num = count($m) - 1;
     if ($local_num>5) $local_num = 5;
@@ -133,9 +135,11 @@ continue
         }
         print '</ul><p align="center"><a href="http://www.pledgebank.com/alert?postcode='.$q_h_postcode.'">Get emails about local pledges</a></p></div>';
     }
+*/
+
 ?>
 <p class="loudmessage"><?
-    print sprintf("<strong>Thanks! You're the %s person to sign up to get emails from %s in the %s constituency.</strong> ",
+    print sprintf("<strong>Thanks!</strong> You're the %s person to sign up to get emails from %s in the %s constituency. ",
         english_ordinal($count), $rep_info['name'], $area_info['name']);
     if ($nothanks['status'] == 't') {
         $mp_gender = $nothanks['gender'];
@@ -157,25 +161,26 @@ regardless of whether your current MP chooses to use the site or not.
 If your MP changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
 <?  } else {
-        $next_threshold = db_getOne('select mp_threshold(?, +1)', $count);
-        $next_next_threshold = db_getOne('select mp_threshold(?, +1)', $next_threshold);
+        #$next_threshold = db_getOne('select mp_threshold(?, +1)', $count);
+        #$next_next_threshold = db_getOne('select mp_threshold(?, +1)', $next_threshold);
 ?>
-<h2>What happens next?</h2>
-<p>The mailing list for <?=$area_info['name']?> will keep growing until there
-are <?=$next_threshold?> people signed up. We'll then automatically send your
-MP an email asking them to talk to you.</p>
-<p>When you get the email, it'll contain a link, right underneath the MP's words.
-To talk about what they said all you'll have to do is click on the link, and start
-talking with other local people, and, if you're lucky, your MP as well.</p>
-<p>If your MP doesn't respond to the next email we send them, we'll remind them again
-when there are <?=$next_next_threshold?> people signed up.</p>
 <?  }
+$person_id = str_replace("uk.org.publicwhip/person/", "", $rep_info['parlparse_person_id']);
 ?>
-<p><strong>While you wait, why not
-<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">follow
-what <?=$rep_info['name'] ?> does in Parliament</a>, including speeches made, questions
-asked, and general information about them, on our sister site
-<a href="http://www.theyworkforyou.com/mp/?c=<?=urlencode($area_info['name']) ?>">TheyWorkForYou</a>?</strong></p>
+
+<p style="font-size: 150%;">Would you like to be emailed when your MP talks in parliament?</p>
+<form action="http://www.theyworkforyou.com/alert">
+                Your email: <input type="text" name="email" value="<?=$q_email ?>" maxlength="100" size="30" />
+                <input type="hidden" name="pid" value="<?=$person_id?>">            
+                <input type="submit" value="Sign me up!" />
+                <input type="hidden" name="submitted" value="true" />
+                <input type="hidden" name="pg" value="alert" />
+</form>
+
+<p><a href="http://www.theyworkforyou.com">TheyWorkForYou.com</a>, which sends these email alerts, is 
+another <a href="http://www.mysociety.org">mySociety</a> site and we will treat
+your data with the same diligence as we do on all our sites.  Obviously, you
+can unsubscribe at any time.
 
 <?  if ($return = get_http_var('r'))
         print '<p><a href="' . htmlspecialchars($return). '">Continue to where you came from</a></p>';
