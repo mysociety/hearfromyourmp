@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.2 2005-08-12 16:04:19 matthew Exp $
+// $Id: constituent.php,v 1.3 2006-04-28 15:47:23 francis Exp $
 
 require_once '../../phplib/person.php';
 
@@ -58,6 +58,7 @@ function constituent_subscribe_box($array = array()) {
 
 ?>
 <form accept-charset="utf-8" method="post" action="/subscribe">
+<div id="subscribeBox">
 <input type="hidden" name="r" value="<?=htmlspecialchars($return) ?>">
 <h2>Sign up now</h2>
 <p></p>
@@ -70,6 +71,7 @@ function constituent_subscribe_box($array = array()) {
     <input type="text" name="postcode" id="postcode" value="<?=htmlspecialchars($postcode) ?>" size="10">
     <input type="submit" class="submit" value="Sign up">
     <br><em>(for example OX1 3DR)</em>
+</div>
 </form>
 
 <? 
