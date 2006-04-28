@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.23 2006-04-26 18:04:01 francis Exp $
+// $Id: subscribe.php,v 1.24 2006-04-28 17:14:10 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -13,6 +13,7 @@ require_once '../phplib/constituent.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
+require_once '../../phplib/crosssell.php';
 
 $title = _('Signing up');
 page_header($title);
@@ -165,24 +166,10 @@ over to their successor.&quot;</p>
         #$next_next_threshold = db_getOne('select mp_threshold(?, +1)', $next_threshold);
 ?>
 <?  }
-$person_id = str_replace("uk.org.publicwhip/person/", "", $rep_info['parlparse_person_id']);
-?>
 
-<p style="font-size: 150%;">Would you like to be emailed when your MP talks in parliament?</p>
-<form action="http://www.theyworkforyou.com/alert">
-                Your email: <input type="text" name="email" value="<?=$q_email ?>" maxlength="100" size="30" />
-                <input type="hidden" name="pid" value="<?=$person_id?>">            
-                <input type="submit" value="Sign me up!" />
-                <input type="hidden" name="submitted" value="true" />
-                <input type="hidden" name="pg" value="alert" />
-</form>
+    crosssell_display_advert("hfymp", $q_email, $q_name, $q_postcode);
 
-<p><a href="http://www.theyworkforyou.com">TheyWorkForYou.com</a>, which sends these email alerts, is 
-another <a href="http://www.mysociety.org">mySociety</a> site and we will treat
-your data with the same diligence as we do on all our sites.  Obviously, you
-can unsubscribe at any time.
-
-<?  if ($return = get_http_var('r'))
+    if ($return = get_http_var('r'))
         print '<p><a href="' . htmlspecialchars($return). '">Continue to where you came from</a></p>';
 }
 
