@@ -10,11 +10,12 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.41 2006-04-15 13:48:09 matthew Exp $
+# $Id: view.php,v 1.42 2006-05-15 17:16:28 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
+require_once '../phplib/constituent.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
@@ -112,7 +113,7 @@ function view_messages($c_id) {
     mini_signup_form();
 ?>
 <h2><?=$area_info['name'] ?></h2>
-<?  if ($rep_info['id'] == '2000005') {
+<?  if (array_key_exists('id', $rep_info) && $rep_info['id'] == '2000005') {
         print '<img alt="" title="Portrait of Stom Teinberg MP" src="images/zz99zz.jpeg" align="right" hspace="5" border="0">';
     } elseif (array_key_exists('image', $rep_info)) {
         print '<img alt="" title="Portrait of ' . htmlspecialchars($rep_info['name']) . '" src="' . $rep_info['image'] . '" align="right" hspace="5">';
@@ -368,8 +369,4 @@ function person_allowed_to_reply($person_id, $constituency, $message) {
     return false;
 }
 
-function constituent_is_mp($person_id, $constituency) {
-    return db_getOne('SELECT is_mp FROM constituent
-                        WHERE person_id = ? AND constituency = ?', array($person_id, $constituency) );
-}
 ?>

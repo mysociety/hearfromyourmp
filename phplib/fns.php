@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.13 2006-01-18 15:11:51 ycml Exp $
+// $Id: fns.php,v 1.14 2006-05-15 17:16:17 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -44,7 +44,7 @@ function ycml_get_all_areas_info($q, $ignore_fictional = true) {
 
     $rows = array(); $ids = array();
     while ($r = db_fetch_array($q)) {
-        if ($r['constituency'] && $ignore_fictional && va_is_fictional_area($r['constituency']))
+        if ($r['constituency'] && $ignore_fictional && va_is_fictional_area($r['constituency']) && !OPTION_YCML_STAGING)
             continue;
         $rows[] = array_map('htmlspecialchars', $r);
         if ($r['constituency'] && !array_key_exists($r['constituency'], $areas_info))

@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.15 2006-01-17 10:30:18 francis Exp $
+ * $Id: send-mp-threshold-alerts,v 1.16 2006-05-15 17:16:04 matthew Exp $
  * 
  */
 
@@ -18,6 +18,7 @@ require_once '../phplib/fns.php';
 require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
+require_once '../../phplib/person.php';
 
 $short_opts = '';
 $long_opts = array('verbose','help');
@@ -48,7 +49,7 @@ send_mp_threshold_alerts('has-posted');
 send_mp_threshold_alerts('not-interested');
 
 function send_mp_threshold_alerts($type) {
-    verbose("sending MP threshold alerts");
+    verbose("sending $type MP threshold alerts");
     if ($type == 'never-posted') {
         $having = 'max(posted) is null';
         $timespan = '1 week';
@@ -129,7 +130,22 @@ function send_mp_threshold_alerts($type) {
         }
         verbose("email address for this MP is ${rep_info['email']}");
 
+	# Create account for MP if they don't already have one.
+	$P = person_get_or_create($rep_info['email'], $rep_info['name']);
+        $already_signed = db_getOne("select id from constituent where 
+            constituency = ? and person_id = ?
+            for update", array( $constituency, $P->id() ) );
+        if (!$already_signed) {
+            db_query("insert into constituent (
+                        person_id, constituency, is_mp,
+                        postcode, creation_ipaddr
+                    )
+                    values (?, ?, ?, ?, ?)", array($P->id(), $constituency, true, '', ''));
+            db_commit();
+	}
+	$url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/' . $constituency, null);
         $pp = array(
+                'message_url' => $url,
                 'subscribers' => $current,
                 'constituency_name' => $area_info['name'],
                 'next_threshold' => $next_thr,

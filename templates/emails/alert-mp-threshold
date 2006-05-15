@@ -2,17 +2,16 @@ Subject: <?=$values['subscribers']?> of your constituents would like to hear fro
 
 Dear <?=$values['mp_forename']?>,
 
-This is an email to let you know that there are
-<?=$values['subscribers']?> constituents in
-<?=$values['constituency_name']?> who would like to hear from you about
-any issue you consider to be of particular importance at the moment.
-All you have to do to talk to them is hit reply to this email.
+This is an email to let you know that there are <?=$values['subscribers']?> constituents
+in <?=$values['constituency_name']?> who would like to hear from you
+about any issue you consider to be of particular importance at the
+moment. All you have to do to talk to them is visit:
+    <?=$values['message_url']?>
 
-This mail has been sent by HearFromYourMP.com, a new, free service
-from charitable project mySociety.org. mySociety.org also runs
-WriteToThem.com (formerly FaxYourMP.com) and civic action site
-PledgeBank.com. We are from the same community of people who also run
-TheyWorkForYou.com.
+This mail has been sent by HearFromYourMP.com, a free service from
+charitable project mySociety.org. mySociety.org also runs
+www.WriteToThem.com (formerly FaxYourMP.com), civic action site
+www.PledgeBank.com and www.TheyWorkForYou.com .
 
 HearFromYourMP.com is a strictly non-partisan site which is trying to
 build healthier and more productive long-term relationships between
@@ -20,15 +19,15 @@ representatives and represented. That is why have launched the site
 now, long before the next general election. <?=$values['mps_using']?>
 MPs have already used HearFromYourMP to send messages to their
 constituents -- you can see what they said at
-www.hearfromyourmp.com/about
+    http://www.hearfromyourmp.com/about
  
-When you reply, your constituents will be able to discuss what you say
-in a public forum. You can also respond to comments in the forum if
-you so wish. The forum has 'post-hoc' moderation, and we have a strict
-code of good behavior that we will enforce -- no unconstructive
+When you send a message, your constituents will be able to discuss what
+you say in a public forum. You can also respond to comments in the
+forum if you so wish. The forum has 'post-hoc' moderation, and we have
+a strict code of good behavior that we will enforce -- no unconstructive
 partisanship, no ad hominem attacks, etc. You can write to your
-constituents whenever you feel like by replying to this email, or by
-emailing mps@hearfromyourmp.com
+constituents whenever you feel like by visiting:
+    <?=$values['message_url']?>
 
 Constituents will not be able to reply to your mail and write back to
 you directly, filling up your inbox. If a constituent wants to write
@@ -40,8 +39,7 @@ If you are not interested in using this service at the moment, we will
 send you a reminder when you have <?=$values['next_threshold']?>
 constituents signed up. If you have any further questions, please email
 team@hearfromyourmp.com, call us on 07811 082158, or read our
-Frequently Asked Questions at www.hearfromyourmp.com/faq
+Frequently Asked Questions at http://www.hearfromyourmp.com/faq
 
 All the best,
-
 The HearFromYourMP Team

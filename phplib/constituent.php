@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.3 2006-04-28 15:47:23 francis Exp $
+// $Id: constituent.php,v 1.4 2006-05-15 17:16:17 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -78,4 +78,8 @@ function constituent_subscribe_box($array = array()) {
 
 }
 
+function constituent_is_mp($person_id, $constituency) {
+    return db_getOne('SELECT is_mp FROM constituent
+                        WHERE person_id = ? AND constituency = ?', array($person_id, $constituency) );
+}
 ?>
