@@ -5,6 +5,8 @@ Dear <?=$values['mp_forename']?>,
 This is just an automatic update email to let you know that there are
 now <?=$values['subscribers']?> constituents in
 <?=$values['constituency_name']?> who would like to hear from you.
+All you have to do to send a new message is visit:
+    <?=$values['message_url']?>
 
 You've used the service before, so this is just a short email. We'll
 remind you again when you have <?=$values['next_threshold']?>, but
@@ -12,9 +14,7 @@ we won't email again for at least one month.
 
 As always, if you have any further questions, please email
 team@hearfromyourmp.com, call us on 07811 082158, or read our
-Frequently Asked Questions at www.hearfromyourmp.com/faq
+Frequently Asked Questions at http://www.hearfromyourmp.com/faq
 
 All the best,
-
 The HearFromYourMP Team
-
