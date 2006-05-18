@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.42 2006-05-15 17:16:28 matthew Exp $
+# $Id: view.php,v 1.43 2006-05-18 17:05:24 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -109,7 +109,9 @@ function view_messages($c_id) {
     $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND constituency = ?", $c_id);
     $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
     
-    page_header($rep_info['name'] . ', ' . $area_info['name']);
+    $title = $area_info['name'];
+    if (isset($rep_info['name'])) $title = $rep_info['name'] . ', ' . $title;
+    page_header($title);
     mini_signup_form();
 ?>
 <h2><?=$area_info['name'] ?></h2>
@@ -118,10 +120,15 @@ function view_messages($c_id) {
     } elseif (array_key_exists('image', $rep_info)) {
         print '<img alt="" title="Portrait of ' . htmlspecialchars($rep_info['name']) . '" src="' . $rep_info['image'] . '" align="right" hspace="5">';
     }
+
+    if (isset($rep_info['name'])) {
 ?>
 <p>The MP for this constituency is <?=$rep_info['name'] ?>, <?=$rep_info['party'] ?>.
+<?  } else { ?>
+<p>There is currently no MP for this constituency.
+<?  } ?>
 So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.
-To discover everything you could possibly want to know about what your MP gets up to in Parliament,
+To discover everything you could possibly want to know about what your MP <?=isset($rep_info['name'])?'gets':'got')?> up to in Parliament,
 see their page on our sister site <a href="<?=$twfy_link ?>">TheyWorkForYou</a>.
 </p>
 <?

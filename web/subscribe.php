@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.24 2006-04-28 17:14:10 francis Exp $
+// $Id: subscribe.php,v 1.25 2006-05-18 17:05:24 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -59,6 +59,9 @@ function do_subscribe() {
     $wmc_id = ycml_get_constituency_id($q_postcode);
     $area_info = ycml_get_area_info($wmc_id);
     $rep_info = ycml_get_mp_info($wmc_id);
+    if (!isset($rep_info['name'])) {
+        $rep_info['name'] = 'the future MP'; # XXX
+    }
 
     /* Check for authentication forwarded from WriteToThem.com */
     $external_auth = auth_verify_with_shared_secret($q_email, OPTION_AUTH_SHARED_SECRET, get_http_var('sign'));

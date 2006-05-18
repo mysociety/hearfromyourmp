@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.14 2006-05-15 17:16:17 matthew Exp $
+// $Id: fns.php,v 1.15 2006-05-18 17:05:18 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -69,7 +69,7 @@ function ycml_get_mp_info($wmc_id) {
     $reps = dadem_get_representatives($wmc_id);
     dadem_check_error($reps);
     if (count($reps) == 0)
-        err('We don\'t have any information about the MP for your postcode.');
+        return array();
     if (count($reps) != 1)
         err("Unexpectedly found ".count($reps)." MPs for your postcode.");
     $rep_info = dadem_get_representative_info($reps[0]);
@@ -96,7 +96,11 @@ function ycml_get_all_reps_info($ids) {
         dadem_check_error($reps);
         $reps_info2 = array();
         foreach ($reps as $c_id => $row) {
-            $reps_info2[] = $row[0];
+	    if (isset($row[0])) {
+                $reps_info2[] = $row[0];
+	    } else {
+	        $reps_info[$c_id] = array('id'=>0, 'name'=>'-');
+	    }
         }
         $reps_info2 = dadem_get_representatives_info($reps_info2);
         foreach ($reps_info2 as $id => $row) {
