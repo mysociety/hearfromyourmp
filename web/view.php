@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.43 2006-05-18 17:05:24 matthew Exp $
+# $Id: view.php,v 1.44 2006-05-18 17:08:32 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -128,7 +128,7 @@ function view_messages($c_id) {
 <p>There is currently no MP for this constituency.
 <?  } ?>
 So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.
-To discover everything you could possibly want to know about what your MP <?=isset($rep_info['name'])?'gets':'got')?> up to in Parliament,
+To discover everything you could possibly want to know about what your MP <?=isset($rep_info['name'])?'gets':'got' ?> up to in Parliament,
 see their page on our sister site <a href="<?=$twfy_link ?>">TheyWorkForYou</a>.
 </p>
 <?
