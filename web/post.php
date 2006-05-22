@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.1 2006-05-15 17:16:28 matthew Exp $
+// $Id: post.php,v 1.2 2006-05-22 10:13:37 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -34,7 +34,7 @@ if ($q_post == 2) { # Post
         err("Blank subject or message when confirming - should not happen!");
     $q_message = str_replace("\r", '', $q_message);
     db_query("INSERT INTO message (constituency, subject, content, state)
-                VALUES (?, ?, ?, 'new')",
+                VALUES (?, ?, ?, 'approved')",
                 array($q_constituency, $q_subject, $q_message));
     db_commit();
     print '<p><em>Thank you; your message has been posted, and will be emailed to the subscribed constituents shortly.</em></p>';
