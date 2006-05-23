@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.26 2006-05-23 15:26:09 matthew Exp $
+// $Id: subscribe.php,v 1.27 2006-05-23 17:06:02 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -124,25 +124,8 @@ continue
     }
     $count = db_getOne("select count(*) from constituent where constituency = ?", $wmc_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $wmc_id);
-
-/*
-    $local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=' . urlencode($q_postcode));
-    #$local_pledges = file_get_contents('http://www.pledgebank.com/rss?postcode=sw1a1aa');
-    preg_match_all('#<link>(.*?)</link>\s+<description>(.*?)</description>#', $local_pledges, $m, PREG_SET_ORDER);
-    $local_num = count($m) - 1;
-    if ($local_num>5) $local_num = 5;
-    if ($local_num) {
-        print '<div id="pledges"><h2>Recent pledges local to ' . canonicalise_postcode($q_h_postcode) . '</h2>';
-        print '<p style="margin-top:0; text-align:right; font-size: 89%">These are pledges near you made by users of <a href="http://www.pledgebank.com/">PledgeBank</a>, another mySociety site. We thought you might be interested. N.B. mySociety does not endorse specific pledges.</p> <ul>';
-        for ($p=1; $p<=$local_num; ++$p) {
-            print '<li><a href="' . $m[$p][1] . '">' . $m[$p][2] . '</a>';
-        }
-        print '</ul><p align="center"><a href="http://www.pledgebank.com/alert?postcode='.$q_h_postcode.'">Get emails about local pledges</a></p></div>';
-    }
-*/
-
 ?>
-<p class="loudmessage"><?
+<p id="loudmessage"><?
     print sprintf("<strong>Thanks!</strong> You're the %s person to sign up to get emails from %s in the %s constituency. ",
         english_ordinal($count), $rep_info['name'], $area_info['name']);
     if ($nothanks['status'] == 't') {
