@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.25 2006-05-18 17:05:24 matthew Exp $
+// $Id: subscribe.php,v 1.26 2006-05-23 15:26:09 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -69,7 +69,7 @@ function do_subscribe() {
         $person = person_get_or_create($q_email, $q_name);
     } else {
         $person = person_if_signed_on();
-        if (!$person) {
+        if (!$person || $person->email() != $q_email) {
             /* Otherwise get the user to log in. */
             $template_data = array();
             $template_data['reason_web'] = _('Before adding you to HearFromYourMP, we need to confirm your email address.');
