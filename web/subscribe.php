@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.27 2006-05-23 17:06:02 matthew Exp $
+// $Id: subscribe.php,v 1.28 2006-05-26 08:05:14 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -153,7 +153,11 @@ over to their successor.&quot;</p>
 ?>
 <?  }
 
-    crosssell_display_advert("hfymp", $q_email, $q_name, $q_postcode);
+    $advert_shown = crosssell_display_advert("hfymp", $q_email, $q_name, $q_postcode);
+    if ($extra)
+        $extra .= '; advert=' . $advert_shown;
+    else
+        $extra = 'advert=' . $advert_shown;
 
     if ($return = get_http_var('r'))
         print '<p><a href="' . htmlspecialchars($return). '">Continue to where you came from</a></p>';
