@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.23 2006-05-31 16:10:22 matthew Exp $
+// $Id: index.php,v 1.24 2006-05-31 16:57:24 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -14,7 +14,15 @@ page_header();
 $extra = front_page();
 page_footer(array('extra' => $extra));
 
-function front_page() { ?>
+function front_page() {
+    $pagestyle = rand(0, 2);
+
+    if ($pagestyle == 2) {
+        print recent_messages();
+        print recent_replies();
+        print '<div id="indented">';
+    }
+?>
 <h2 align="center">Get email from your MP
 <br>Discuss it with your MP and other local people</h2>
 <form method="post" action="/subscribe" name="frontpage_subscribe" accept-charset="utf-8">
@@ -33,7 +41,6 @@ function front_page() { ?>
     </div>
 </form>
 <?
-    $pagestyle = rand(0, 2);
     
     if ($pagestyle == 0) {
         ?>
@@ -75,7 +82,9 @@ what they've said. Safe, easy and democratic.</p>
 
 <?  }
 
-    $pagestyle = "1.$pagestyle";
+    if ($pagestyle == 2) print '</div>';
+
+    $pagestyle = "2.$pagestyle";
 
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     # Minus one in the next row to account for test constituency

@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.10 2006-03-21 13:02:35 francis Exp $
+ * $Id: ycml.php,v 1.11 2006-05-31 16:57:18 matthew Exp $
  * 
  */
 
@@ -96,7 +96,7 @@ function recent_messages() {
     $q = db_query("SELECT id,subject,constituency FROM message where state = 'approved' ORDER BY posted DESC LIMIT 5");
     $out = '';
     while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['constituency'])) continue;
+        if (va_is_fictional_area($r['constituency']) && !OPTION_YCML_STAGING) continue;
         $area_info = ycml_get_area_info($r['constituency']);
         $rep_info = ycml_get_mp_info($r['constituency']);
         $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
