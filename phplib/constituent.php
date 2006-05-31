@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.4 2006-05-15 17:16:17 matthew Exp $
+// $Id: constituent.php,v 1.5 2006-05-31 16:10:15 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -63,17 +63,18 @@ function constituent_subscribe_box($array = array()) {
 <h2>Sign up now</h2>
 <p></p>
     <input type="hidden" name="subscribe" id="subscribe" value="1">
-    <label for="name">Name:</label>
+    <label for="name">Your name:</label>
     <input type="text" name="name" id="name" value="<?=htmlspecialchars($name) ?>" size="20">
-    <label for="email">Email:</label>
+    <label for="email">Your email:</label>
     <input type="text" name="email" id="email" value="<?=htmlspecialchars($email) ?>" size="25">
-    <label for="postcode">Postcode:</label> 
+    <label for="postcode">UK postcode:</label> 
     <input type="text" name="postcode" id="postcode" value="<?=htmlspecialchars($postcode) ?>" size="10">
+&nbsp; 
     <input type="submit" class="submit" value="Sign up">
+    <input type="hidden" name="sign" id="sign" value="<?=htmlentities(get_http_var('sign'))?>">
     <br><em>(for example OX1 3DR)</em>
 </div>
 </form>
-
 <? 
 
 }

@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.22 2006-03-27 15:58:40 chris Exp $
+// $Id: index.php,v 1.23 2006-05-31 16:10:22 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -20,11 +20,11 @@ function front_page() { ?>
 <form method="post" action="/subscribe" name="frontpage_subscribe" accept-charset="utf-8">
 <div id="subscribeBox">
     <input type="hidden" name="subscribe" id="subscribe" value="1">
-    <label for="name">Name:</label>
+    <label for="name">Your name:</label>
     <input type="text" name="name" id="name" value="<?=htmlentities(get_http_var('name'))?>" size="20">
-    <label for="email">Email:</label>
+    <label for="email">Your email:</label>
     <input type="text" name="email" id="email" value="<?=htmlentities(get_http_var('email'))?>" size="25">
-    <label for="postcode">UK Postcode:</label> 
+    <label for="postcode">UK postcode:</label> 
     <input type="text" name="postcode" id="postcode" value="<?=htmlentities(get_http_var('pc'))?>" size="10">
 &nbsp; 
     <input type="submit" class="submit" value="Sign up">
