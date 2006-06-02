@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.25 2006-03-17 11:27:51 matthew Exp $
+ * $Id: admin-ycml.php,v 1.26 2006-06-02 11:58:59 matthew Exp $
  * 
  */
 
@@ -27,7 +27,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
     function display() {
         $signups = db_getOne('SELECT COUNT(*) FROM constituent');
         $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
-        $mps = db_getOne('SELECT COUNT(*) FROM constituent WHERE is_mp');
+    	$consts_posted = db_getOne("select count(distinct constituency) from message where state='approved'");
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         $messages_approved = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
@@ -50,7 +50,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
 
         print "$signups constituency signups from $people2 people
             (though $people1 person entries) to $consts constituencies<br>
-            $mps MPs have sent $messages_approved message".
+            $consts_posted constituencies have had $messages_approved message".
             ($messages_approved!=1?'s':'').", and there have been 
             $comments comments<br>
             $messages_new message" . ($messages_new!=1?'s are':' is') .
