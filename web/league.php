@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.16 2006-01-18 15:10:45 ycml Exp $
+// $Id: league.php,v 1.17 2006-06-07 15:59:14 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -20,6 +20,7 @@ if (array_key_exists('csv', $_GET)) {
     header('Content-Type: text/csv');
     csv_league_table($sort);
 } else {
+    header('Cache-Control: max-age=60');
     page_header();
     league_table($sort);
     page_footer();
