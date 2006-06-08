@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.44 2006-05-18 17:08:32 matthew Exp $
+# $Id: view.php,v 1.45 2006-06-08 13:09:03 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -205,7 +205,7 @@ function view_message($message) {
     print '</p>';
     print '</div>';
     $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_mp from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
-    if (count($cc))
+    if ($cc && count($cc))
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
     if (get_http_var('showform')) {
