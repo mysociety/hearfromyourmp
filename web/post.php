@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.2 2006-05-22 10:13:37 matthew Exp $
+// $Id: post.php,v 1.3 2006-06-15 12:56:24 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -76,7 +76,8 @@ if ($q_post == 2) { # Post
 ?>
 <p>Hello, <?=$P->name() ?>. To post a message through HearFromYourMP, please enter a subject and message in the boxes below, then click "Preview". You will be given the opportunity to preview and re-edit your message before it is confirmed and sent.</p>
 <p>We find that short messages on a single topic work best - for example,
-Stephen William's <a href="http://www.hearfromyourmp.com/view/message/6" target="_blank">post on smoking in public places</a>.
+Stephen William's <a href="http://www.hearfromyourmp.com/view/message/6" target="_blank">post on smoking in public places</a>,
+or Ed Vaizey's <a href="http://www.hearfromyourmp.com/view/message/91" target="_blank">post on climate change</a>.
 </p>
 <?  post_message_form();
 }
