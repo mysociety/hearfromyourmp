@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.46 2006-06-10 13:45:20 matthew Exp $
+# $Id: view.php,v 1.47 2006-06-15 12:26:25 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -188,8 +188,8 @@ We will automatically email them <?=$emails_sent_to_mp>0?'again ':'' ?>when the 
 function view_message($message) {
     $r = message_get($message);
     $content = comment_prettify($r['content']);
-    $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
     $content = preg_replace('#<p>\*(.*?)\*</p>#', "<h3>$1</h3>", $content);
+    $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
     $c_id = $r['constituency'];
     $rep_info = ycml_get_mp_info($c_id);
     $area_info = ycml_get_area_info($c_id);
