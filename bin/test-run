@@ -15,7 +15,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.4 2006-03-13 13:22:39 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.5 2006-06-16 14:11:28 francis Exp $';
 
 use strict;
 require 5.8.0;
@@ -31,7 +31,6 @@ use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
-use mySociety::Util;
 
 sub help {
 print <<END
@@ -122,7 +121,7 @@ sub get_web_bug {
 
 #############################################################################
 
-sub do_basic_signup_test() {
+sub do_basic_signup_test {
     $wth->browser_get($base_url);
     get_web_bug();
     $wth->browser_check_contents("Sign up to hear from your MP");
