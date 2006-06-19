@@ -5,11 +5,11 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.24 2006-04-04 12:28:50 chris Exp $
+-- $Id: schema.sql,v 1.25 2006-06-19 17:47:03 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
-create function pb_current_timestamp()
+create function ms_current_timestamp()
     returns timestamp as '
     begin
         return current_timestamp;
@@ -222,7 +222,7 @@ create table abusereport (
     id serial not null primary key,
     comment_id text not null references comment(id),
     reason text,
-    whenreported timestamp not null default pb_current_timestamp(),
+    whenreported timestamp not null default ms_current_timestamp(),
     ipaddr text,
     email text
 );
