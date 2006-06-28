@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.26 2006-06-02 11:58:59 matthew Exp $
+ * $Id: admin-ycml.php,v 1.27 2006-06-28 15:42:49 matthew Exp $
  * 
  */
 
@@ -349,10 +349,19 @@ if any. This must be set before messages can be posted:</p>
             print '<h2>Preview of message</h2>';
             print '<p><strong>Subject:</strong> ' . htmlspecialchars($subject) . '</p>';
             print '<h3>Web page</h3>';
-            print '<div><p>' . comment_prettify($message) . '</p></div>';
-            print '<h3>Email(ish)</h3>';
+            $content = comment_prettify($message);
+            $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
+            print '<blockquote><p>' . $content . '</p></blockquote>';
+            print '<h3>Email</h3>';
             $preview = preg_replace('#\r#', '', htmlspecialchars($message));
-            print '<pre>     ' . wordwrap($preview, 64, "\n     ") . '</pre>';
+	    print '<pre>';
+            $paras = preg_split('/\n{2,}/', $preview);
+            foreach ($paras as $para) {
+                $para = "     $para";
+                print wordwrap($para, 64, "\n     ");
+                print "\n\n";
+            }
+	    print '</pre>';
             print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
             return 0;
         }
