@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.49 2006-07-05 17:45:38 francis Exp $
+# $Id: view.php,v 1.50 2006-07-05 22:39:05 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -196,15 +196,16 @@ function view_message($message) {
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     mini_signup_form();
     $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
-    print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong><a href="' . $twfy_link . '">' . $rep_info['name']
-        . '</a>, MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
     $prev = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted < ?", array($c_id, $r['posted']) );
-    print '<p align="right">';
+    print '<div id="message">';
+    print '<p id="nav">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
     print '<a href="/view/' . $c_id . '">Messages for this constituency</a>';
     if ($next) print ' | <a href="/view/message/' . $next . '">Next message</a>';
     print '</p>';
+    print '<h2>' . $r['subject'] . '</h2> <p>Posted by <strong><a href="' . $twfy_link . '">' . $rep_info['name']
+        . '</a>, MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     print '</div>';
     $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_mp from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
     if ($cc && count($cc))
