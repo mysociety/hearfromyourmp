@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.17 2006-06-07 15:59:14 chris Exp $
+// $Id: league.php,v 1.18 2006-07-05 09:09:57 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -31,7 +31,7 @@ function csv_league_table($sort) {
     $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
+    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
@@ -77,7 +77,7 @@ function league_table($sort) {
     $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message) AS comments,
+    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible) AS comments,
     (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp,
     (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
