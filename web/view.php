@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.47 2006-06-15 12:26:25 matthew Exp $
+# $Id: view.php,v 1.48 2006-07-05 10:42:50 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -195,8 +195,9 @@ function view_message($message) {
     $area_info = ycml_get_area_info($c_id);
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     mini_signup_form();
-    print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong>' . $rep_info['name']
-        . ', MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
+    $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
+    print '<div id="message"><h2>' . $r['subject'] . '</h2> <p>Posted by <strong><a href="' . $twfy_link . '">' . $rep_info['name']
+        . '</a>, MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
     $prev = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted < ?", array($c_id, $r['posted']) );
     print '<p align="right">';
