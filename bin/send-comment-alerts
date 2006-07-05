@@ -7,21 +7,25 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-comment-alerts,v 1.4 2006-07-05 17:57:20 francis Exp $
+ * $Id: send-comment-alerts,v 1.5 2006-07-05 18:27:19 francis Exp $
  *
  */
 
+$short_opts = '';
+$long_opts = array('verbose','help');
+
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once "../conf/general";
+/* for some reason phpcli.php has to be included immediately
+ * after conf/general or you get an error
+ * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
+require_once '../../phplib/phpcli.php';
+
 require_once '../phplib/fns.php';
 require_once "../phplib/alert.php";
 require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
-
-$short_opts = '';
-$long_opts = array('verbose','help');
-require_once '../../phplib/phpcli.php';
 
 $switches = $options[0];
 $args = $options[1];
