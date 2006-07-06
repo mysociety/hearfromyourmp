@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.27 2006-06-28 15:42:49 matthew Exp $
+ * $Id: admin-ycml.php,v 1.28 2006-07-06 17:36:12 matthew Exp $
  * 
  */
 
@@ -350,6 +350,7 @@ if any. This must be set before messages can be posted:</p>
             print '<p><strong>Subject:</strong> ' . htmlspecialchars($subject) . '</p>';
             print '<h3>Web page</h3>';
             $content = comment_prettify($message);
+            $content = preg_replace('#<p>\*(.*?)\*</p>#', "<h3>$1</h3>", $content);
             $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
             print '<blockquote><p>' . $content . '</p></blockquote>';
             print '<h3>Email</h3>';
