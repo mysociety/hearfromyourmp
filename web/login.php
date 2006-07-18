@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.5 2005-11-25 14:56:23 matthew Exp $
+ * $Id: login.php,v 1.6 2006-07-18 16:29:01 francis Exp $
  * 
  */
 
@@ -65,7 +65,7 @@ try again</p>
         page_footer();
         exit();
     } else {
-        setcookie('test_cookie', '1', null, '/',OPTION_WEB_DOMAIN, false);
+        setcookie('test_cookie', '1', null, '/',person_cookie_domain(), false);
         header("Location: /login?" . $_SERVER['QUERY_STRING'] . "&test_cookie=1\n");
         exit();
     }
