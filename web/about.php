@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.10 2006-02-11 22:36:49 matthew Exp $
+// $Id: about.php,v 1.11 2006-08-08 15:13:03 chris Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -145,7 +145,8 @@ representatives, for free, and our more recent sites include
 <dd>HearFromYourMP has been built by mySociety thanks to the effort of a
 combination of paid core developers and unpaid volunteers. The core
 developers were paid for by the ODPM's e-innovations fund in
-partnership with West Sussex County Council.
+partnership with West Sussex County Council. Our servers are kindly
+hosted by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
 
 <dt>Do you need any help with the project?
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
