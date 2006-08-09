@@ -8,6 +8,7 @@ link:
 Or you can send them a private message through this link:
 <?=$values['writetothem_url']?>
 
+-------------------
 
 <?=$values['content']?>
 
