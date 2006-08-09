@@ -4,7 +4,7 @@ PLEASE DO NOT REPLY TO THIS MAIL -- you cannot reply to your MP by doing so.
 Instead, you can leave a public comment on their message by following this
 link:
 <?=$values['message_url']?>
-    
+
 Or you can send them a private message through this link:
 <?=$values['writetothem_url']?>
 
