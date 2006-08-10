@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.4 2006-07-06 17:36:12 matthew Exp $
+// $Id: post.php,v 1.5 2006-08-10 07:43:00 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -16,7 +16,7 @@ $title = 'Post a message';
 page_header($title);
 $P = person_if_signed_on();
 if (!$P) 
-    err('You must be logged in to view this page');
+    err('You must be logged in to view this page. This presumably means your browser does not have cookies enabled, which we use to track logins. Please enable cookies and try again.');
 
 importparams(
     array('constituency', '/^\d+$/', 'Invalid constituency', null),
