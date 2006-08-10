@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.25 2006-06-19 17:47:03 francis Exp $
+-- $Id: schema.sql,v 1.26 2006-08-10 07:16:10 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -217,7 +217,7 @@ create table mp_nothanks (
 
 create unique index mp_nothanks_constituency_idx on mp_nothanks(constituency);
  
--- table of abuse reports on comments, pledges and signers.
+-- table of abuse reports on comments
 create table abusereport (
     id serial not null primary key,
     comment_id text not null references comment(id),

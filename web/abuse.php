@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: francis@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: abuse.php,v 1.1 2005-11-04 22:14:43 matthew Exp $
+// $Id: abuse.php,v 1.2 2006-08-10 07:16:10 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -17,7 +17,7 @@ report_abusive_thing();
 page_footer();
 
 /* report_abusive_thing
- * Reporting of abusive comments, signatures, and pledges. */
+ * Reporting of abusive comments. */
 function report_abusive_thing() {
     global $q_id, $q_reason, $q_email;
     global $q_h_id, $q_h_reason;
@@ -31,7 +31,7 @@ function report_abusive_thing() {
         return;
     }
 
-    /* Find information about the associated pledge. */
+    /* Find information about the associated comment. */
     $more = '';
         $message_id = db_getOne('select message from comment where id = ?', $q_id);
         $more = "\nAuthor: " . db_getOne('select name from comment,person where comment.person_id=person.id AND comment.id = ?', $q_id)
