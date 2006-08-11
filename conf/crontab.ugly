@@ -4,18 +4,22 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.5 2006-07-05 19:14:42 francis Exp $
+# $Id: crontab.ugly,v 1.6 2006-08-11 13:54:20 francis Exp $
 
 MAILTO=team@hearfromyourmp.com
 
-# Frequently
+!!(* if ($hostname eq "bitter") { *)!!
+# Frequently, on one machine only as not concurrent
 5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-threshold-alerts
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-message-confirmations
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-message-alerts
 
-# Once a day
+# Once a day, on one machine only as not concurrent
 5 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-mp-comment-alerts
 33 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/send-comment-alerts
+!!(* } *)!!
+
+# Once a day, on all machines
 51 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/mysociety/ycml/bin/signup-rate-graph
 
 
