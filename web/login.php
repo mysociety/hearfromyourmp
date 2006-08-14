@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.8 2006-08-10 07:43:00 matthew Exp $
+ * $Id: login.php,v 1.9 2006-08-14 08:22:15 matthew Exp $
  * 
  */
 
@@ -307,12 +307,12 @@ function login_form($errors = array()) {
 <? } ?>
 
 <li><p>I'm new to HearFromYourMP:
-<input type="submit" name="SendEmail" value="Click here to continue &gt;&gt;"><br>
+<input type="submit" name="SendEmail" value="Click here to continue"><br>
 
 <li><p>I have been here before and have a HearFromYourMP password:
 
 <input type="password" name="password" id="password" value="" <? if (array_key_exists('badpass', $errors)) print ' class="error"' ?> >
-<input type="submit" name="LogIn" value="Let me in &gt;&gt;"></p>
+<input type="submit" name="LogIn" value="Let me in"></p>
 
 <input type="checkbox" name="rememberme" id="rememberme" value="1"><strong>Remember me</strong>
 <small>(don't use this on a public or shared computer)</small>
@@ -393,7 +393,7 @@ EOF;
 <input type="hidden" name="email" value="$q_h_email">
 <input type="hidden" name="name" value="$q_h_name">
 No, I don't want to think of a password right now.
-<input type="submit" name="NoPassword" value="Click here to continue &gt;&gt;">
+<input type="submit" name="NoPassword" value="Click here to continue">
 <br><small>(you can set a password another time)</small>
 </form></li>
 
@@ -406,7 +406,7 @@ Yes, I'd like to set a password, so I don't have to keep going back to my email.
 <br>
     <strong>Password:</strong> <input type="password" name="pw1" id="pw1" size="15">
     <strong>Password (again):</strong> <input type="password" name="pw2" size="15">
-    <input type="submit" name="SetPassword" value="Set password &gt;&gt;">
+    <input type="submit" name="SetPassword" value="Set password">
 </form>
 </li>
 
