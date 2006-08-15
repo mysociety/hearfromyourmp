@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.14 2006-08-15 15:20:49 chris Exp $
+ * $Id: ycml.php,v 1.15 2006-08-15 15:32:50 chris Exp $
  * 
  */
 
@@ -83,7 +83,7 @@ function comment_show_one($r, $noabuse = false) {
     if (!$noabuse)
         $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
     /* Permalink to this comment. */
-    $comment .= " <a href=\"#${r['id']}\" class=\"comment-permalink\" title=\"Link to this comment\">#</a>";
+    $comment .= " <a href=\"#comment${r['id']}\" class=\"comment-permalink\" title=\"Link to this comment\">#</a>";
     $comment .= "</p>\n<div><p>$content</p></div>";
     return $comment;
 }
