@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.12 2006-06-08 13:02:11 matthew Exp $
+ * $Id: ycml.php,v 1.13 2006-08-15 15:18:49 chris Exp $
  * 
  */
 
@@ -67,7 +67,7 @@ function comment_show_one($r, $noabuse = false) {
         $ds = prettify($r['date']);
     else
         $ds = '';
-    $comment = '<p><a name="comment' . $r['id'] .'">Posted by</a> ';
+    $comment = '<p><a name="comment' . $r['id'] .'"></a>Posted by ';
     if ($r['posted_by_mp']) $comment .= '<strong>';
     if ($r['website'])
         $comment .= '<a href="' . $r['website'] . '">';
