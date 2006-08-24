@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.19 2006-07-05 19:28:50 francis Exp $
+// $Id: league.php,v 1.20 2006-08-24 18:27:33 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -63,6 +63,8 @@ function league_table($sort) {
     # This way is far too slow:
     # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
     $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM mp_threshold_alert');
+    $mp_written_messages = db_getOne("SELECT COUNT(*) FROM message WHERE state = 'approved'");
+    $comments = db_getOne("SELECT COUNT(*) FROM comment WHERE visible > 0");
     print "<ul><li>$people people have signed up in ";
     if ($consts==646) print 'all ';
     print "$consts constituencies";
@@ -72,7 +74,9 @@ function league_table($sort) {
     elseif ($consts==645)
         print "<li>There is $left constituency with nobody signed up";
     print "<li>$morethan constituencies have 25 or more subscribers, $morethan_emailed have been sent emails";
+    print "<li>$mp_written_messages messages sent by MPs, $comments comments made by constituents";
     print '</ul>';
+    print '<p><strong>Click on the headings (e.g. Constituency) to sort the table by different columns.</strong></p>';
 
     $q = db_query("SELECT COUNT(id) AS count,constituency,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
