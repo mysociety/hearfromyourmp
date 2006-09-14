@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.29 2006-08-08 10:51:41 chris Exp $
+// $Id: subscribe.php,v 1.30 2006-09-14 14:29:32 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -127,7 +127,7 @@ continue
 ?>
 <p id="loudmessage"><?
     if (!$already_signed)
-        print sprintf("<strong>Thanks!</strong> You're the %s person to sign up to get emails from %s in the %s constituency. ",
+        print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in the %s constituency. ",
             english_ordinal($count), $rep_info['name'], $area_info['name']);
     if ($nothanks['status'] == 't') {
         $mp_gender = $nothanks['gender'];
