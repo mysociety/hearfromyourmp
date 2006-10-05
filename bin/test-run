@@ -15,7 +15,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.5 2006-06-16 14:11:28 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.6 2006-10-05 10:27:29 francis Exp $';
 
 use strict;
 require 5.8.0;
@@ -74,6 +74,7 @@ sub name_n { my $n = shift; return "Cara Constituent $n"; }
 print "Set up web test harness...\n" if $verbose > 0;
 our $wth = new mySociety::WebTestHarness();
 $wth->log_watcher_setup($httpd_error_log);
+$wth->log_watcher_self_test($base_url . "/test.php?error=1", "deliberate_error_to_test_error_handling");
 $wth->database_connect('YCML_');
 $wth->database_drop_reload('../db/schema.sql');
 $wth->database_cycle_sequences(200);
@@ -84,13 +85,6 @@ $wth->email_setup({ eveld_bin => "$FindBin::Bin/../../services/EvEl/bin/eveld",
 print "Syntax check all PHP files...\n" if $verbose > 0;
 $wth->php_check_syntax("../../ycml/");
 $wth->php_check_syntax("../../ycml/templates/emails/", qr//);
-
-# Check that we can detect PHP errors
-print "Confirm we can detect errors...\n" if $verbose > 0;
-$wth->log_watcher_check();
-$wth->browser_get($base_url . "/test.php?error=1" );
-my $errors = $wth->log_watcher_get_errors();
-die "Unable to detect errors from PHP" if ($errors !~ m/deliberate_error_to_test_error_handling/);
 
 print "Basic signup test...\n" if $verbose > 0;
 do_basic_signup_test();
@@ -141,7 +135,6 @@ sub do_basic_signup_test {
     my $confirmation_url = $1;
     $wth->email_check_url($confirmation_url);
     print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
-    $wth->log_watcher_check();
     $wth->browser_get($confirmation_url);
     get_web_bug();
     $wth->browser_check_contents("You're the 1st person to sign up to get emails"); 
