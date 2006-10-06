@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.6 2006-10-06 09:32:26 francis Exp $
+// $Id: post.php,v 1.7 2006-10-06 11:09:36 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -75,10 +75,17 @@ if ($q_post == 2) { # Post
     }
 } else {
 ?>
-<p>Hello, <?=$P->name() ?>. To post a message through HearFromYourMP, please enter a subject and message in the boxes below, then click "Preview". You will be given the opportunity to preview and re-edit your message before it is confirmed and sent.</p>
-<p>We find that short messages on a single topic work best - for example,
-Stephen William's <a href="http://www.hearfromyourmp.com/view/message/6" target="_blank">post on smoking in public places</a>,
-or Ed Vaizey's <a href="http://www.hearfromyourmp.com/view/message/91" target="_blank">post on climate change</a>.
+<p>Hello, <?=$P->name() ?>. To post a message through HearFromYourMP, please enter a subject and
+message in the boxes below, then click "Preview". You will be given the opportunity to preview
+and re-edit your message before it is confirmed and sent.</p>
+
+<p>We find that the MPs who succeed in provoking the largest number of interesting comments
+from their constituents tend to send short messages on a single topic. Often asking your
+constituents for their views on something provokes interesting responses. Here are a couple
+of example: Stephen William's
+<a href="http://www.hearfromyourmp.com/view/message/6" target="_blank">post on smoking in public places</a>,
+and Ed Vaizey's
+<a href="http://www.hearfromyourmp.com/view/message/91" target="_blank">post on climate change</a>.
 </p>
 <?  post_message_form();
 }
