@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.5 2006-08-10 07:43:00 matthew Exp $
+// $Id: post.php,v 1.6 2006-10-06 09:32:26 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -38,7 +38,7 @@ if ($q_post == 2) { # Post
                 array($q_constituency, $q_subject, $q_message));
     db_commit();
     print '<p><em>Thank you; your message has been posted, and will be emailed to the subscribed constituents shortly.</em></p>';
-    # TODO: Cross-sell TheyWorkForYou!?
+    # TODO: Cross-sell TheyWorkForYou!? Maybe ask for copyright-free photos of them?
 } elseif ($q_post == 1) { # Preview
     if ($err = importparams(
         array('message', '/./', 'Please write a message', null),
