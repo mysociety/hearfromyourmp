@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.50 2006-07-05 22:39:05 matthew Exp $
+# $Id: view.php,v 1.51 2006-10-09 16:40:46 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -142,7 +142,7 @@ see their page on our sister site <a href="<?=$twfy_link ?>">TheyWorkForYou</a>.
 service<?
         if ($mp_website)
             print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
-?>. You can still contact <?=$accu ?> directly via our service
+?>. You can still contact <?=$accu ?> directly via our other service
 <a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
 
 <p>In accordance with our site policy we will continue to allow signups for
