@@ -5,24 +5,20 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.24 2006-05-31 16:57:24 matthew Exp $
+// $Id: index.php,v 1.25 2007-01-16 13:26:47 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../../phplib/utility.php';
 page_header();
-$extra = front_page();
-page_footer(array('extra' => $extra));
+front_page();
+page_footer();
 
 function front_page() {
-    $pagestyle = rand(0, 2);
-
-    if ($pagestyle == 2) {
-        print recent_messages();
-        print recent_replies();
-        print '<div id="indented">';
-    }
+    print recent_messages();
+    print recent_replies();
 ?>
+<div id="indented">
 <h2 align="center">Get email from your MP
 <br>Discuss it with your MP and other local people</h2>
 <form method="post" action="/subscribe" name="frontpage_subscribe" accept-charset="utf-8">
@@ -40,30 +36,7 @@ function front_page() {
     <br><em>(for example OX1 3DR)</em>
     </div>
 </form>
-<?
-    
-    if ($pagestyle == 0) {
-        ?>
-<ol>
-<li>Enter your details and we'll add you to a queue of other people in your
-constituency who also want a more genuine sort of interaction than just being
-sent newsletters.</li>
-<li>When 25 people in your constituency have signed up, we send an automatic
-email to your MP. That email says "25 of your constituents would like to hear
-what you're up to, and would like to discuss it.  Hit reply to let them
-know".</li>
-<li>If your MP doesn't reply to this message, nothing will happen until your MP
-gets a further email which says there are now 50, then 75, 100, 150, ...
-people.</li>
-<li>When your MP sends you an email, we provide a public space to discuss what
-has been said. Each email from your MP comes with a link at the bottom, which
-takes you straight to an extremely simple page for discussing what the MP has
-just said. To leave your thoughts, you just enter your text and hit enter.
-There's no tiresome login&mdash;you can just start talking about what they've
-said. Safe, easy and democratic.</li>
-</ol>
-<?  } else {
-        ?>
+
 <p>If you enter your details, we'll add you to a queue of other people in
 your constituency. When enough have signed up, your MP will get sent
 an email. It'll say "25 of your constituents would like to hear what
@@ -80,20 +53,14 @@ constituents. To leave your thoughts, you just enter your text and hit
 enter. There's no tiresome login &mdash; you can just start talking about
 what they've said. Safe, easy and democratic.</p>
 
-<?  }
-
-    if ($pagestyle == 2) print '</div>';
-
-    $pagestyle = "2.$pagestyle";
-
+</div>
+<?
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     # Minus one in the next row to account for test constituency
     $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
     print "<p align='center'>$people people have signed up in ";
     if ($consts==646) print 'all ';
     print "$consts constituencies &mdash; <a href='/league'>League table</a></p>";
-
-    return "frontpagestyle=$pagestyle";
 }
 
 ?>
