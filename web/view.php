@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.51 2006-10-09 16:40:46 matthew Exp $
+# $Id: view.php,v 1.52 2007-01-18 14:43:01 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -196,8 +196,14 @@ function view_message($message) {
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     mini_signup_form();
     $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
-    $next = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted > ?", array($c_id, $r['posted']) );
-    $prev = db_getOne("SELECT id FROM message WHERE state = 'approved' and constituency = ? AND posted < ?", array($c_id, $r['posted']) );
+    $next = db_getOne("SELECT id FROM message
+        WHERE state = 'approved' and constituency = ? AND posted > ?
+        ORDER BY posted LIMIT 1",
+        array($c_id, $r['posted']) );
+    $prev = db_getOne("SELECT id FROM message
+        WHERE state = 'approved' and constituency = ? AND posted < ?
+        ORDER BY posted DESC LIMIT 1",
+        array($c_id, $r['posted']) );
     print '<div id="message">';
     print '<p id="nav">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
