@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.7 2006-10-06 11:09:36 matthew Exp $
+// $Id: post.php,v 1.8 2007-03-05 17:40:36 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -57,6 +57,7 @@ if ($q_post == 2) { # Post
         print '<pre>';
         $paras = preg_split('/\n{2,}/', $preview);
         foreach ($paras as $para) {
+            $para = str_replace("\n", " ", $para);
             $para = "     $para";
             print wordwrap($para, 64, "\n     ");
             print "\n\n";
