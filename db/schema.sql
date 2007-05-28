@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.26 2006-08-10 07:16:10 francis Exp $
+-- $Id: schema.sql,v 1.27 2007-05-28 22:38:04 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -38,6 +38,7 @@ create table person (
 );
 
 create unique index person_email_idx on person(email);
+create unique index person_email_lower_idx on person(lower(email));
 
 -- MP's constituents who have signed up
 create table constituent (
