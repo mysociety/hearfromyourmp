@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.27 2007-05-28 22:38:04 francis Exp $
+-- $Id: schema.sql,v 1.28 2007-05-29 17:50:34 francis Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -89,7 +89,9 @@ create table requeststash (
             (post_data is null and method = 'GET') or
             (post_data is not null and method = 'POST')
         ),
-    extra text
+    extra text,
+    -- email address of user in the stash data
+    email text
 );
 
 -- make expiring old requests quite quick
