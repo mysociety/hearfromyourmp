@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.12 2007-06-02 19:46:23 francis Exp $
+// $Id: about.php,v 1.13 2007-06-02 20:11:05 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -53,7 +53,7 @@ democratic feedback to the most powerful politician in your area.
 <dd>If you enter your details, we'll add you to a queue of other
 people in your constituency. When enough have signed up, your MP will
 get sent an email. It'll say &ldquo;25 of your constituents would like to
-hear what you're up to. Click hear to let them know&rdquo;. If they
+hear what you're up to. Click here to let them know&rdquo;. If they
 don't respond, nothing will happen, until your MP gets a further email
 which says there are now 50, then 75, 100, 150 &ndash; until it is
 nonsensical not to reply and start talking.</p>
