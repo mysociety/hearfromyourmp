@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.11 2006-08-08 15:13:03 chris Exp $
+// $Id: about.php,v 1.12 2007-06-02 19:46:23 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -27,7 +27,7 @@ everything carries on as before, right?&rdquo;</em></p>
 
 <p>Wrong. Between elections the internet is really starting to
 challenge politics as usual. As part of this change, we'd like to put
-you in touch with your new MP. Not for a specific purpose, but in
+you in touch with your MP. Not for a specific purpose, but in
 order to hear what they're working on, to debate their thoughts in a
 safe, friendly environment, and generally to build better, more useful
 relationships between constituents and their MPs. That's why we built
@@ -53,10 +53,10 @@ democratic feedback to the most powerful politician in your area.
 <dd>If you enter your details, we'll add you to a queue of other
 people in your constituency. When enough have signed up, your MP will
 get sent an email. It'll say &ldquo;25 of your constituents would like to
-hear what you're up to. Hit reply to let them know&rdquo;. If they don't
-reply, nothing will happen, until your MP gets a further email which says
-there are now 50, then 75, 100, 150 &ndash; until it is nonsensical
-not to reply and start talking.</p>
+hear what you're up to. Click hear to let them know&rdquo;. If they
+don't respond, nothing will happen, until your MP gets a further email
+which says there are now 50, then 75, 100, 150 &ndash; until it is
+nonsensical not to reply and start talking.</p>
 
 <p>When your MP sends you mail it won't be one-way spam, and it won't be
 an inbox-filling free-for-all. Instead, each email comes with a link
@@ -70,20 +70,11 @@ what they've said. Safe, easy and democratic.</p>
 EOF;
     signup_form();
     print <<<EOF
-<dt>I am an MP, or work in an MP's office. How do I take part in the testing?
-<dd><a href="/contact/">Contact us</a> and we'll tell you how to get
-involved. All you have to do really is compose a first message to your
-constituents, and we'll help you send it out.
-
-<dt>I signed up to the placeholder page, forgot about it, and when I
-signed up again it didn't tell me that it
-knew who I was until after I'd confirmed my email address. Why? This seems
-silly.
-<dd>If we said "We recognise your email address, don't bother" before
-getting you to confirm it, nasty people could type in email addresses
-at random to work out who'd signed up to the lists. We don't want this
-to happen, so we make our users confirm their address before giving out
-any such information.
+<dt>I am an MP, or work in an MP's office. How do I take part?
+<dd><a href="/contact/">Contact us</a> saying you'd like to send
+a message to your constituents, and we'll tell you what to do
+If you'd like more information first, read our <a
+href="/about-mps">MPs' Frequently Asked Questions page</a>.
 
 <dt>Will it fill my inbox with ranting rubbish from other constituents?
 <dd>No &mdash; only the MP can send messages to all list subscribers. If they
@@ -132,14 +123,14 @@ unless you write to them.
 
 <dt>Who are you?
 <dd>This site was built by <a href="http://www.mysociety.org/">mySociety</a>. mySociety is a charitable
-organisation which has grown out of this community of volunteers who
+organisation which has grown out of the community of volunteers who
 built sites like TheyWorkForYou.com. mySociety's primary mission is to
 build internet projects which give people simple, tangible benefits in
 the civic and community aspects of their lives. Our first project was
 <a href="http://www.writetothem.com/">WriteToThem.com</a>, where you can write to any of your elected
-representatives, for free, and our more recent sites include
+representatives, for free. Our more recent sites include
 <a href="http://www.pledgebank.com/">PledgeBank.com</a> and
-<a href="http://www.placeopedia.com/">Placeopedia.com</a>.
+<a href="http://www.neighbourhoodfixit.com/">NeighbourhoodFixIt.com</a>.
 
 <dt>Who pays for it?
 <dd>HearFromYourMP has been built by mySociety thanks to the effort of a
@@ -150,7 +141,7 @@ hosted by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
 
 <dt>Do you need any help with the project?
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
-Please contact us if you want to get in touch.
+Please <a href="/contact/">contact us</a> if you want to get in touch.
 
 <dt>What are the terms and conditions of usage?
 <dd>We've got a <a href="/terms">proper Ts&amp;Cs page</a>.
@@ -178,9 +169,11 @@ what should I do?
 tell us what you want, or build it yourself as a volunteer. :)
 
 <dt>You guys are so cool &mdash; how can we thank you?
-<dd>Gin and chocolates, marked c/o Tom Steinberg, 18 Victoria Park Square,
-London E2 9PF. I'll make sure the rest of the gang get their share.
-Honest.
+<dd>Gin and chocolates, marked c/o Tom Steinberg, 18 Victoria Park
+Square, London E2 9PF. I'll make sure the rest of the gang get their
+share.  Honest. (Or, if you are unaccountably out of alcohol and sweets,
+you can <a href="https://secure.mysociety.org/donate/">donate money</a>
+to the charity that runs HearFromYourMP.)
 
 <dt>What's that background image on every page?
 <dd>It's a patent illustration for a lever voting machine. As 

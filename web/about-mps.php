@@ -5,10 +5,7 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about-mps.php,v 1.1 2007-06-01 17:54:38 matthew Exp $
-
-# XXX: Needs to start with blurb about subscribers *not* having concerns
-# to tell MP about :)
+// $Id: about-mps.php,v 1.2 2007-06-02 19:46:23 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -25,31 +22,50 @@ function about_mps_page() {
 
 <h2>MPs&rsquo; Frequently Asked Questions</h2>
 
+<p>This page explains to MPs what HearFromYourMP is,
+and why you might want to use it. For the general point of view, 
+see <a href="/about">about this site</a> instead.
+
 <h3>Overview</h3>
 
 <dl>
 
 <dt id="what">So, what is this &lsquo;HearFromYourMP&rsquo; thing?</dt>
 
-<dd>HearFromYourMP is a website that allows constituents to
-sign up to get emails from their local MP. MPs submit messages, which
-are then sent out by email to the people who have signed up in their
-constituency, and also displayed on the website. The constituents
-who've signed up are also able to post comments on the message via the
-website.</dd>
+<dd>HearFromYourMP is a website that allows constituents to sign up to
+get emails from their local MP. MPs submit messages, which are then
+sent out by email to the people who have signed up in their
+constituency. The messages are also displayed on the website. The
+constituents who've signed up are then able to post comments on the
+message via the website.</dd>
 
 <dt id="cost">Is it free to use?</dt>
 
 <dd>Yes. It's completely free for both MPs and constituents to use.</dd>
 
+<dt id="write">Can't my constituents just write to me with their
+concerns?</dt>
+
+<dd>We've got a separate website, called <a
+href="http://www.writetothem.com">WriteToThem</a>, for that.
+
+HearFromYourMP is different. It is a chance for you to set the
+agenda, tell your constituents what you are working on and
+are concerned about, and get feedback about what they think.
+
+</dd>
+
+
 <dt id="who">So who runs all this, and what's in it for them?</dt>
 
 <dd>This site was built by <a
 href="http://mysociety.org/">mySociety</a>. mySociety is a charitable
-organisation which has grown out of this community of volunteers who
-built sites like TheyWorkForYou.com. mySociety's primary mission is to
-build internet projects which give people simple, tangible benefits in
-the civic and community aspects of their lives.</dd>
+organisation which has grown out of the community of volunteers who
+built sites like 
+<a href="http://www.theyworkforyou.com">TheyWorkForYou.com</a>. 
+mySociety's primary mission is to build internet projects which give
+people simple, tangible benefits in the civic and community aspects of
+their lives.</dd>
 
 </dl>
 
@@ -62,34 +78,37 @@ the civic and community aspects of their lives.</dd>
 <dd>As an elected representative, it's important that those
 constituents who want to follow your actions and efforts on their
 behalf are able to. It's also useful for you to be able to be able to
-receive direct feedback from them. HearFromYourMP provides an easy-to-use
-solution to both of these issues.</dd>
+receive direct feedback from them. HearFromYourMP provides an
+easy-to-use solution to both of these issues.</dd>
 
-<dt id="mailinglist">What makes HearFromYourMP better than a simple email
-mailing list?</dt>
+<dt id="mailinglist">What makes HearFromYourMP better than a simple
+email mailing list, an online forum, or a blog?</dt>
 
-<dd>First there's no set-up or on-going administration for you &mdash;
-the system is already set up and ready to use, and registrations and
-removal requests are all handled automatically. Secondly, as this is
-independent system run by a group with a proven track record, your
-constituents are potentially more likely to feel comfortable signing
-up, confident that unsubscription requests will be honoured, and that
-their email address will not be given out to third parties. Finally,
-the opportunity for constituents to post their own comments is likely
-to make this system more attractive to constituents, allowing your
-messages to reach a wider audience.</dd>
+<dd>Lots of reasons!
+<ul>
+<li>There's no set-up or on-going administration for you &mdash;
+the system is already set up and ready to use. Registrations and
+removal requests are all handled automatically.</li>
+<li>The opportunity for constituents to post their own
+comments makes this system more attractive to constituents, allowing
+your messages to reach a wider audience.</li>
+<li>Unlike a blog or a forum, we take steps to make sure only your
+constituents can post comments. Rather than becoming a national
+(or international!) debating forum, it is a space for you to talk with
+your constituents.</li>
+<li>The posting format and restrictions mean that there's less risk of
+the junk or abusive posts that often plague traditional forum setups
+(see also the <a href="#abuse" title="Won't there be problems with
+abusive or irrelevent replies to my messages?">Won't there be problems
+&hellip;</a> question below).</li>
+<li>This is a neutral space run by an independent group with a proven
+track record. Both you and your constituents can feel comfortable
+signing up, confident that unsubscription requests will be honoured,
+and that your email addresses will not be given out to third
+parties.</li>
 
-<dt id="forum">What makes HearFromYourMP better than an online forum?</dt>
-
-<dd>There's no set-up or administration for your to worry about. In
-particular, the posting format and restrictions should mean that
-there's less risk of junk or abusive posts that could easily occur
-with a traditional forum setup (see also the <a href="#abuse"
-title="Won't there be problems with abusive or irrelevent replies to
-my messages?">Won't there be problems &hellip;</a> question
-below). Despite these restrictions, we feel there is still enough
-freedom in the system to be attractive to constituents.</dd>
-
+</ul>
+</dd>
 </dl>
 
 <h3>How it all Works</h3>
@@ -104,11 +123,14 @@ freedom in the system to be attractive to constituents.</dd>
 using the online form at <a
 href="http://www.hearfromyourmp.com/">www.hearfromyourmp.com</a></li>
 
-<li>MPs are sent messages encouraging them to take part at various milestone numbers.</li>
+<li>MPs are sent occasional emails encouraging them to take part.
+The first of these is when 25 constituents have signed up.
+</li>
 
 <li>MP decides to take part.</li>
 
-<li>MP Sends message by following the link in the email and typing in their message.</li>
+<li>MP sends message by following the link in the email and typing in
+their message.</li>
 
 <li>The message is sent by email to the people who've signed up, and
 is also displayed online.</li>
@@ -121,12 +143,12 @@ to post comments next to the online version.</li>
 <dt id="messages">What sort of messages can / should I send through
 the system?</dt>
 
-<dd>It's basically up to you, but remember that your messages will be
-viewed by the constituents that have signed up, and also available
-online for anyone else who's interested to read. People will probably
-be more interested to read personal details, commentary and plans
-directly from the MP, rather than something that reads like a press
-release or a party political broadcast.</dd>
+<dd>It's basically up to you. Remember, however, that your messages
+will be viewed by the constituents that have signed up, and also
+available online for anyone else who's interested to read. People will
+probably be more interested to read personal details, commentary and
+plans directly from the MP, rather than something that reads like a
+press release or a party political broadcast.</dd>
 
 <dt id="abuse">Won't there be problems with abusive or irrelevant replies to my messages?</dt>
 
@@ -135,8 +157,8 @@ general public, there is a risk that it will be abused. However, the
 registration system, the fact that you need to register in advance of
 a message to post a comment on it, and the fact that comments are
 limited to two per person per day all help to prevent abuse. In
-practice, abusive or irrelevant posts have not been a problem so far,
-and if any appear they are simply reported and easily removed.</dd>
+practice, abusive or irrelevant posts have not been a problem.
+If any appear they are simply reported and easily removed.</dd>
 
 <dt>Can I see an example of HearFromYourMP in action?</dt>
 
@@ -150,8 +172,9 @@ using the system</a>.</dd>
 <dt>I'm not really into computers and the internet. Will this be a
 problem?</dt>
 
-<dd>It shouldn't be. The system is simple to use, and requires no specialist or technical knowledge. All you need is 
-a web browser and something to say.</dd>
+<dd>It shouldn't be. The system is simple to use, and requires no
+specialist or technical knowledge. All you need is a web browser and
+something to say.</dd>
 
 <dt id="signups">Does it matter how many of my constituents have
 signed up?</dt>
@@ -175,24 +198,23 @@ href="http://www.hearfromyourmp.com/league?s=c">league table</a>.</dd>
 href="http://www.hearfromyourmp.com/privacy">privacy policy</a>, we
 promise not to divulge the details of the people who sign up to anyone
 else. This includes the MPs themselves. You are of course free to use
-HearFromYourMP to send out copies of the messages that go your your existing
-list, or to send a one-time message containing instructions on how to
-sign up to your own list. (See also <a href="#mailinglist">What makes
-it better than a simple email mailing list?</a> above, and <a
-href="#remove">Can you remove my name to stop people signing up?</a>
-below.)</dd>
+HearFromYourMP to send out copies of the messages that go your your
+existing list, or to send a one-time message containing instructions
+on how to sign up to your own list. (See also <a
+href="#mailinglist">What makes it better than a simple email mailing
+list?</a> above, and <a href="#remove">Can you remove my name to stop
+people signing up?</a> below.)</dd>
 
 <dt>I already run a mailing list. If I switch to using HearFromYourMP, could I automatically sign up all the people on my list?</dt>
 
-<dd>? [Presumably not, and you couldn't even help automate things since you'd need the post-codes even to do the initial web-form submission]</dd>
-
-<dd>If you wish to switch completely, you'll need to encourage your
+<dd>Unfortunately not, because we need to check their postcodes. 
+If you wish to switch completely, you'll need to encourage your
 existing list members to sign-up at <a
-href="http://www.hearfromyourmp.com/">www.hearfromyourmp.com</a>. To
-encourage them to do so there's a page of information at <a
-href="http://www.hearfromyourmp.com/about">www.hearfromyourmp.com/about</a>. Since
-people may not respond immediately, you can always continue to use
-your existing mailing list to send out a copy of any messages sent
+href="http://www.hearfromyourmp.com/">www.hearfromyourmp.com</a>. 
+To encourage them to do so there's a page of information at <a
+href="http://www.hearfromyourmp.com/about">www.hearfromyourmp.com/about</a>.
+Since people may not respond immediately, you can always continue to
+use your existing mailing list to send out a copy of any messages sent
 through HearFromYourMP.</dd>
 
 </dl>
@@ -205,21 +227,26 @@ through HearFromYourMP.</dd>
 <dt id="convinced">Ok, I'm convinced, and I'd like to take part. What
 do I need to do?</dt>
 
-<dd>If you've reached a threshold and received an email from us, simply follow
-its instructions. If you haven't had an email, or can't find it, simply email
-us at team@hearfromyourmp.com and we'll be happy to help.</dd>
+<dd>If you've reached a threshold and received an email from us,
+simply follow its instructions. If you haven't had an email, or can't
+find it, simply email us at 
+<a href="mailto:team@hearfromyourmp.com">team@hearfromyourmp.com</a>
+and we'll be happy to help.</dd>
 
-<dt id="unsure">I'm not sure, and would like more information. Whom should I
-contact?</dt>
+<dt id="unsure">I'm not sure, and would like more information. Whom
+should I contact?</dt>
 
-<dd>Please feel free to email any questions you have to team@hearfromyourmp.com.</dd>
+<dd>Please feel free to email any questions you have to 
+<a href="mailto:team@hearfromyourmp.com">team@hearfromyourmp.com</a>.
+</dd>
 
 <dt id="remove">I'm really not interested at all. Can you remove my
 name to stop people signing up?</dt>
 
-<dd>We can advise people that you don't wish to use the site, and point them
-elsewhere. However, as the list is per constituency, not per MP, we will 
-continue to accept subscribers, in case something happens in the future.</dd>
+<dd>We can advise people that you don't wish to use the site, and
+point them elsewhere. However, as the list is per constituency, not
+per MP, we will continue to accept subscribers. A future MP in your
+constituency may want to use this service.</dd>
 
 </dl>
 

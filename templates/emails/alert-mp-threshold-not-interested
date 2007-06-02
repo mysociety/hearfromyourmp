@@ -14,5 +14,9 @@ Thus far <?=$values['mps_using']?> MPs have sent messages through the service, a
 <?=$values['num_people']?> people signed up nationwide. It's free, popular, and growing. Why
 not have a go?
 
+If you have any questions about what HearFromYourMP is, or why you should use
+it, then follow this link:
+    http://www.hearfromyourmp.com/about-mps
+
 All the best,
 The HearFromYourMP.com team

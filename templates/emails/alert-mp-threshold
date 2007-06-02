@@ -37,9 +37,10 @@ elected representatives, from councillors to MEPs.
 
 If you are not interested in using this service at the moment, we will
 send you a reminder when you have <?=$values['next_threshold']?>
-constituents signed up. If you have any further questions, please email
-team@hearfromyourmp.com, call us on 07811 082158, or read our
-Frequently Asked Questions at http://www.hearfromyourmp.com/faq
+constituents signed up. If you have any further questions, please 
+follow this link:
+    http://www.hearfromyourmp.com/about-mps
+Or email us at team@hearfromyourmp.com, or call us on 07811 082158.
 
 All the best,
 The HearFromYourMP Team
