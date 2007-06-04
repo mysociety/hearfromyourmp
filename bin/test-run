@@ -15,7 +15,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.6 2006-10-05 10:27:29 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.7 2007-06-04 13:15:48 francis Exp $';
 
 use strict;
 require 5.8.0;
@@ -63,8 +63,9 @@ if ($help) {
 our $base_url = mySociety::Config::get('BASE_URL');
 our $admin_url = mySociety::Config::get('ADMIN_URL');
 our $track_url = mySociety::Config::get('TRACKING_URL');
+our $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
 our $httpd_error_log = mySociety::Config::get('HTTPD_ERROR_LOG');
-sub email_n { my $n = shift; return "ycmlharness+$n\@writetothem.owl"; }
+sub email_n { my $n = shift; return "ycmlharness+$n\@$email_domain"; }
 sub name_n { my $n = shift; return "Cara Constituent $n"; }
 
 #############################################################################
@@ -117,7 +118,6 @@ sub get_web_bug {
 
 sub do_basic_signup_test {
     $wth->browser_get($base_url);
-    get_web_bug();
     $wth->browser_check_contents("Sign up to hear from your MP");
     $wth->browser_check_contents("This is a test site"); 
 
@@ -125,7 +125,6 @@ sub do_basic_signup_test {
     $wth->browser_submit_form(form_name => 'frontpage_subscribe',
         fields => { name => name_n(1), email => email_n(1), postcode => "ZZ9 9zz"},  
         );
-    get_web_bug();
     $wth->browser_check_contents("Now check your email!"); 
 
     # Confirm email
@@ -136,7 +135,6 @@ sub do_basic_signup_test {
     $wth->email_check_url($confirmation_url);
     print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
     $wth->browser_get($confirmation_url);
-    get_web_bug();
     $wth->browser_check_contents("You're the 1st person to sign up to get emails"); 
 
     #print $wth->browser_content();
