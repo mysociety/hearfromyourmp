@@ -10,7 +10,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: create-mp-login-url,v 1.1 2006-07-07 09:48:51 matthew Exp $
+ * $Id: create-mp-login-url,v 1.2 2007-06-10 23:34:25 francis Exp $
  * 
  */
 
@@ -33,9 +33,9 @@ foreach ($switches as $switch) {
     if ($switch[0]=='--help') {
 ?>
 
-YCML MP threshold alert sending script.
+YCML show MP login URL.
 
-Usage: send-mp-threshold-alerts --constituency=ID [--verbose]
+Usage: create-mp-login-url --constituency=ID [--verbose]
 
 --constituency  Constituency ID to return URL for
 --help          Display this help message
