@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.28 2006-07-06 17:36:12 matthew Exp $
+ * $Id: admin-ycml.php,v 1.29 2007-06-21 17:10:03 francis Exp $
  * 
  */
 
@@ -96,6 +96,27 @@ class ADMIN_PAGE_YCML_MAIN {
         elseif ($sort=='c') $order = 'constituency';
         elseif ($sort=='s') $order = 'count DESC';
 
+        if (get_http_var('makempurl')) {
+            $constituency = get_http_var('makempurl');
+
+            $area_info = ycml_get_area_info($constituency);
+            $rep_info = ycml_get_mp_info($constituency);
+
+            print "<p><i>";
+            if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+                print("No email address available for ${rep_info['name']} MP (${area_info['name']}). ");
+                if ($rep_info['email'] === '')
+                    print("Email address returned by DaDem was blank; should be null.");
+            } else {
+                print "Email address for ${rep_info['name']} MP is ${rep_info['email']}.";
+
+                $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/' . $constituency, null);
+                db_commit();
+                print "<br>New MP login URL: <a href=\"$url\">$url</a>\n";
+            }
+            print "</i></p>";
+        }
+
         $q = db_query('SELECT COUNT(id) AS count,constituency,EXTRACT(epoch FROM MAX(creation_time)) AS latest FROM constituent GROUP BY constituency' . 
             ($order ? ' ORDER BY ' . $order : '') );
         list($areas_info, $rows) = ycml_get_all_areas_info($q, false);
@@ -113,7 +134,12 @@ class ADMIN_PAGE_YCML_MAIN {
             $row .= '<br><a href="'.$this->self_link.'&amp;constituency='.$c_id.'">admin</a> |
                 <a href="?page=ycmllatest&amp;constituency='.$c_id.'">timeline</a>';
             $row .= '</td>';
-            $row .= "<td>$r_name</td>";
+            $row .= "<td>$r_name<br>" .
+                    '<form method="post">
+                    <input type="hidden" name="page" value="ycml">
+                    <input type="hidden" name="makempurl" value="'.$c_id.'">
+                    <input type="submit" value="Create MP login URL">'
+                . "</a></td>";
             $row .= '<td align="center">' . $r['count'] . '</td>';
             $row .= '<td>' . prettify($r['latest']) . '</td>';
             $rows[$k] = $row;
