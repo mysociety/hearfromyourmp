@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.29 2007-06-21 17:10:03 francis Exp $
+ * $Id: admin-ycml.php,v 1.30 2007-06-21 17:12:22 francis Exp $
  * 
  */
 
@@ -138,7 +138,8 @@ class ADMIN_PAGE_YCML_MAIN {
                     '<form method="post">
                     <input type="hidden" name="page" value="ycml">
                     <input type="hidden" name="makempurl" value="'.$c_id.'">
-                    <input type="submit" value="Create MP login URL">'
+                    <input type="submit" value="Create MP login URL">
+                    </form>'
                 . "</a></td>";
             $row .= '<td align="center">' . $r['count'] . '</td>';
             $row .= '<td>' . prettify($r['latest']) . '</td>';
