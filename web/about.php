@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.13 2007-06-02 20:11:05 francis Exp $
+// $Id: about.php,v 1.14 2007-07-17 10:03:19 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -127,10 +127,10 @@ organisation which has grown out of the community of volunteers who
 built sites like TheyWorkForYou.com. mySociety's primary mission is to
 build internet projects which give people simple, tangible benefits in
 the civic and community aspects of their lives. Our first project was
-<a href="http://www.writetothem.com/">WriteToThem.com</a>, where you can write to any of your elected
+<a href="http://www.writetothem.com/">WriteToThem</a>, where you can write to any of your elected
 representatives, for free. Our more recent sites include
-<a href="http://www.pledgebank.com/">PledgeBank.com</a> and
-<a href="http://www.neighbourhoodfixit.com/">NeighbourhoodFixIt.com</a>.
+<a href="http://www.pledgebank.com/">PledgeBank</a> and
+<a href="http://www.fixmystreet.com/">FixMyStreet</a>.
 
 <dt>Who pays for it?
 <dd>HearFromYourMP has been built by mySociety thanks to the effort of a
