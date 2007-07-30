@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.29 2007-07-30 17:29:11 matthew Exp $
+-- $Id: schema.sql,v 1.30 2007-07-30 17:59:13 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -99,6 +99,7 @@ create table message (
     -- to 'approved' and are sent.
     state text not null default ('new') check (state in ('new', 'ready', 'approved'))
 );
+create index message_state_constituency_idx on message(state,constituency);
 
 create table comment (
     id text not null primary key,   -- comment ID, 8 hex digits
