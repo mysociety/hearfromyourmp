@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.28 2007-05-29 17:50:34 francis Exp $
+-- $Id: schema.sql,v 1.29 2007-07-30 17:29:11 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -15,16 +15,6 @@ create function ms_current_timestamp()
         return current_timestamp;
     end;
 ' language 'plpgsql';
-
--- information about a constituency (and its MP)
-create table constituency (
-    -- MaPit area_id
-    id integer not null primary key,
-    -- Email to which confirmation requests for posted messages are sent;
-    -- roughly, "the email address of the person who may post messages to the
-    -- site pp an MP".
-    confirmation_email text not null
-);
 
 -- users, but call the table person rather than user so we don't have to quote
 -- its name in every statement....
@@ -243,9 +233,15 @@ create function delete_comment(text)
     end
 ' language 'plpgsql';
 
+-- information about a constituency (and its MP)
 create table constituency_cache (
+    -- MaPit area_id
     id integer not null primary key,
+    -- Constituency name
     name text not null,
+    -- Email to which confirmation requests and some alerts? are sent
+    confirmation_email text not null default '',
     rep_name text not null default '',
-    rep_id integer not null default 0 
+    rep_id integer not null default 0,
+    rep_created integer not null default 0
 );

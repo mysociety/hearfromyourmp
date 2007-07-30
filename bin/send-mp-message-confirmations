@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-message-confirmations,v 1.9 2006-05-23 17:05:55 matthew Exp $
+ * $Id: send-mp-message-confirmations,v 1.10 2007-07-30 17:29:11 matthew Exp $
  * 
  */
 
@@ -53,8 +53,8 @@ function send_mp_message_confirmations() {
 
     $q = db_query("
             select message.id, constituency, subject, content, confirmation_email
-            from message left join constituency
-                on message.constituency = constituency.id
+            from message left join constituency_cache
+                on message.constituency = constituency_cache.id
             where state = 'new'");
 
     while (list($id, $constituency, $subject, $content, $email)
@@ -66,7 +66,7 @@ function send_mp_message_confirmations() {
                 continue;
             } else {
                 warning("no confirmation email address available for ${rep_info['name']} MP; using DaDem address ${rep_info['email']}");
-                db_query('insert into constituency (id, confirmation_email) values (?, ?)', array($constituency, $rep_info['email']));
+                db_query('update constituency_cache set confirmation_email=? where id=?', array($rep_info['email'], $constituency));
                 $email = $rep_info['email'];
             }
         }

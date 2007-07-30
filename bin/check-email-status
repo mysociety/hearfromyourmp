@@ -7,7 +7,7 @@
  * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: check-email-status,v 1.1 2007-06-04 13:18:28 francis Exp $
+ * $Id: check-email-status,v 1.2 2007-07-30 17:29:11 matthew Exp $
  * 
  */
 
@@ -18,22 +18,18 @@ require_once '../../phplib/db.php';
 db_connect();
 
 $data = array();
-$q = db_getAll('select id,name,rep_name from constituency_cache');
+$q = db_getAll('select id,name,rep_name, confirmation_email from constituency_cache');
 foreach ($q as $r) {
     $data[$r['id']] = array(
         'name' => $r['name'],
 	'rep_name' => $r['rep_name'],
 	'email_constituent' => '',
-	'email_confirmation' => ''
+	'email_confirmation' => strtolower($r['confirmation_email'])
     );
 }
 $q = db_getAll("select constituency,person.email from constituent,person where person_id=person.id and is_mp='t'");
 foreach ($q as $r) {
     $data[$r['constituency']]['email_constituent'] .= strtolower($r['email']).'|';
-}
-$q = db_getAll('select id, confirmation_email from constituency');
-foreach ($q as $r) {
-    $data[$r['id']]['email_confirmation'] = strtolower($r['confirmation_email']);
 }
 
 $out = array('fax'=>'','wttconf'=>'','wttconst'=>'','confconst'=>'','alldiff'=>'');

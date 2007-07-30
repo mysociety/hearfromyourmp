@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.30 2007-06-21 17:12:22 francis Exp $
+ * $Id: admin-ycml.php,v 1.31 2007-07-30 17:29:11 matthew Exp $
  * 
  */
 
@@ -206,7 +206,7 @@ class ADMIN_PAGE_YCML_MAIN {
                 if ($r['is_mp']=='t') $choices .= ' selected';
                 $choices .= ' value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
             }
-            $confirmation_email = db_getOne('select confirmation_email from constituency where id = ?', $id);
+            $confirmation_email = db_getOne('select confirmation_email from constituency_cache where id = ?', $id);
             if (is_null($confirmation_email))
                 $confirmation_email = '';
             $sent_messages = db_getOne("select count(*) from message where constituency=? and state='approved'", $id);
@@ -420,9 +420,7 @@ if any. This must be set before messages can be posted:</p>
             $email = get_http_var('confirmation_email');
             if (!is_null($id) && !is_null($email)) {
                 if (validate_email($email)) {
-                    $q = db_query('update constituency set confirmation_email = ? where id = ?', array($email, $id));
-                    if (0 == db_affected_rows())
-                        db_query('insert into constituency (id, confirmation_email) values (?, ?)', array($id, $email));
+                    db_query('update constituency_cache set confirmation_email = ? where id = ?', array($email, $id));
                     db_commit();
                     print '<p><em>Confirmation email address set to '
                             . htmlspecialchars($email)

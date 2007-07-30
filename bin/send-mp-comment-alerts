@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-comment-alerts,v 1.5 2006-10-19 08:15:01 matthew Exp $
+ * $Id: send-mp-comment-alerts,v 1.6 2007-07-30 17:29:11 matthew Exp $
  *
  */
 
@@ -82,7 +82,7 @@ function send_mp_comment_alerts() {
     }
 
     foreach ($comments as $constituency_id => $messages) {
-        $email = db_getOne('select confirmation_email from constituency where id = ?', $constituency_id);
+        $email = db_getOne('select confirmation_email from constituency_cache where id = ?', $constituency_id);
 	$body = '';
         foreach ($messages as $message_id => $comments) {
             $body .= $subjects[$message_id] . "\n\n"; # . str_repeat('-', strlen($subjects[$message_id])) . "\n\n";
