@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.16 2007-07-30 16:57:55 matthew Exp $
+// $Id: fns.php,v 1.17 2007-07-30 17:32:33 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -39,7 +39,7 @@ function ycml_get_all_areas_info($q, $ignore_fictional = true) {
     $areas_info = array();
     $cache = db_getAll('SELECT id,name FROM constituency_cache');
     foreach ($cache as $r) {
-    	$areas_info[$r['id']] = array('name'=>$r['name']);
+        $areas_info[$r['id']] = array('name'=>$r['name']);
     }
 
     $rows = array(); $ids = array();
@@ -97,16 +97,17 @@ function ycml_get_all_reps_info($ids) {
         dadem_check_error($reps);
         $reps_info2 = array();
         foreach ($reps as $c_id => $row) {
-	    if (isset($row[0])) {
+            if (isset($row[0])) {
                 $reps_info2[] = $row[0];
-	    } else {
-	        $reps_info[$c_id] = array('id'=>0, 'name'=>'-');
-	    }
+            } else {
+                $reps_info[$c_id] = array('id'=>0, 'name'=>'-');
+            }
         }
         $reps_info2 = dadem_get_representatives_info($reps_info2);
         foreach ($reps_info2 as $id => $row) {
             $reps_info[$row['voting_area']] = array('id'=>$id, 'name'=>$row['name']);
-            db_query('UPDATE constituency_cache SET rep_id=?, rep_name=? WHERE id=?', array($id, $row['name'], $row['voting_area']));
+            db_query('UPDATE constituency_cache SET rep_id=?, rep_name=?, rep_created=? WHERE id=?',
+                array($id, $row['name'], $row['voting_area'], $row['whencreated']));
         }
         db_commit();
     }
