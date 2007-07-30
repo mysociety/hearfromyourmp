@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.20 2006-08-24 18:27:33 francis Exp $
+// $Id: league.php,v 1.21 2007-07-30 17:45:38 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -32,7 +32,8 @@ function csv_league_table($sort) {
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp
+    (SELECT COUNT(*) FROM mp_threshold_alert,constituency_cache WHERE constituency = constituent.constituency
+        AND constituency=constituency_cache.id AND whensent>rep_created) AS emails_to_mp
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
 
@@ -82,7 +83,8 @@ function league_table($sort) {
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = constituent.constituency) AS emails_to_mp,
+    (SELECT COUNT(*) FROM mp_threshold_alert,constituency_cache WHERE constituency = constituent.constituency
+        AND constituency=constituency_cache.id AND whensent>rep_created) AS emails_to_mp,
     (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
     FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
     $sort_orders[$sort] );
