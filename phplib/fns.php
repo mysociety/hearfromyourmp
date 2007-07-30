@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.17 2007-07-30 17:32:33 matthew Exp $
+// $Id: fns.php,v 1.18 2007-07-30 17:38:09 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -107,7 +107,7 @@ function ycml_get_all_reps_info($ids) {
         foreach ($reps_info2 as $id => $row) {
             $reps_info[$row['voting_area']] = array('id'=>$id, 'name'=>$row['name']);
             db_query('UPDATE constituency_cache SET rep_id=?, rep_name=?, rep_created=? WHERE id=?',
-                array($id, $row['name'], $row['voting_area'], $row['whencreated']));
+                array($id, $row['name'], $row['whencreated'], $row['voting_area']));
         }
         db_commit();
     }
