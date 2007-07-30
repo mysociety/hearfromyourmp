@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.53 2007-07-04 10:03:12 francis Exp $
+# $Id: view.php,v 1.54 2007-07-30 16:57:56 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -104,7 +104,8 @@ function view_messages($c_id) {
                     WHERE state = 'approved' and constituency = ? ORDER BY message.posted", $c_id);
     $num_messages = db_num_rows($q);
     $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.constituency = ?', $c_id);
-    $emails_sent_to_mp = db_getOne('SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = ?', $c_id);
+    $emails_sent_to_mp = db_getOne('SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = ?
+        and extract(epoch from whensent) > ?', $c_id, $rep_info['whencreated']);
     $next_threshold = db_getOne('SELECT mp_threshold(?, +1);', $signed_up);
     $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND constituency = ?", $c_id);
     $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);

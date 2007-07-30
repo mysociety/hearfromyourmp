@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.15 2006-05-18 17:05:18 matthew Exp $
+// $Id: fns.php,v 1.16 2007-07-30 16:57:55 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -65,20 +65,21 @@ function ycml_get_all_areas_info($q, $ignore_fictional = true) {
 
 # ycml_get_mp_info WMC_ID
 # Given a WMC id, returns rep's name and party
-function ycml_get_mp_info($wmc_id) {
-    $reps = dadem_get_representatives($wmc_id);
+function ycml_get_mp_info($wmc_id, $all = 0) {
+    $reps = dadem_get_representatives($wmc_id, $all);
     dadem_check_error($reps);
     if (count($reps) == 0)
         return array();
-    if (count($reps) != 1)
+    if (!$all && count($reps) != 1)
         err("Unexpectedly found ".count($reps)." MPs for your postcode.");
-    $rep_info = dadem_get_representative_info($reps[0]);
+    $reps_info = dadem_get_representatives_info($reps);
     # TODO: Get method (email only?) from here
-    if (OPTION_YCML_STAGING) {
-        $rep_info['name'] = spoonerise($rep_info['name']);
+    foreach ($reps_info as $id => $rep_info) {
+        if (OPTION_YCML_STAGING)
+            $rep_info['name'] = spoonerise($rep_info['name']);
+        if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
+            $rep_info['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     }
-    if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
-        $rep_info['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     return $rep_info;
 }
 
