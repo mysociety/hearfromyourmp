@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-threshold-alerts,v 1.20 2007-07-30 17:29:11 matthew Exp $
+ * $Id: send-mp-threshold-alerts,v 1.21 2007-07-31 12:47:46 matthew Exp $
  * 
  */
 
@@ -151,7 +151,7 @@ function send_mp_threshold_alerts($type) {
         $already_present = db_getOne("select confirmation_email from constituency_cache where 
             id = ? for update", array($constituency) );
         if (!$already_present) {
-            db_query("update constituency_cache set confirmation_email=? where id=?"
+            db_query("update constituency_cache set confirmation_email=? where id=?",
                     array($rep_info['email'], $constituency));
             db_commit();
 	}
