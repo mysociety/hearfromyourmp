@@ -1,5 +1,7 @@
 Subject: New comment on message '<?=$values['subject']?>' at HearFromYourMP
 
+Hi <?=$values['alerted_name']?>,
+
 <?=$values['comment_author_name']?> has left a comment saying:
 
 '<?=$values['comment_text']?>'

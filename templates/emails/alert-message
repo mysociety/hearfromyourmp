@@ -1,5 +1,7 @@
 Subject: New message from your MP, <?=$values['mp_name']?>
 
+Hello <?=$values['creator_name']?>,
+
 PLEASE DO NOT REPLY TO THIS MAIL -- you cannot reply to your MP by doing so.
 Instead, you can leave a public comment on their message by following this
 link:

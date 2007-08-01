@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-comment-alerts,v 1.5 2006-07-05 18:27:19 francis Exp $
+ * $Id: send-comment-alerts,v 1.6 2007-08-01 15:07:54 matthew Exp $
  *
  */
 
@@ -94,7 +94,8 @@ function send_comment_alerts() {
         $row['comment_url'] = ycml_make_view_url($row['message_id'], $row['alerted_email']);
         $row['comment_text'] = trim($row['comment_content']);
         $row['unsubscribe_url'] = alert_unsubscribe_link($row['alert_id'], $row['alerted_email']);
-        $f = ycml_send_email_template($row['alerted_email'], 'alert-comment', $row);
+        $f = ycml_send_email_template(array($row['alerted_email'], $row['alerted_name']),
+	    'alert-comment', $row);
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();

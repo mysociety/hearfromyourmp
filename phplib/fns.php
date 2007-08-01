@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.18 2007-07-30 17:38:09 matthew Exp $
+// $Id: fns.php,v 1.19 2007-08-01 15:07:54 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -114,7 +114,7 @@ function ycml_get_all_reps_info($ids) {
     return $reps_info;
 }
 
-// $to can be one recipient address in a string, or an array of addresses
+// $to can either be one address in a string, or an array of (address, name)
 function ycml_send_email_template($to, $template_name, $values, $headers = array()) {
     global $lang;
 
@@ -129,7 +129,7 @@ function ycml_send_email_template($to, $template_name, $values, $headers = array
         $values['email'] = null;
     }
         
-    $values['signature'] = _("-- the HearFromYourMP team");
+    $values['signature'] = _("--\nthe HearFromYourMP team");
 
     if (is_file("../templates/emails/$lang/$template_name"))
         $template = file_get_contents("../templates/emails/$lang/$template_name");
@@ -144,7 +144,7 @@ function ycml_send_email_template($to, $template_name, $values, $headers = array
     return ycml_send_email_internal($to, $spec);
 }
 
-// $to can be one recipient address in a string, or an array of addresses
+// $to can be as above
 function ycml_send_email($to, $subject, $message, $headers = array()) {
     $spec = array(
         '_unwrapped_body_' => $message,
@@ -155,21 +155,14 @@ function ycml_send_email($to, $subject, $message, $headers = array()) {
 }
 
 function ycml_send_email_internal($to, $spec) {
-    // Construct parameters
-
     // Add standard YCML From header
     if (!array_key_exists("From", $spec)) {
         $spec['From'] = '"HearFromYourMP" <' . OPTION_CONTACT_EMAIL . ">";
     }
 
-    // With one recipient, put in header.  Otherwise default to undisclosed recip.
-    if (!is_array($to)) {
-        $spec['To'] = $to;
-        $to = array($to);
-    }
-
-    // Send the message
-    $result = evel_send($spec, $to);
+    $spec['To'] = array($to);
+    $recip = is_array($to) ? $to[0] : $to;
+    $result = evel_send($spec, $recip);
     $error = evel_get_error($result);
     if ($error) 
         error_log("ycml_send_email_internal: " . $error);

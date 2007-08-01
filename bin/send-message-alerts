@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-message-alerts,v 1.8 2006-01-17 10:30:18 francis Exp $
+ * $Id: send-message-alerts,v 1.9 2007-08-01 15:07:54 matthew Exp $
  *
  */
 
@@ -93,7 +93,8 @@ function send_message_alerts() {
         $row['message_url'] = ycml_make_view_url($row['message_id'], $row['email']);
         $row['unsubscribe_url'] = constituent_unsubscribe_link($row['constituent_id'], $row['email']);
         $row['writetothem_url'] = 'http://www.writetothem.com/?a=WMC&pc=' . urlencode($row['postcode']);
-        $f = ycml_send_email_template($row['email'], 'alert-message', $row);
+        $f = ycml_send_email_template(array($row['email'], $row['name']),
+	    'alert-message', $row);
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();

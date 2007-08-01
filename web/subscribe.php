@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.30 2006-09-14 14:29:32 francis Exp $
+// $Id: subscribe.php,v 1.31 2007-08-01 15:07:55 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -86,7 +86,7 @@ function do_subscribe() {
             db_commit();
             $url = OPTION_BASE_URL . "/L/$token";
             $template_data['url'] = $url;
-            ycml_send_email_template($q_email, 'confirm-subscribe', $template_data);
+            ycml_send_email_template(array($q_email, $q_name), 'confirm-subscribe', $template_data);
             page_header("Now check your email");
 ?>
 <p id="loudmessage">
