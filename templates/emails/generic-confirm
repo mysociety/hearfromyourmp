@@ -1,6 +1,6 @@
 Subject: <?=$values['reason_email_subject']?>
 
-Hello <?=$values['user_name']?>,
+Hello<?=$values['user_name']?>,
 
 Please click on the link below to confirm your email address.
 <?=$values['reason_email']?>
