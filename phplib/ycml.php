@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.16 2007-08-17 10:33:24 matthew Exp $
+ * $Id: ycml.php,v 1.17 2007-08-17 19:13:48 matthew Exp $
  * 
  */
 
@@ -19,9 +19,6 @@ require_once '../../phplib/stash.php';
 require_once "../../phplib/error.php";
 require_once "../../phplib/utility.php";
 require_once 'page.php';
-
-/* POST redirects */
-stash_check_for_post_redirect();
 
 /* Output buffering: PHP's output buffering is broken, because it does not
  * affect headers. However, it's worth using it anyway, because in the common
@@ -54,6 +51,9 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
     }
 }
 err_set_handler_display('ycml_handle_error');
+
+/* POST redirects */
+stash_check_for_post_redirect();
 
 /* ycml_show_error MESSAGE
  * General purpose error display. */
