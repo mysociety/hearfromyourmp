@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.15 2006-08-15 15:32:50 chris Exp $
+ * $Id: ycml.php,v 1.16 2007-08-17 10:33:24 matthew Exp $
  * 
  */
 
@@ -41,9 +41,13 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
     } else {
         /* Nuke any existing page output to display the error message. */
         ob_clean();
-        /* Message will be in log file, don't display it for cleanliness */
-        $err = 'Please try again later, or <a href="mailto:team@mysociety.org">email us</a> for help resolving the problem.';
-        if ($num & E_USER_ERROR) {
+        if ($num & E_USER_NOTICE)
+            # Assume we've said everything we need to
+            $err = "<p><em>$message</em></p>";
+        else
+            # Message will be in log file, don't display it for cleanliness
+            $err = '<p>Please try again later, or <a href="mailto:team@mysociety.org">email us</a> for help resolving the problem.</p>';
+        if ($num & (E_USER_ERROR | E_USER_WARNING)) {
             $err = "<p><em>$message</em></p> $err";
         }
         ycml_show_error($err);
@@ -52,11 +56,11 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
 err_set_handler_display('ycml_handle_error');
 
 /* ycml_show_error MESSAGE
- * General purpose eror display. */
+ * General purpose error display. */
 function ycml_show_error($message) {
     page_header(_("Sorry! Something's gone wrong."), array('override'=>true));
     print _('<h2>Sorry!  Something\'s gone wrong.</h2>') .
-        "\n<p>" . $message . '</p>';
+        "\n" . $message;
     page_footer();
 }
 
