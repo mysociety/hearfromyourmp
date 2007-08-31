@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.23 2007-08-31 09:44:48 matthew Exp $
+// $Id: league.php,v 1.24 2007-08-31 09:52:22 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -50,7 +50,9 @@ function csv_league_table($sort) {
 }
 
 function league_table($sort) {
-    global $reps_info, $sort_orders; ?>
+    # Gah, so that they're available in the sort routines...
+    global $reps_info, $areas_info, $sort_orders;
+?>
 <h2>Current Status</h2>
 <?
 
