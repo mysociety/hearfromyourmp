@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.22 2007-07-30 18:01:03 matthew Exp $
+// $Id: league.php,v 1.23 2007-08-31 09:44:48 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -102,7 +102,18 @@ function league_table($sort) {
             return strcmp($a_name, $b_name);
         }
         usort($rows, 'by_mp');
+    } elseif ($sort=='c') {
+        function by_constituency($a, $b) {
+            global $areas_info;
+            $a_id = $a['constituency'] ? $a['constituency'] : -1;
+            $b_id = $b['constituency'] ? $b['constituency'] : -1;
+            $a_name = $areas_info[$a_id]['name'];
+            $b_name = $areas_info[$b_id]['name'];
+            return strcmp($a_name, $b_name);
+        }
+        usort($rows, 'by_constituency');
     }
+
     foreach ($rows as $k=>$r) {
         $c_id = $r['constituency'] ? $r['constituency'] : -1;
         $c_name = $areas_info[$c_id]['name'];
