@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.24 2007-08-31 09:52:22 matthew Exp $
+// $Id: league.php,v 1.25 2007-09-13 14:33:05 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -56,8 +56,7 @@ function league_table($sort) {
 <h2>Current Status</h2>
 <?
 
-    # -1 to account for test constituency
-    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
+    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
     $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
     $left = 646 - $consts;

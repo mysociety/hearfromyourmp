@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.25 2007-01-16 13:26:47 matthew Exp $
+// $Id: index.php,v 1.26 2007-09-13 14:33:05 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -56,8 +56,7 @@ what they've said. Safe, easy and democratic.</p>
 </div>
 <?
     $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-    # Minus one in the next row to account for test constituency
-    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent') - 1;
+    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
     print "<p align='center'>$people people have signed up in ";
     if ($consts==646) print 'all ';
     print "$consts constituencies &mdash; <a href='/league'>League table</a></p>";
