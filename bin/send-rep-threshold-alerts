@@ -1,0 +1,193 @@
+#!/usr/bin/php -q
+<?php
+/*
+ * send-rep-threshold-alerts:
+ * Run from cron regularly to send representatives who have never sent a mail
+ * messages telling them how many users are signed up in their voting area.
+ * 
+ * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+ * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: send-rep-threshold-alerts,v 1.1 2007-09-18 12:58:29 matthew Exp $
+ * 
+ */
+
+chdir(dirname($_SERVER['SCRIPT_FILENAME']));
+require_once '../conf/general';
+$short_opts = '';
+$long_opts = array('verbose','help','nowarn');
+require_once '../../phplib/phpcli.php';
+
+require_once '../phplib/fns.php';
+require_once '../../phplib/cli.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/utility.php';
+require_once '../../phplib/person.php';
+
+$switches = $options[0];
+$args = $options[1];
+foreach ($switches as $switch) {
+    if ($switch[0]=='--verbose') $cli_is_verbose = true;
+    if ($switch[0]=='--nowarn') $cli_show_warnings = false;
+    if ($switch[0]=='--help') {
+?>
+
+HearFromYourMP representative threshold alert sending script.
+
+Usage: send-rep-threshold-alerts [--verbose]
+
+--help      Display this help message
+--verbose   Display more information
+--nowarn    Don't show warnings
+
+<?
+        exit;
+    }
+}
+
+db_connect();
+send_rep_threshold_alerts('never-posted');
+send_rep_threshold_alerts('has-posted');
+send_rep_threshold_alerts('not-interested');
+
+function send_rep_threshold_alerts($type) {
+    verbose("sending $type representative threshold alerts");
+    $tem = OPTION_AREA_TYPE == 'WMC' ? 'mp' : 'cllr';
+
+    if ($type == 'never-posted') {
+        $having = 'max(posted) is null';
+        $timespan = '1 week';
+        $template = "alert-$tem-threshold";
+        $nothanks = 'is null';
+    } elseif ($type == 'has-posted') {
+        $having = 'max(posted) is not null';
+        $timespan = '1 month';
+        $template = "alert-$tem-threshold-posted";
+        $nothanks = 'is null';
+    } elseif ($type == 'not-interested') {
+        $having = 'max(posted) is null';
+        $timespan = '1 year';
+        $template = "alert-$tem-threshold-not-interested";
+        $nothanks = '';
+    } else {
+        err('Invalid type!');
+        exit;
+    }
+
+    db_query("lock table rep_threshold_alert in share mode");
+
+    /* Find out how many reps and people have used the service, in an attempt to convince
+     * others through peer pressure. */
+    $num_reps_using = db_getOne('select count(distinct area_id) from message');
+    $num_people = db_getOne('select count(distinct person_id) from constituent');
+    
+    $threshold_step = OPTION_THRESHOLD_STEP;
+    $q = db_query("
+            select constituent.area_id,
+                -- current # subscribers
+                count(distinct(constituent.id)),
+                -- current most recent threshold passed
+                rep_threshold(count(distinct(constituent.id))::integer, -1, $threshold_step),
+                -- when last sent
+                max(whensent),
+                -- number of subscribers when alert last sent
+                max(num_subscribers),
+                -- threshold when alert last sent
+                rep_threshold(max(num_subscribers)::integer, -1, $threshold_step),
+                -- null if no message sent
+                max(posted),
+                -- next threshold
+                rep_threshold(count(distinct(constituent.id))::integer, +1, $threshold_step)
+            from constituent left join message
+                    on constituent.area_id = message.area_id
+                left join rep_threshold_alert
+                    on rep_threshold_alert.area_id
+                        = constituent.area_id
+            where constituent.area_id is not null
+            group by constituent.area_id
+            having $having
+                and count(distinct(constituent.id)) >= $threshold_step
+                and (max(whensent) is null
+                    or max(whensent) < current_timestamp
+                                        - '$timespan'::interval)
+                and (max(num_subscribers) is null
+                    or rep_threshold(count(distinct(constituent.id))::integer, -1, $threshold_step)
+                        > rep_threshold(max(num_subscribers)::integer, -1, $threshold_step))
+                and (select status from rep_nothanks
+                    where rep_nothanks.area_id = constituent.area_id) $nothanks");
+
+    while (list($area_id, $current, $current_thr, $whenlast, $last,
+                    $last_thr, $posted, $next_thr) = db_fetch_row($q)) {
+        $area_info = ycml_get_area_info($area_id);
+        $reps_info = ycml_get_reps_for_area($area_id);
+                    
+        verbose("need to send an alert for ${area_info['name']}, #$area_id with $current subscribers (>$current_thr)");
+        if (defined($last))
+            verbose("last alert was sent $whenlast when there were $last subscribers (>$last_thr)");
+        else
+            verbose("no previous alert sent for this area");
+
+	foreach ($reps_info as $id => $rep_info) {
+            if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+                warning("no email address available for ${rep_info['name']} (${area_info['name']}), but need to send threshold alert");
+                if ($rep_info['email'] === '')
+                    error("email address returned by DaDem was blank; should be null");
+                continue;
+            }
+            verbose("email address for this rep is ${rep_info['email']}");
+
+	    # Create account for rep if they don't already have one.
+	    $P = person_get_or_create($rep_info['email'], $rep_info['name']);
+            $already_signed = db_getOne("select id from constituent where 
+                area_id = ? and person_id = ?
+                for update", array( $area_id, $P->id() ) );
+            if (!$already_signed) {
+                db_query("insert into constituent (
+                            person_id, area_id, is_rep,
+                            postcode, creation_ipaddr
+                        )
+                        values (?, ?, ?, ?, ?)", array($P->id(), $area_id, true, '', ''));
+	    } else {
+                 db_query("update constituent set is_rep = true where person_id=? and area_id=?",
+                     array($P->id(), $area_id));
+	    }
+            db_commit();
+            $already_present = db_getOne("select confirmation_email from rep_cache where 
+                id = ? for update", array($id) );
+            if (!$already_present) {
+                db_query("update rep_cache set confirmation_email=? where id=?",
+                    array($rep_info['email'], $id));
+                db_commit();
+	    }
+	    $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
+            $pp = array(
+                'message_url' => $url,
+                'subscribers' => $current,
+                'area_name' => $area_info['name'],
+                'next_threshold' => $next_thr,
+                'rep_name' => $rep_info['name'],
+                'rep_forename' => preg_replace('/\s.*$/', '', $rep_info['name']), /* XXX */
+                'reps_using' => $num_reps_using,
+                'num_people' => $num_people
+            );
+
+	    if (OPTION_YCML_STAGING) {
+	        $success = true;
+	    } else {
+                $success = ycml_send_email_template($rep_info['email'], $template, $pp);
+	    }
+            if ($success) {
+                verbose("mail successfully sent");
+                db_query('
+                    insert into rep_threshold_alert
+                        (area_id, num_subscribers)
+                    values (?, ?)', array($area_id, $current));
+            } else {
+                warning("failed to send mail to ${rep_info['name']} (${area_info['name']}) <${rep_info['email']}>");
+            }
+        }
+    }
+
+    db_commit();
+}
+

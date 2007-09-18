@@ -15,7 +15,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.7 2007-06-04 13:15:48 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.8 2007-09-18 12:58:29 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -122,7 +122,7 @@ sub do_basic_signup_test {
     $wth->browser_check_contents("This is a test site"); 
 
     # Sign up as constituent
-    $wth->browser_submit_form(form_name => 'frontpage_subscribe',
+    $wth->browser_submit_form(form_name => 'subscribe_form',
         fields => { name => name_n(1), email => email_n(1), postcode => "ZZ9 9zz"},  
         );
     $wth->browser_check_contents("Now check your email!"); 

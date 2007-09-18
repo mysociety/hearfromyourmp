@@ -5,13 +5,15 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: faq.php,v 1.11 2005-12-22 11:06:52 matthew Exp $
+// $Id: faq.php,v 1.12 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 page_header();
 front_page();
 page_footer();
+
+# XXX: MP specific
 
 function front_page() { ?>
 <dl>

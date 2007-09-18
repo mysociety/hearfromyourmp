@@ -1,4 +1,4 @@
-Subject: HearFromYourMP.com update - you've now got <?=$values['subscribers']?> constituents subscribed
+Subject: HearFromYourCouncillor update - you've now got <?=$values['subscribers']?> constituents subscribed
 
 Dear <?=$values['rep_forename']?>,
 
@@ -13,8 +13,8 @@ remind you again when you have <?=$values['next_threshold']?>, but
 we won't email again for at least one month.
 
 As always, if you have any further questions, please follow this link
-    http://www.hearfromyourmp.com/about-mps
+    http://www.hearfromyourmp.com/about
 Or email us at team@hearfromyourmp.com, or call us on 07811 082158.
 
 All the best,
-The HearFromYourMP Team
+The HearFromYourCouncillor Team

@@ -9,7 +9,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: local-authorities-league-table,v 1.6 2006-01-18 15:12:34 ycml Exp $
+ * $Id: local-authorities-league-table,v 1.7 2007-09-18 12:58:29 matthew Exp $
  * 
  */
 
@@ -19,7 +19,6 @@ require_once "../phplib/alert.php";
 require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once '../../phplib/mapit.php';
-require_once '../../phplib/votingarea.php';
 require_once '../../phplib/utility.php';
 
 $short_opts = '';

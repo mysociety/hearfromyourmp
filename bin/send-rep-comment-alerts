@@ -1,13 +1,13 @@
 #!/usr/bin/php -q
 <?php
 /* 
- * send-mp-comment-alerts:
- * Run from cron daily to send new comment email alerts to MPs.
+ * send-rep-comment-alerts:
+ * Run from cron daily to send new comment email alerts to representatives.
  *
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-comment-alerts,v 1.6 2007-07-30 17:29:11 matthew Exp $
+ * $Id: send-rep-comment-alerts,v 1.1 2007-09-18 12:58:29 matthew Exp $
  *
  */
 
@@ -30,9 +30,9 @@ foreach ($switches as $switch) {
     if ($switch[0]=='--help') {
 ?>
 
-HearFromYourMP MP comment summary sending script.
+HearFromYourMP representative comment summary sending script.
 
-Usage: send-mp-comment-alerts [--verbose]
+Usage: send-rep-comment-alerts [--verbose]
 
 --help      Display this help message
 --verbose   Display more information
@@ -43,11 +43,13 @@ Usage: send-mp-comment-alerts [--verbose]
 }
 
 db_connect();
-send_mp_comment_alerts();
+send_rep_comment_alerts();
 
-// send_mp_comment_alerts sends alerts for a summary of new comments to MPs
-function send_mp_comment_alerts() {
-    verbose("sending MP comment summaries");
+# XXX: Needs to only alert the rep. who posted the message
+
+// send_rep_comment_alerts sends alerts for a summary of new comments to representatives
+function send_rep_comment_alerts() {
+    verbose("sending representative comment summaries");
 
     // Search for alert
     $q = db_query("
@@ -65,7 +67,7 @@ function send_mp_comment_alerts() {
 
     $comments = array();
     while ($row = db_fetch_array($q)) {
-        verbose("${row['constituency']} MP has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['name']})");
+        verbose("${row['constituency']} representative has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['name']})");
 
         # Grab a lock, making sure alert hasn't been deleted meanwhile
         $stillthere = db_getOne('select id from comment where id = ? for update', $row['comment_id']);
@@ -94,16 +96,16 @@ function send_mp_comment_alerts() {
             }
         }
         # Send email
-        $f = ycml_send_email_template($email, 'alert-mp-comment', array('content'=>$body) );
+        $f = ycml_send_email_template($email, 'alert-rep-comment', array('content'=>$body) );
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();
-            error("Failed to send comments alert to $constituency_id MP");
+            error("Failed to send comments alert to $constituency_id representative");
         } else {
             # Commit that it has been sent
             db_commit();
         }
     }
-    verbose("finished sending MP comment alerts");
+    verbose("finished sending representative comment alerts");
 }
 

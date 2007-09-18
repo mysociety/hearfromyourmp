@@ -5,21 +5,23 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about.php,v 1.14 2007-07-17 10:03:19 matthew Exp $
+// $Id: about.php,v 1.15 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
-require_once '../../phplib/votingarea.php';
+require_once '../phplib/constituent.php';
+
 page_header();
 about_page();
 page_footer();
 
-function about_page() { ?>
-<?  
+# XXX: MP specific!
+
+function about_page() {
     print recent_messages();
     print recent_replies();
-    $num = db_getOne("select count(distinct constituency) from message where state='approved'");
-    print <<<EOF
+    $num = db_getOne("select count(distinct area_id) from message where state='approved'");
+?>
 <div id="indented">
 
 <p><em>&ldquo;So, the voting is over. The politicians vanish to Westminster, and
@@ -66,10 +68,13 @@ constituents. To leave your thoughts, you just enter your text and hit
 enter. There's no tiresome login &ndash; you can just start talking about
 what they've said. Safe, easy and democratic.</p>
 
-<p align="center"><strong>Sign up now &ndash; $num MPs have already sent out messages.</strong></p>
-EOF;
-    signup_form();
-    print <<<EOF
+<p align="center"><strong>Sign up now
+<?  if ($num>1)
+        echo ' &ndash; ', $num, ' MPs have already sent out messages.';
+    constituent_subscribe_box();
+?>
+</strong></p>
+
 <dt>I am an MP, or work in an MP's office. How do I take part?
 <dd><a href="/contact/">Contact us</a> saying you'd like to send
 a message to your constituents, and we'll tell you what to do
@@ -184,24 +189,6 @@ to the charity that runs HearFromYourMP.)
 
 </dl>
 </div>
-EOF;
-}
-
-function signup_form() {
-    print <<<EOF
-<form method="post" action="/subscribe" accept-charset="utf-8">
-<div id="subscribeBox">
-    <input type="hidden" name="subscribe" id="subscribe" value="1">
-    <label for="name">Name:</label>
-    <input type="text" name="name" id="name" value="" size="20">
-    <label for="email">Email:</label>
-    <input type="text" name="email" id="email" value="" size="25">
-    <label for="postcode">Postcode:</label> 
-    <input type="text" name="postcode" id="postcode" value="" size="10">
-    <input type="submit" class="submit" value="Sign up">
-    <br><em>(for example OX1 3DR)</em>
-</div>
-</form>
-EOF;
+<?
 }
 

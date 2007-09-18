@@ -3,14 +3,14 @@
 # The meat of HearFromYourMP
 # 
 # Things this script has to do:
-# * View messages for a particular constituency
+# * View messages for a particular area
 # * View a thread for a particular message
 # * Deal with posting a comment
 # 
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.54 2007-07-30 16:57:56 matthew Exp $
+# $Id: view.php,v 1.55 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -20,10 +20,9 @@ require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
 require_once '../../phplib/mapit.php';
-require_once '../../phplib/votingarea.php';
 
 importparams(
-    array('constituency', '/^\d+$/', 'Invalid constituency', null),
+    array('area_id', '/^\d+$/', 'Invalid area ID', null),
     array('message', '/^\d+$/', 'Invalid message ID', null),
     array('mode', '/^post$/', 'Invalid mode', null)
 );
@@ -34,9 +33,9 @@ if ($q_mode == 'post') {
 } elseif ($q_message) {
     # Show thread for particular message.
     view_message($q_message);
-} elseif ($q_constituency) {
-    # Show list of messages for this particular constituency.
-    view_messages($q_constituency);
+} elseif ($q_area_id) {
+    # Show list of messages for this particular area.
+    view_messages($q_area_id);
 } else {
     # Main page. Show nothing? Or list of constituencies?
     page_header('List of constituencies');
@@ -53,7 +52,7 @@ function mini_signup_form() {
     ?>
 <form method="post" action="/subscribe" name="mini_subscribe" accept-charset="utf-8">
 <div id="miniSubscribeBox">
-<strong style="align:left;">Sign up to hear from your MP about local issues, and to
+<strong style="align:left;">Sign up to hear from your <?=rep_type() ?> about local issues, and to
 discuss them with other constituents</strong><br>
 <input type="hidden" name="subscribe" id="subscribe" value="1">
 <label for="name">Name:</label> <input type="text" name="name" id="name" size="20">
@@ -69,80 +68,100 @@ discuss them with other constituents</strong><br>
  * Page listing all constituencies having messages. */
 function view_constituencies() {
     mini_signup_form();
-    $q = db_query("SELECT DISTINCT constituency FROM message where state = 'approved'");
+    $q = db_query("SELECT DISTINCT area_id FROM message where state = 'approved'");
     $out = array();
     while ($r = db_fetch_array($q)) {
-        $out[] = $r['constituency'];
+        $out[] = $r['area_id'];
     }
     if (count($out)) {
         $areas_info = mapit_get_voting_areas_info($out);
         $out = array();
-        foreach ($areas_info as $c_id => $array) {
-            if (va_is_fictional_area($c_id)) continue;
-            $out[$array['name']] = "<li><a href=\"/view/$c_id\">$array[name]</a></li>\n";
+        foreach ($areas_info as $area_id => $array) {
+            if (va_is_fictional_area($area_id)) continue;
+            $out[$array['name']] = "<li><a href=\"/view/$area_id\">$array[name]</a></li>\n";
         }
         ksort($out);
         print '<p>The following constituencies have had postings:</p> <ul>';
         foreach ($out as $line) print $line;
         print '</ul>';
     } else {
-        print '<p>There are no messages on HearFromYourMP yet.</p>';
+        echo "<p>There are no messages on $_SERVER[site_name] yet.</p>";
     }
 }
 
 /* view_messages CONSTITUENCY
  * Page listing all messages in CONSTITUENCY. */
-function view_messages($c_id) {
-    $area_info = ycml_get_area_info($c_id);
-    $rep_info = ycml_get_mp_info($c_id);
-    $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE constituency = ?', $c_id);
-    $nothanks = db_getRow('SELECT status,website,gender FROM mp_nothanks WHERE constituency = ?', $c_id);
+function view_messages($area_id) {
+    $area_info = ycml_get_area_info($area_id);
+    $reps_info = ycml_get_reps_for_area($area_id);
+    $reps_info_arr = array_values($reps_info);
+    $max_created = 0;
+    foreach ($reps_info as $rep) {
+        if ($rep['whencreated'] > $max_created) $max_created = $rep['whencreated'];
+    }
+    $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE area_id = ?', $area_id);
+    $nothanks = db_getRow('SELECT status,website,gender FROM rep_nothanks WHERE area_id = ?', $area_id);
     $q = db_query("SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
                     FROM message
-                    WHERE state = 'approved' and constituency = ? ORDER BY message.posted", $c_id);
+                    WHERE state = 'approved' and area_id = ? ORDER BY message.posted", $area_id);
     $num_messages = db_num_rows($q);
-    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.constituency = ?', $c_id);
-    $emails_sent_to_mp = db_getOne('SELECT COUNT(*) FROM mp_threshold_alert WHERE constituency = ?
-        and extract(epoch from whensent) > ?', $c_id, $rep_info['whencreated']);
-    $next_threshold = db_getOne('SELECT mp_threshold(?, +1);', $signed_up);
-    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND constituency = ?", $c_id);
-    $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
+    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?', $area_id);
+    $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert WHERE area_id = ?
+        and extract(epoch from whensent) > ?', $area_id, $max_created);
+    $emails_sent_to_rep /= count($reps_info);
+    $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
+    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND area_id = ?", $area_id);
     
     $title = $area_info['name'];
-    if (isset($rep_info['name'])) $title = $rep_info['name'] . ', ' . $title;
+    if (count($reps_info)==1 && isset($reps_info_arr[0]['name']))
+        $title = $reps_info_arr[0]['name'] . ', ' . $title;
     page_header($title);
     mini_signup_form();
-?>
-<h2><?=$area_info['name'] ?></h2>
-<?  if (array_key_exists('id', $rep_info) && $rep_info['id'] == '2000005') {
-        print '<img alt="" title="Portrait of Stom Teinberg MP" src="images/zz99zz.jpeg" align="right" hspace="5" border="0">';
-    } elseif (array_key_exists('image', $rep_info)) {
-        print '<img alt="" title="Portrait of ' . htmlspecialchars($rep_info['name']) . '" src="' . $rep_info['image'] . '" align="right" hspace="5">';
-    }
 
-    if (isset($rep_info['name'])) {
+    echo '<h2>', $area_info['name'], '</h2>';
+    $reps = array();
+    foreach ($reps_info as $rep_info) {
+        if (isset($rep_info['id']) && $rep_info['id'] == '2000005') {
+            print '<img alt="" title="Portrait of Stom Teinberg MP" src="images/zz99zz.jpeg" align="right" hspace="5" border="0">';
+        } elseif (array_key_exists('image', $rep_info)) {
+            print '<img alt="" title="Portrait of ' . htmlspecialchars($rep_info['name']) . '" src="' . $rep_info['image'] . '" align="right" hspace="5">';
+        }
+	$reps[] = $rep_info['name'] . ' (' . $rep_info['party'] . ')';
+    }
+    $reps = (count($reps) > 1 ? join(', ', array_slice($reps, 0, count($reps)-1)) . ' and ' : '') . $reps[count($reps)-1];
+
+    if (count($reps_info)) {
+        echo '<p>The ', make_plural(count($reps_info), rep_type('single'), rep_type('plural')),
+	    ' for this ', $area_info['type_name'], ' ' , make_plural(count($reps_info), 'is', 'are'),
+	    ' ', $reps, '.';
+    } else {
+        echo '<p>There is currently no ', rep_type('single'), ' for this ' . area_type() . '.';
+    }
 ?>
-<p>The MP for this constituency is <?=$rep_info['name'] ?>, <?=$rep_info['party'] ?>.
-<?  } else { ?>
-<p>There is currently no MP for this constituency.
-<?  } ?>
-So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has', 'people have') ?> signed up to HearFromYourMP in this constituency.
-To discover everything you could possibly want to know about what your MP <?=isset($rep_info['name'])?'gets':'got' ?> up to in Parliament,
-see their page on our sister site <a href="<?=$twfy_link ?>">TheyWorkForYou</a>.
-</p>
+
+So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has', 'people have') ?> signed up to <?=$_SERVER['site_name']?> in this <?=area_type() ?>.
 <?
+    if (OPTION_AREA_TYPE == 'WMC') {
+        $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
+        echo 'To discover everything you could possibly want to know about what your MP ', 
+            isset($rep_infos[0]['name']) ? 'gets' : 'got',
+	    ' up to in Parliament, see their page on our sister site <a href="',
+	    $twfy_link, '">TheyWorkForYou</a>.';
+    }
+    echo '</p>';
+
     if ($nothanks['status'] == 't') {
-        $mp_gender = $nothanks['gender'];
-        if ($mp_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
-        elseif ($mp_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
+        $rep_gender = $nothanks['gender'];
+        if ($rep_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
+        elseif ($rep_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
         else { $nomi = 'they are'; $accu = 'them'; $geni = 'their'; }
-        $mp_website = $nothanks['website']; ?>
+        $rep_website = $nothanks['website']; ?>
 <p>Unfortunately, <?=$rep_info['name'] ?> has said <?=$nomi ?> not interested in using this
 service<?
-        if ($mp_website)
-            print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $mp_website . '">' . $mp_website . '</a>';
+        if ($rep_website)
+            print ', and asks that we encourage users to visit ' . $geni . ' website at <a href="' . $rep_website . '">' . $rep_website . '</a>';
 ?>. You can still contact <?=$accu ?> directly via our other service
 <a href="http://www.writetothem.com/">www.writetothem.com</a>.</p>
 
@@ -159,27 +178,37 @@ over to their successor.&quot;</p>
 
 <h3>Statistics</h3>
 <ul>
-<?  if ($num_messages==0) { ?>
-    <li>We have sent this MP <?=$emails_sent_to_mp ?> message<?=$emails_sent_to_mp!=1?'s':'' ?> so far, asking them to send an email to their constituents.
-We will automatically email them <?=$emails_sent_to_mp>0?'again ':'' ?>when the list in this constituency reaches <?=$next_threshold ?>.
-<?  } else { ?>
-    <li>We sent this MP <?=$emails_sent_to_mp ?> message<?=$emails_sent_to_mp!=1?'s':'' ?>, asking them to send an email to their constituents.
-    <li>This MP has sent <?=$num_messages ?> message<?=$num_messages!=1?'s':'' ?> through
-        HearFromYourMP<?=$num_messages>1?', most recently':'' ?> at <?=prettify($latest_message) ?>.
+<?
+    $this_or_these = make_plural(count($reps_info), 'this ' . rep_type('single'), 'these ' . rep_type('plural'));
+    if ($num_messages==0) {
+        echo '<li>We have sent ', make_plural(count($reps_info), 'this ' . rep_type('single'),
+	    'these ' . rep_type('plural')), ' ',
+	    $emails_sent_to_rep, ' ', make_plural($emails_sent_to_rep, 'message'),
+	    ' so far, asking them to send an email to their constituents.
+We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
+            ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
+    } else { ?>
+    <li>We sent <?=$this_or_these ?> <?=$emails_sent_to_rep ?> <?=make_plural($emails_sent_to_rep, 'message') ?>, asking them to send an email to their constituents.
+    <li><?=ucfirst($this_or_these) ?> <?=make_plural(count($reps_info), 'has', 'have') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
+        <?=$_SERVER['site_name']?><?=$num_messages>1?', most recently':'' ?> at <?=prettify($latest_message) ?>.
     <li>Constituents have left <?=$num_comments==0?'no':"a total of $num_comments" ?> comment<?=$num_comments!=1?'s':'' ?>
-        on this MP's message<?=$num_messages!=1?'s':'' ?>.
+        on <?=$this_or_these ?>&rsquo;s <?=make_plural($num_messages, 'message') ?>.
 <?  } ?>
 </ul>
 
 <?
     $out = '';
     while ($r = db_fetch_array($q)) {
-        $out .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>. $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
+        $out .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
+	if (count($reps_info)>1) {
+	    $out .= ', by ' . $reps_info[$r['rep_id']]['name'];
+	}
+	$out .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
     }
     if ($out) {
         print "<h3>Messages posted</h3> <ul>$out</ul>";
     } else { ?>
-<p><em>This MP has not yet sent any messages through HearFromYourMP.</em></p>
+<p><em><?=ucfirst($this_or_these) ?> <?=make_plural(count($reps_info), 'has', 'have') ?> not yet sent any messages through <?=$_SERVER['site_name']?>.</em></p>
 <?
     }
 }
@@ -191,54 +220,61 @@ function view_message($message) {
     $content = comment_prettify($r['content']);
     $content = preg_replace('#<p>\*(.*?)\*</p>#', "<h3>$1</h3>", $content);
     $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
-    $c_id = $r['constituency'];
-    $rep_info = ycml_get_mp_info($c_id);
-    $area_info = ycml_get_area_info($c_id);
+    $area_id = $r['area_id'];
+    $rep_id = $r['rep_id'];
+    $rep_info = ycml_get_rep_info($rep_id);
+    $area_info = ycml_get_area_info($area_id);
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     mini_signup_form();
-    $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
     $next = db_getOne("SELECT id FROM message
-        WHERE state = 'approved' and constituency = ? AND posted > ?
+        WHERE state = 'approved' and area_id = ? AND posted > ?
         ORDER BY posted LIMIT 1",
-        array($c_id, $r['posted']) );
+        array($area_id, $r['posted']) );
     $prev = db_getOne("SELECT id FROM message
-        WHERE state = 'approved' and constituency = ? AND posted < ?
+        WHERE state = 'approved' and area_id = ? AND posted < ?
         ORDER BY posted DESC LIMIT 1",
-        array($c_id, $r['posted']) );
+        array($area_id, $r['posted']) );
     print '<div id="message">';
     print '<p id="nav">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
-    print '<a href="/view/' . $c_id . '">Messages for this constituency</a>';
+    print '<a href="/view/' . $area_id . '">Messages for this ' . area_type() . '</a>';
     if ($next) print ' | <a href="/view/message/' . $next . '">Next message</a>';
     print '</p>';
-    print '<h2>' . $r['subject'] . '</h2> <p>Posted by <strong><a href="' . $twfy_link . '">' . $rep_info['name']
-        . '</a>, MP for ' . $area_info['name'] . ', at ' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
+    print '<h2>' . $r['subject'] . '</h2> <p>Posted by <strong>';
+    if (OPTION_AREA_TYPE == 'WMC') {
+        $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
+        echo '<a href="', $twfy_link, '">';
+    }
+    echo $rep_info['name'];
+    if (OPTION_AREA_TYPE == 'WMC') echo '</a>';
+    echo '</strong>, ', rep_type('single'), ' for <strong>' . $area_info['name'] . '</strong>, at <strong>' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     print '</div>';
-    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_mp from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
+
+    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_rep from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
     if ($cc && count($cc))
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
     if (get_http_var('showform')) {
         $r = array();
-        $r['reason_web'] = _('Before posting to HearFromYourMP, we need to confirm your email address and that you are subscribed to this constituency.');
-        $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-        $r['reason_email_subject'] = _("Post to HearFromYourMP");
+        $r['reason_web'] = _('Before posting to ' . $_SERVER['site_name'] . ', we need to confirm your email address and that you are subscribed to this ' . area_type() . '.');
+        $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this " . area_type() . '.');
+        $r['reason_email_subject'] = "Post to $_SERVER[site_name]";
         $P = person_signon($r);
     } else {
         $P = person_if_signed_on();
     }
     if (!is_null($P)) {
-        if (person_allowed_to_reply($P->id(), $c_id, $message)) {
+        if (person_allowed_to_reply($P->id(), $area_id, $message)) {
             comment_form($P);
         } else {
-            print '<p id="formreplace">You are not subscribed to HearFromYourMP in this constituency, or subscribed after this message was posted.</p>';
+            print '<p id="formreplace">You are not subscribed to ' . $_SERVER['site_name'] . ' in this ' . $area_info['type_name'] . ', or subscribed after this message was posted.</p>';
         }
     } else { ?>
-<p id="formreplace">If you are subscribed to HearFromYourMP in this constituency,
+<p id="formreplace">If you are subscribed to <?=$_SERVER['site_name']?> in this <?=area_type() ?>,
 <a href="/view/message/<?=$message ?>/reply">log in</a> to post a reply.
 <br>Otherwise, if you live in the UK, 
 <a href="/subscribe?r=/view/message/<?=$message ?>">sign up</a> in order to
-HearFromYourMP.
+<?=$_SERVER['site_name']?>.
 </p>
 <?
     }
@@ -249,9 +285,9 @@ function comment_show($cc, $first, $last) {
     $html = '';
     for ($i = $first; $i <= $last; ++$i) {
         $r = $cc[$i];
-        $r['posted_by_mp'] = ($r['posted_by_mp']=='t') ? true : false;
+        $r['posted_by_rep'] = ($r['posted_by_rep']=='t') ? true : false;
         $html .= '<li';
-        if ($r['posted_by_mp']) $html .= ' class="by_mp"';
+        if ($r['posted_by_rep']) $html .= ' class="by_rep"';
         $html .= '>' . comment_show_one($r);
 /*      XXX COMMENTED OUT AS NO THREADING TO START
         $html .= '<a href="view?mode=post;article=$q_message;replyid=$id">Reply to this</a>.';
@@ -286,14 +322,14 @@ function view_post_comment_form() {
     );
 
     $r = array();
-    $r['reason_web'] = _('Before posting to HearFromYourMP, we need to confirm your email address and that you are subscribed to this constituency.');
+    $r['reason_web'] = _('Before posting to '.$_SERVER['site_name'].', we need to confirm your email address and that you are subscribed to this constituency.');
     $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-    $r['reason_email_subject'] = _("Post to HearFromYourMP");
+    $r['reason_email_subject'] = _("Post to $_SERVER[site_name]");
     $P = person_signon($r);
 
     $r = message_get($q_message);
-    $constituency = $r['constituency'];
-    if (!person_allowed_to_reply($P->id(), $constituency, $q_message)) {
+    $area_id = $r['area_id'];
+    if (!person_allowed_to_reply($P->id(), $area_id, $q_message)) {
         print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
         return false;
     }
@@ -343,10 +379,10 @@ function view_post_comment_form() {
             $refs .= ",$q_replyid";
         }
 
-        $posted_by_mp = constituent_is_mp($P->id(), $constituency);
-        db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_mp)
+        $posted_by_rep = constituent_is_rep($P->id(), $area_id);
+        db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_rep)
             values (comment_next_id(), ?, ?, ?, ?, ?, ?, ?)', array($q_message, $refs, $P->id(),
-            $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_mp));
+            $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_rep));
         if ($q_emailreplies)
             alert_signup($P->id(), $q_message);
         db_commit();
@@ -377,11 +413,11 @@ function comment_form($P) {
 <?
 }
 
-function person_allowed_to_reply($person_id, $constituency, $message) {
+function person_allowed_to_reply($person_id, $area_id, $message) {
     $signed_up = db_getOne('SELECT constituent.id FROM constituent,message
-                            WHERE person_id = ? AND constituent.constituency = ? AND message.id = ?
+                            WHERE person_id = ? AND constituent.area_id = ? AND message.id = ?
                             AND creation_time<=posted',
-                            array($person_id, $constituency, $message));
+                            array($person_id, $area_id, $message));
     if ($signed_up) return true;
     return false;
 }

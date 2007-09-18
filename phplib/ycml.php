@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.17 2007-08-17 19:13:48 matthew Exp $
+ * $Id: ycml.php,v 1.18 2007-09-18 12:58:30 matthew Exp $
  * 
  */
 
@@ -18,6 +18,7 @@ require_once '../../phplib/db.php';
 require_once '../../phplib/stash.php';
 require_once "../../phplib/error.php";
 require_once "../../phplib/utility.php";
+require_once '../../phplib/votingarea.php';
 require_once 'page.php';
 
 /* Output buffering: PHP's output buffering is broken, because it does not
@@ -65,23 +66,22 @@ function ycml_show_error($message) {
 }
 
 function comment_show_one($r, $noabuse = false) {
-    if (is_string($r['posted_by_mp']))
-        $r['posted_by_mp'] = ($r['posted_by_mp']=='t') ? true : false;
+    if (is_string($r['posted_by_rep']))
+        $r['posted_by_rep'] = ($r['posted_by_rep']=='t') ? true : false;
     if (isset($r['date']))
         $ds = prettify($r['date']);
     else
         $ds = '';
     $comment = '<p><a name="comment' . $r['id'] .'"></a>Posted by ';
-    if ($r['posted_by_mp']) $comment .= '<strong>';
+    if ($r['posted_by_rep']) $comment .= '<strong>';
     if ($r['website'])
         $comment .= '<a href="' . $r['website'] . '">';
     $comment .= $r['name'];
     if ($r['website'])
         $comment .= '</a>';
-    if ($r['posted_by_mp']) $comment .= ' MP';
     $comment .= ', ';
     $comment .= $ds;
-    if ($r['posted_by_mp']) $comment .= '</strong>';
+    if ($r['posted_by_rep']) $comment .= '</strong>';
     $content = comment_prettify($r['content']);
     $comment .= ':';
     if (!$noabuse)
@@ -102,13 +102,15 @@ function comment_prettify($content) {
 }
 
 function recent_messages() {
-    $q = db_query("SELECT id,subject,constituency FROM message where state = 'approved' ORDER BY posted DESC LIMIT 5");
+    $q = db_query("SELECT id, subject, area_id, rep_id FROM message
+        where state = 'approved' ORDER BY posted DESC LIMIT 5");
     $out = '';
     while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['constituency']) && !OPTION_YCML_STAGING) continue;
-        $area_info = ycml_get_area_info($r['constituency']);
-        $rep_info = ycml_get_mp_info($r['constituency']);
-        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_info[name] $area_info[rep_suffix], $area_info[name]</li>";
+        if (va_is_fictional_area($r['area_id']) && !OPTION_YCML_STAGING) continue;
+        $area_info = ycml_get_area_info($r['area_id']);
+        $rep_info = ycml_get_rep_info($r['rep_id']);
+	$rep_name = trim("$area_info[rep_prefix] $rep_info[name] $area_info[rep_suffix]");
+        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_name, $area_info[name]</li>";
     }
 //    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
     if ($out) $out = '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
@@ -116,15 +118,13 @@ function recent_messages() {
 }
 
 function recent_replies() {
-  $q = db_query('SELECT comment.id,message,constituency,extract(epoch from date) as date,name
+  $q = db_query('SELECT comment.id,message,area_id,extract(epoch from date) as date,name
         FROM comment,message,person
         WHERE visible=1 AND comment.message = message.id AND comment.person_id = person.id
         ORDER BY date DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['constituency'])) continue;
-        $area_info = ycml_get_area_info($r['constituency']);
-        $rep_info = ycml_get_mp_info($r['constituency']);
+        if (va_is_fictional_area($r['area_id'])) continue;
         $ds = prettify($r['date']);
         $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
     }
@@ -146,4 +146,25 @@ function postcode_to_constituency_form() {
 <?
 }
 
-?>
+# rep_type PLURALIZATION
+# Returns the type of representative, by default pluralised if there's
+# generally more than one - so returns "MP" and "councillors". 
+# Variable is plural to always pluralize, single to always be singular
+function rep_type($type = '') {
+    global $va_rep_name;
+    $rep_type = $va_rep_name[OPTION_AREA_TYPE];
+    if ($type == 'plural' || ($type=='' && OPTION_AREA_TYPE != 'WMC'))
+        $rep_type .= 's';
+    return $rep_type;
+} 
+
+function area_type($type = '', $plural = 0) {
+    global $va_type_name;
+    $area_type = $va_type_name[OPTION_AREA_TYPE];
+    if ($type == 'plural' && $plural != 1) {
+        if (OPTION_AREA_TYPE == 'WMC') $area_type = 'constituencies';
+	else $area_type .= 's';
+    }
+    return $area_type;
+}
+

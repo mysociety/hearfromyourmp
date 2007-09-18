@@ -5,15 +5,22 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: link.php,v 1.3 2005-11-22 16:45:53 francis Exp $
+// $Id: link.php,v 1.4 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
+require_once '../../phplib/mapit.php';
+
 page_header();
 link_to_us_page();
 page_footer();
 
 function link_box() {
+    $rep_type = rep_type();
+    if (OPTION_AREA_ID) 
+        $example_postcode = canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
+    else
+        $example_postcode = 'OX1 3DR';
     $html = '
 <form style="text-align: left; position: relative; background-color: #d9ecff;
         color: #000000; font-family: Georgia, serif; display:table; _width: 24em;
@@ -22,13 +29,13 @@ function link_box() {
     <p style="padding: 0.5em 0.5em 0.5em 0.5em; margin: 0 0 0 0;">
         <a href="http://www.hearfromyourmp.com" style="color: #20005C; 
             text-decoration:none; font-weight:bold">
-        Sign up to Hear From Your MP</a>
+        Sign up to Hear From Your ' . $rep_type . '</a>
         <br><strong>Name:</strong> <input type="text" name="name" id="name" size="20">
         <br><strong>Email:</strong> <input type="text" name="email" id="email" size="25">
         <br><strong>UK Postcode:</strong> <input type="text" name="postcode" id="postcode" size="10">
         <input type="hidden" name="subscribe" id="subscribe" value="1">
         <input type="submit" class="submit" value="Sign up">
-        <br><em>(for example OX1 3DR)</em>
+        <br><em>(for example ' . $example_postcode . ')</em>
         <a href="http://www.hearfromyourmp.com/about" style="color: #20005C; font-weight:bold">
         Tell me more</a>
     </p>
@@ -38,11 +45,13 @@ function link_box() {
 }
 
 
-function link_to_us_page() { ?>
+function link_to_us_page() {
+    $rep_type = rep_type();
+?>
 <h2>How to link to us</h2>
 
 <p>You can add a simple box to your website which people can use to sign
-up to hear from their MP. It'll look like this.</p>
+up to hear from their <?=$rep_type ?>. It'll look like this.</p>
 
 <?=link_box()?>
 

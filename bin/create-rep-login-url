@@ -1,21 +1,21 @@
 #!/usr/bin/php -q
 <?php
 /*
- * create-mp-login-url
- * Run to create a URL to send to an MP who has previously emailed us
+ * create-rep-login-url
+ * Run to create a URL to send to a rep. who has previously emailed us
  * messages, so they can post them themselves in future. The same URL
- * that send-mp-threshold-alerts sends, but we don't want to wait unti
- * then (presumably, we've got an email from the MP).
+ * that send-rep-threshold-alerts sends, but we don't want to wait unti
+ * then (presumably, we've got an email from the rep. or similar).
  * 
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: create-mp-login-url,v 1.2 2007-06-10 23:34:25 francis Exp $
+ * $Id: create-rep-login-url,v 1.1 2007-09-18 12:58:29 matthew Exp $
  * 
  */
 
 $short_opts = '';
-$long_opts = array('verbose', 'help', 'constituency=');
+$long_opts = array('verbose', 'help', 'rep=');
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once '../../phplib/phpcli.php';
@@ -29,15 +29,15 @@ $switches = $options[0];
 $args = $options[1];
 foreach ($switches as $switch) {
     if ($switch[0]=='--verbose') $cli_is_verbose = 1;
-    if ($switch[0]=='--constituency') $constituency = $switch[1];
+    if ($switch[0]=='--rep') $rep = $switch[1];
     if ($switch[0]=='--help') {
 ?>
 
-YCML show MP login URL.
+YCML show representative login URL.
 
-Usage: create-mp-login-url --constituency=ID [--verbose]
+Usage: create-rep-login-url --rep=ID [--verbose]
 
---constituency  Constituency ID to return URL for
+--constituency  Representative ID to return URL for
 --help          Display this help message
 --verbose       Display more information
 
@@ -47,18 +47,19 @@ Usage: create-mp-login-url --constituency=ID [--verbose]
 }
 
 db_connect();
-$area_info = ycml_get_area_info($constituency);
-$rep_info = ycml_get_mp_info($constituency);
+$rep_info = ycml_get_rep_info($rep);
+dadem_check_error($rep_info);
+$area_info = ycml_get_area_info($rep_info['voting_area']);
                     
 if (!isset($rep_info['email']) || $rep_info['email'] === '') {
-    warning("no email address available for ${rep_info['name']} MP (${area_info['name']}), but need to send threshold alert");
+    warning("no email address available for ${rep_info['name']} representative (${area_info['name']}), but need to send threshold alert");
     if ($rep_info['email'] === '')
         error("email address returned by DaDem was blank; should be null");
     exit;
 }
-verbose("email address for this MP is ${rep_info['email']}");
+verbose("email address for this representative is ${rep_info['email']}");
 
-$url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/' . $constituency, null);
+$url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $rep, null);
 db_commit();
 print "URL: $url\n";
 

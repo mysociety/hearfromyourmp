@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: francis@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: abuse.php,v 1.2 2006-08-10 07:16:10 francis Exp $
+// $Id: abuse.php,v 1.3 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -49,7 +49,7 @@ function report_abusive_thing() {
             array($q_id, $q_reason, $ip, $q_email));
         db_commit();
         $admin_url = OPTION_ADMIN_URL . "/?page=ycmlabusereports";
-        ycml_send_email(OPTION_CONTACT_EMAIL, "HearFromYourMP abuse report", _(<<<EOF
+        ycml_send_email(OPTION_CONTACT_EMAIL, $_SERVER['site_name'] . " abuse report", _(<<<EOF
 New abuse report for comment id $q_id from IP $ip, email $q_email
 
 $more

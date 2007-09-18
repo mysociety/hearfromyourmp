@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.25 2007-09-13 14:33:05 matthew Exp $
+// $Id: league.php,v 1.26 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -28,19 +28,19 @@ if (array_key_exists('csv', $_GET)) {
 
 function csv_league_table($sort) {
     global $sort_orders;
-    $q = db_query("SELECT COUNT(id) AS count,constituency,
+    $q = db_query("SELECT COUNT(id) AS count, area_id,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM mp_threshold_alert,constituency_cache WHERE constituency = constituent.constituency
-        AND constituency=constituency_cache.id AND extract(epoch from whensent)>rep_created) AS emails_to_mp
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
+    (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
+    (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
+    (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
+        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp
+    FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
     list($areas_info, $rows) = ycml_get_all_areas_info($q);
 
     foreach ($rows as $k=>$r) {
-        $c_id = $r['constituency'] ? $r['constituency'] : -1;
+        $c_id = $r['area_id'] ? $r['area_id'] : -1;
         $c_name = $areas_info[$c_id]['name'];
         $rows[$k] = "\"$c_name\",$r[count]\n";
     }
@@ -52,74 +52,75 @@ function csv_league_table($sort) {
 function league_table($sort) {
     # Gah, so that they're available in the sort routines...
     global $reps_info, $areas_info, $sort_orders;
-?>
-<h2>Current Status</h2>
-<?
 
-    $consts = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent');
-    $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-    $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
-    $left = 646 - $consts;
-    $morethan = db_getAll('SELECT constituency FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency HAVING count(*)>=25');
-    $morethan = count($morethan);
-    # This way is far too slow:
-    # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
-    $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM mp_threshold_alert');
-    $mp_written_messages = db_getOne("SELECT COUNT(*) FROM message WHERE state = 'approved'");
-    $comments = db_getOne("SELECT COUNT(*) FROM comment WHERE visible > 0");
-    print "<ul><li>$people people have signed up in ";
-    if ($consts==646) print 'all ';
-    print "$consts constituencies";
-    print "<li>$people_lastday people in the last day";
-    if ($consts<645)
-        print "<li>There are $left constituencies with nobody signed up";
-    elseif ($consts==645)
-        print "<li>There is $left constituency with nobody signed up";
-    print "<li>$morethan constituencies have 25 or more subscribers, $morethan_emailed have been sent emails";
-    print "<li>$mp_written_messages messages sent by MPs, $comments comments made by constituents";
-    print '</ul>';
-    print '<p><strong>Click on the headings (e.g. Constituency) to sort the table by different columns.</strong></p>';
-
-    $q = db_query("SELECT COUNT(id) AS count,constituency,
+    $q = db_query("SELECT COUNT(id) AS count,area_id,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE state = 'approved' and constituency = constituent.constituency) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE constituency = constituent.constituency AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM mp_threshold_alert,constituency_cache WHERE constituency = constituent.constituency
-        AND constituency=constituency_cache.id AND extract(epoch from whensent)>rep_created) AS emails_to_mp,
-    (SELECT status FROM mp_nothanks WHERE constituency = constituent.constituency) AS nothanks
-    FROM constituent WHERE constituency IS NOT NULL GROUP BY constituency ORDER BY " . 
+    (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
+    (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
+    (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
+        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp,
+    (SELECT status FROM rep_nothanks WHERE area_id = constituent.area_id) AS nothanks
+    FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
     list($areas_info, $rows) = ycml_get_all_areas_info($q);
     $reps_info = ycml_get_all_reps_info(array_keys($areas_info));
 
+    $consts = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM constituent');
+    $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
+    $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
+    $morethan = db_getAll('SELECT area_id FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id HAVING count(*)>=' . OPTION_THRESHOLD_STEP);
+    $morethan = count($morethan);
+    # This way is far too slow:
+    # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
+    $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM rep_threshold_alert');
+    $mp_written_messages = db_getOne("SELECT COUNT(*) FROM message WHERE state = 'approved'");
+    $comments = db_getOne("SELECT COUNT(*) FROM comment WHERE visible > 0");
+
     if ($sort=='p') {
         function by_mp($a, $b) {
             global $reps_info;
-            $a_id = $a['constituency'] ? $a['constituency'] : -1;
-            $b_id = $b['constituency'] ? $b['constituency'] : -1;
+            $a_id = $a['area_id'] ? $a['area_id'] : -1;
+            $b_id = $b['area_id'] ? $b['area_id'] : -1;
             $a_name = $reps_info[$a_id]['name'];
             $b_name = $reps_info[$b_id]['name'];
             return strcmp($a_name, $b_name);
         }
         usort($rows, 'by_mp');
     } elseif ($sort=='c') {
-        function by_constituency($a, $b) {
+        function by_area($a, $b) {
             global $areas_info;
-            $a_id = $a['constituency'] ? $a['constituency'] : -1;
-            $b_id = $b['constituency'] ? $b['constituency'] : -1;
+            $a_id = $a['area_id'] ? $a['area_id'] : -1;
+            $b_id = $b['area_id'] ? $b['area_id'] : -1;
             $a_name = $areas_info[$a_id]['name'];
             $b_name = $areas_info[$b_id]['name'];
             return strcmp($a_name, $b_name);
         }
-        usort($rows, 'by_constituency');
+        usort($rows, 'by_area');
     }
 
+    echo '<h2>Current Status</h2>';
+    echo "<ul><li>$people ", make_plural($people, 'person has', 'people have'), " signed up in ";
+    if (OPTION_AREA_TYPE == 'WMC' && $consts==646) echo 'all ';
+    echo "$consts ", area_type('plural', $consts);
+    echo "<li>$people_lastday ", make_plural($people_lastday, 'person', 'people'), ' in the last day';
+    if (OPTION_AREA_TYPE == 'WMC') {
+        $left = 646 - $consts;
+        if ($consts<645)
+            print "<li>There are $left constituencies with nobody signed up";
+        elseif ($consts==645)
+            print "<li>There is 1 constituency with nobody signed up";
+    }
+    print "<li>$morethan constituencies have " . OPTION_THRESHOLD_STEP . " or more subscribers, $morethan_emailed have been sent emails";
+    print "<li>$mp_written_messages messages sent by " . rep_type('plural') . ", $comments comments made by constituents";
+    print '</ul>';
+    print '<p><strong>Click on the headings (e.g. ' . area_type() . ') to sort the table by different columns.</strong></p>';
+
     foreach ($rows as $k=>$r) {
-        $c_id = $r['constituency'] ? $r['constituency'] : -1;
+        $c_id = $r['area_id'] ? $r['area_id'] : -1;
         $c_name = $areas_info[$c_id]['name'];
-        $r_name = $reps_info[$c_id]['name'];
-        $r_id = $reps_info[$c_id]['id'];
+        $r_name = join(', ', $reps_info[$c_id]['names']);
+        #$r_id = $reps_info[$c_id]['ids'];
         if (OPTION_YCML_STAGING) {
             $r_name = spoonerise($r_name);
         }
@@ -161,13 +162,15 @@ function league_table($sort) {
 }
 
 function table_header($sort) {
+    $rep_type = rep_type();
+
     print '<table border="0" cellpadding="4" cellspacing="0"><tr>';
     $cols = array(
-        'c'=>'Constituency', 
-        'p'=>'MP',
+        'c' => ucwords(area_type()),
+        'p' => ucwords($rep_type),
         's'=>'Signups',
-	'e'=>'Emails sent asking MP to post',
-        'm'=>'Messages sent by MP',
+	'e' => "Emails sent asking $rep_type to post",
+        'm' => "Messages sent by $rep_type",
         'r'=>'Comments left by constituents',
         'l'=>'Latest signup'
     );

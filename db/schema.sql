@@ -1,11 +1,11 @@
 --
 -- schema.sql:
--- Schema for Your Constituency Mailing List
+-- Schema for HearFromYourMP/Councillor
 --
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.30 2007-07-30 17:59:13 matthew Exp $
+-- $Id: schema.sql,v 1.31 2007-09-18 12:58:30 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -30,7 +30,7 @@ create table person (
 create unique index person_email_idx on person(email);
 create unique index person_email_lower_idx on person(lower(email));
 
--- MP's constituents who have signed up
+-- An area's constituents who have signed up
 create table constituent (
     id serial not null primary key,
 -- For old-style signups. TODO: Remove this when everyone switched over
@@ -39,17 +39,17 @@ create table constituent (
 -- For new-style signups
     person_id integer not null references person(id),
 -- Constituency they've signed up to, plus postcode they used, and whether they're the current rep.
-    constituency integer, -- can be NULL if postcode is bad
+    area_id integer, -- can be NULL if postcode is bad
     postcode text not null,
-    is_mp boolean not null default false,
+    is_rep boolean not null default false,
 -- Metadata
     creation_time timestamp not null default current_timestamp,
     creation_ipaddr text not null
 );
 
 create index constituent_person_id_idx on constituent(person_id);
-create index constituent_constituency_idx on constituent(constituency);
-create unique index constituent_person_id_constituency_idx on constituent(person_id, constituency);
+create index constituent_area_id_idx on constituent(area_id);
+create unique index constituent_person_id_area_id_idx on constituent(person_id, area_id);
 
 -- secret
 -- A random secret.
@@ -89,7 +89,8 @@ create index requeststash_whensaved_idx on requeststash(whensaved);
 
 create table message (
     id serial not null primary key,
-    constituency integer not null,
+    area_id integer not null,
+    rep_id integer not null, -- Which rep in this area posted the message
     posted timestamp not null default current_timestamp,
     subject text not null,
     content text not null,
@@ -99,7 +100,7 @@ create table message (
     -- to 'approved' and are sent.
     state text not null default ('new') check (state in ('new', 'ready', 'approved'))
 );
-create index message_state_constituency_idx on message(state,constituency);
+create index message_state_area_id_idx on message(state,area_id);
 
 create table comment (
     id text not null primary key,   -- comment ID, 8 hex digits
@@ -110,7 +111,7 @@ create table comment (
     ipaddr text not null,
     content text not null,
     visible integer not null default 0,
-    posted_by_mp boolean not null default false
+    posted_by_rep boolean not null default false
 );
 create index comment_refs_idx on comment(refs);
 create index comment_person_id_idx on comment(person_id);
@@ -157,22 +158,24 @@ create index alert_sent_id_idx on alert_sent(alert_id);
 create index alert_sent_comment_id_idx on alert_sent(comment_id);
 create unique index alert_sent_unique_idx on alert_sent(alert_id, comment_id);
 
--- mp_threshold NUM DIR
+-- rep_threshold NUM DIR SCALE
 -- If DIR is positive, return the smallest threshold level larger than NUM;
 -- otherwise return the largest threshold level smaller than NUM.
-create function mp_threshold(integer, integer) returns integer as '
+-- SCALE is so we can use different thresholds for different sorts of rep.
+create function rep_threshold(integer, integer, integer) returns integer as '
     declare
         num alias for $1;
         dir alias for $2;
+	scale alias for $3;
         n integer;
         m integer;
     begin
-        if num < 100 then
-            m := 25;
-        elsif num < 200 then
-            m := 50;
+        if num < scale * 4 then
+            m := scale;
+        elsif num < scale * 8 then
+            m := 2 * scale;
         else
-            m := 100;
+            m := 4 * scale;
         end if;
         n := num / m;
         if dir < 0 then
@@ -189,27 +192,23 @@ create function mp_threshold(integer, integer) returns integer as '
     end;
 ' language 'plpgsql';
 
-create table mp_threshold_alert (
-    -- XXX This is broken because it's per-constituency, not per-MP. So if the
-    -- MP for a constituency changes and the previous MP had already sent
-    -- mails to their constituents, the new MP won't get chivvying mail. But
-    -- ignore that problem for the moment.
-    constituency integer not null,
+create table rep_threshold_alert (
+    area_id integer not null,
     whensent timestamp not null default current_timestamp,
     num_subscribers integer not null -- at time of sending
 );
 
-create index mp_threshold_alert_constituency_idx
-    on mp_threshold_alert(constituency);
+create index rep_threshold_alert_area_id_idx
+    on rep_threshold_alert(area_id);
 
-create table mp_nothanks (
-    constituency integer not null,
+create table rep_nothanks (
+    area_id integer not null,
     status boolean not null,
     website text,
     gender text not null
 );
 
-create unique index mp_nothanks_constituency_idx on mp_nothanks(constituency);
+create unique index rep_nothanks_area_id_idx on rep_nothanks(area_id);
  
 -- table of abuse reports on comments
 create table abusereport (
@@ -234,15 +233,18 @@ create function delete_comment(text)
     end
 ' language 'plpgsql';
 
--- information about a constituency (and its MP)
-create table constituency_cache (
-    -- MaPit area_id
+-- cached information from MaPit about areas
+create table area_cache (
     id integer not null primary key,
-    -- Constituency name
+    name text not null
+);
+
+-- cached information from DaDem about reps
+create table rep_cache (
+    id integer not null primary key,
     name text not null,
+    created integer not null,
+    area_id integer not null,
     -- Email to which confirmation requests and some alerts? are sent
-    confirmation_email text not null default '',
-    rep_name text not null default '',
-    rep_id integer not null default 0,
-    rep_created integer not null default 0
+    confirmation_email text not null default ''
 );

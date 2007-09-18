@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: contact.php,v 1.2 2005-10-14 18:16:01 matthew Exp $
+// $Id: contact.php,v 1.3 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -36,10 +36,10 @@ function contact_form($errors = array()) {
     print '<h2>Contact Us</h2>';
     $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
     printf('<p>Was it useful?  How could it be better?
-We make HearFromYourMP and thrive off feedback, good and bad.
+We make %s and thrive off feedback, good and bad.
 Use this form to contact us.
-If you prefer, you can email %s instead of using the form.</p>', '<a href="mailto:' . $contact_email . '">' . $contact_email . '</a>');
-    print "<p>If you would like to comment on a message from an MP, please use the 'comments' section on the appropriate page. These messages go to the HearFromYourMP Team, <strong>not</strong> your MP.</p>";
+If you prefer, you can email %s instead of using the form.</p>', $_SERVER['site_name'], '<a href="mailto:' . $contact_email . '">' . $contact_email . '</a>');
+    print "<p>If you would like to comment on a message from a representative, please use the 'comments' section on the appropriate page. These messages go to the " . $_SERVER['site_name'] . " Team, <strong>not</strong> your representative.</p>";
     print '<p><a href="/faq">Read the FAQ</a> first, it might be a quicker way to answer your question.</p>';
     if (sizeof($errors)) {
         print '<ul id="errors"><li>';
@@ -47,7 +47,7 @@ If you prefer, you can email %s instead of using the form.</p>', '<a href="mailt
         print '</li></ul>';
     } ?>
 <form name="contact" accept-charset="utf-8" action="/contact" method="post"><input type="hidden" name="contactpost" value="1">
-<div class="fr">Message to: <strong>HearFromYourMP Team</strong></div>
+<div class="fr">Message to: <strong><?=$_SERVER['site_name'] ?> Team</strong></div>
 <div class="fr"><label for="name">Your name:</label> <input type="text" id="name" name="name" value="<?=htmlentities($name) ?>" size="32"></div>
 <div class="fr"><label for="email">Your email:</label> <input type="text" id="email" name="email" value="<?=htmlentities($email) ?>" size="32"></div>
 <div class="fr"><label for="subject">Subject:</label> <input type="text" id="subject" name="subject" value="<?=htmlentities(get_http_var('subject')) ?>" size="50"></div>

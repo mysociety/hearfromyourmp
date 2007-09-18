@@ -7,13 +7,12 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: make-missing-people,v 1.1 2006-01-16 19:39:52 ycml Exp $
+# $Id: make-missing-people,v 1.2 2007-09-18 12:58:29 matthew Exp $
 
 require_once "../conf/general";
 require_once '../../phplib/db.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/mapit.php';
-require_once '../../phplib/votingarea.php';
 
 $right = 0;
 $q = db_query('select id,name,email from constituent where person_id is null');

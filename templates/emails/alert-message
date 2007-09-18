@@ -1,8 +1,8 @@
-Subject: New message from your MP, <?=$values['mp_name']?>
+Subject: New message from your <?=$values['rep_type']?>, <?=$values['rep_name']?>
 
 Hello <?=$values['creator_name']?>,
 
-PLEASE DO NOT REPLY TO THIS MAIL -- you cannot reply to your MP by doing so.
+PLEASE DO NOT REPLY TO THIS MAIL -- you cannot reply to your <?=$values['rep_type']?> by doing so.
 Instead, you can leave a public comment on their message by following this
 link:
 <?=$values['message_url']?>
@@ -16,15 +16,15 @@ Or you can send them a private message through this link:
 
 -------------------
 
-Please note -- you cannot respond to your MP by pressing reply!
+Please note -- you cannot respond to your <?=$values['rep_type']?> by pressing reply!
 
 To leave a public comment on this message, follow this link:
 <?=$values['message_url']?>
 
-To send a message in private to your MP about this issue, follow this link:
+To send a message in private to your <?=$values['rep_type']?> about this issue, follow this link:
 <?=$values['writetothem_url']?>
 
-To stop your subscription to HearFromYourMP in this constituency, follow this link:
+To stop your subscription to HearFromYour<?=$values['rep_type']?> in this constituency, follow this link:
 <?=$values['unsubscribe_url']?>
 
 <?=$values['signature']?>

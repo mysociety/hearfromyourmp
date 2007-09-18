@@ -8,7 +8,7 @@ to HearFromYourMP:
 <?=$values['url']?>
 
 This will enable you to receive emails from
-<?=$values['rep_name']?> in the <?=$values['area_name']?> constituency
+<?=$values['rep_name']?> in <?=$values['area_name']?>
 and leave comments, should they choose to use our service.
 
 If your email program does not let you click on this link, just

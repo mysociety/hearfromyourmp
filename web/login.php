@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.12 2007-08-16 20:17:17 matthew Exp $
+ * $Id: login.php,v 1.13 2007-09-18 12:58:31 matthew Exp $
  * 
  */
 
@@ -221,7 +221,7 @@ function login_page() {
             stash_redirect($q_stash);
             /* NOTREACHED */
         }
-    } else if ($q_SendEmail) {
+    } elseif ($q_SendEmail) {
         /* User has asked to be sent email. */
         if (is_null($q_email)) {
             login_form(array('email'=>'Please enter your email address.'));
@@ -299,28 +299,17 @@ function login_form($errors = array()) {
 
 <p><strong><?=$reason?></strong></p>
 
-<? if (is_null($q_email) || $errors) { ?>
 <ul>
+<li><p>We'll send an email to that address containing a link that logs you in.
+</p></li>
+
+<? if (is_null($q_email) || $errors) { ?>
 <li> Enter your email address: <input<? if (array_key_exists('email', $errors) || array_key_exists('badpass', $errors)) print ' class="error"' ?> type="text" size="30" name="email" id="email" value="<?=$q_h_email?>">
 <? } else { ?>
 <input type="hidden" name="email" value="<?=$q_h_email?>">
-<ul>
 <? } ?>
 
-<li><p>I'm new to HearFromYourMP:
-<input type="submit" name="SendEmail" value="Click here to continue"><br>
-
-<li><p>I have been here before and have a HearFromYourMP password:
-
-<input type="password" name="password" id="password" value="" <? if (array_key_exists('badpass', $errors)) print ' class="error"' ?> >
-<input type="submit" name="LogIn" value="Let me in"></p>
-
-<input type="checkbox" name="rememberme" id="rememberme" value="1"><strong>Remember me</strong>
-<small>(don't use this on a public or shared computer)</small>
-
-</li>
-
-</p>
+<input type="submit" name="SendEmail" value="Go">
 
 </li>
 </ul>

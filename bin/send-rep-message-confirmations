@@ -1,16 +1,19 @@
 #!/usr/bin/php -q
 <?php
 /*
- * send-mp-message-confirmations:
- * Run from cron regularly to send copies of MP messages to their registered
+ * send-rep-message-confirmations:
+ * Run from cron regularly to send copies of representative messages to their registered
  * addresses for confirmation.
  * 
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-mp-message-confirmations,v 1.10 2007-07-30 17:29:11 matthew Exp $
+ * $Id: send-rep-message-confirmations,v 1.1 2007-09-18 12:58:29 matthew Exp $
  * 
  */
+
+exit;
+# XXX: We don't use email confirmations any more, this script won't currently work
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once '../conf/general';
@@ -31,9 +34,9 @@ foreach ($switches as $switch) {
     if ($switch[0]=='--help') {
 ?>
 
-YCML MP message confirmation sending script
+YCML representative message confirmation sending script
 
-Usage: send-mp-message-confirmations [--verbose]
+Usage: send-rep-message-confirmations [--verbose]
 
 --help      Display this help message
 --verbose   Display more information
@@ -44,10 +47,10 @@ Usage: send-mp-message-confirmations [--verbose]
 }
 
 db_connect();
-send_mp_message_confirmations();
+send_rep_message_confirmations();
 
-function send_mp_message_confirmations() {
-    verbose("sending MP message confirmations");
+function send_rep_message_confirmations() {
+    verbose("sending representative message confirmations");
 
     db_query("lock table message in share mode");
 
@@ -62,10 +65,10 @@ function send_mp_message_confirmations() {
         $rep_info = ycml_get_mp_info($constituency);
         if (is_null($email)) {
             if (!isset($rep_info['email']) || $rep_info['email'] === '') {
-                error("no confirmation email address available for ${rep_info['name']} MP and no DaDem email contact either");
+                error("no confirmation email address available for ${rep_info['name']} and no DaDem email contact either");
                 continue;
             } else {
-                warning("no confirmation email address available for ${rep_info['name']} MP; using DaDem address ${rep_info['email']}");
+                warning("no confirmation email address available for ${rep_info['name']}; using DaDem address ${rep_info['email']}");
                 db_query('update constituency_cache set confirmation_email=? where id=?', array($rep_info['email'], $constituency));
                 $email = $rep_info['email'];
             }
@@ -74,7 +77,7 @@ function send_mp_message_confirmations() {
         $token = auth_token_store('message', array('id' => $id));
         $url = OPTION_BASE_URL . "/M/$token";
 
-        verbose("sending mail about message #$id as from ${rep_info['name']} MP to $email...");
+        verbose("sending mail about message #$id as from ${rep_info['name']} to $email...");
 
         $row = array(
 	        'subject' => $subject,

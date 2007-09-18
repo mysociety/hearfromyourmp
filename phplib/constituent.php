@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.5 2006-05-31 16:10:15 matthew Exp $
+// $Id: constituent.php,v 1.6 2007-09-18 12:58:30 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -56,12 +56,15 @@ function constituent_subscribe_box($array = array()) {
             $email = $P->email();
     }
 
+    if (OPTION_AREA_ID)
+        $example_postcode = canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
+    else
+        $example_postcode = 'OX1 3DR';
+
 ?>
-<form accept-charset="utf-8" method="post" action="/subscribe">
+<form accept-charset="utf-8" method="post" action="/subscribe" name="subscribe_form">
 <div id="subscribeBox">
 <input type="hidden" name="r" value="<?=htmlspecialchars($return) ?>">
-<h2>Sign up now</h2>
-<p></p>
     <input type="hidden" name="subscribe" id="subscribe" value="1">
     <label for="name">Your name:</label>
     <input type="text" name="name" id="name" value="<?=htmlspecialchars($name) ?>" size="20">
@@ -72,15 +75,15 @@ function constituent_subscribe_box($array = array()) {
 &nbsp; 
     <input type="submit" class="submit" value="Sign up">
     <input type="hidden" name="sign" id="sign" value="<?=htmlentities(get_http_var('sign'))?>">
-    <br><em>(for example OX1 3DR)</em>
+    <br><em>(for example <?=$example_postcode ?>)</em>
 </div>
 </form>
 <? 
 
 }
 
-function constituent_is_mp($person_id, $constituency) {
-    return db_getOne('SELECT is_mp FROM constituent
-                        WHERE person_id = ? AND constituency = ?', array($person_id, $constituency) );
+function constituent_is_rep($person_id, $area_id) {
+    return db_getOne('SELECT is_rep FROM constituent
+                        WHERE person_id = ? AND area_id = ?', array($person_id, $area_id) );
 }
 ?>

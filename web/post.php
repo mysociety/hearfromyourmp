@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.8 2007-03-05 17:40:36 matthew Exp $
+// $Id: post.php,v 1.9 2007-09-18 12:58:31 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -19,11 +19,21 @@ if (!$P)
     err('You must be logged in to view this page. This presumably means your browser does not have cookies enabled, which we use to track logins. Please enable cookies and try again.');
 
 importparams(
-    array('constituency', '/^\d+$/', 'Invalid constituency', null),
-    array('post', '/^\d$/', 'Invalid mode', null)
+    array('constituency', '/^\d+$/', '', null),
+    array('rep', '/^\d+$/', '', null),
+    array('post', '/^\d$/', '', null)
 );
-$is_mp = constituent_is_mp($P->id(), $q_constituency);
-if (!$is_mp || $is_mp == 'f')
+if ($q_rep && !$q_constituency) {
+    $rep_info = dadem_get_representative_info($q_rep);
+    $q_constituency = $rep_info['voting_area'];
+}
+if (!$q_rep && $q_constituency) {
+    $reps = dadem_get_representatives($q_constituency);
+    $q_rep = $reps[0];
+}
+
+$is_rep = constituent_is_rep($P->id(), $q_constituency);
+if (!$is_rep || $is_rep == 'f')
     err('You cannot use this form, sorry.');
 
 if ($q_post == 2) { # Post
@@ -33,9 +43,9 @@ if ($q_post == 2) { # Post
     ))
         err("Blank subject or message when confirming - should not happen!");
     $q_message = str_replace("\r", '', $q_message);
-    db_query("INSERT INTO message (constituency, subject, content, state)
-                VALUES (?, ?, ?, 'approved')",
-                array($q_constituency, $q_subject, $q_message));
+    db_query("INSERT INTO message (constituency, subject, content, state, rep_id)
+                VALUES (?, ?, ?, 'approved', ?)",
+                array($q_constituency, $q_subject, $q_message, $q_rep));
     db_commit();
     print '<p><em>Thank you; your message has been posted, and will be emailed to the subscribed constituents shortly.</em></p>';
     # TODO: Cross-sell TheyWorkForYou!? Maybe ask for copyright-free photos of them?
@@ -76,10 +86,12 @@ if ($q_post == 2) { # Post
     }
 } else {
 ?>
-<p>Hello, <?=$P->name() ?>. To post a message through HearFromYourMP, please enter a subject and
+<p>Hello, <?=$P->name() ?>. To post a message through <?=$_SERVER['site_name']?>,
+please enter a subject and
 message in the boxes below, then click "Preview". You will be given the opportunity to preview
 and re-edit your message before it is confirmed and sent.</p>
 
+<? # XXX: Very MP specific ?>
 <p>We find that the MPs who succeed in provoking the largest number of interesting comments
 from their constituents tend to send short messages on a single topic. Often asking your
 constituents for their views on something provokes interesting responses. Here are a couple

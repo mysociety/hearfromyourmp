@@ -8,18 +8,18 @@ about any issue you consider to be of particular importance at the
 moment. All you have to do to talk to them is visit:
     <?=$values['message_url']?>
 
-This mail has been sent by HearFromYourMP.com, a free service from
+This mail has been sent by HearFromYourCouncillor.com, a free service from
 charitable project mySociety.org. mySociety.org also runs
-www.WriteToThem.com (formerly FaxYourMP.com), civic action site
+www.WriteToThem.com , civic action site
 www.PledgeBank.com and www.TheyWorkForYou.com .
 
-HearFromYourMP.com is a strictly non-partisan site which is trying to
+HearFromYourCouncillor.com is a strictly non-partisan site which is trying to
 build healthier and more productive long-term relationships between
 representatives and represented. That is why have launched the site
-now, long before the next general election. <?=$values['reps_using']?>
-MPs have already used HearFromYourMP to send messages to their
+now, long before the next election. <?=$values['reps_using']?>
+councillors have already used HearFromYourCouncillor to send messages to their
 constituents -- you can see what they said at
-    http://www.hearfromyourmp.com/about
+    http://www.hearfromyourcouncillor.com/about
  
 When you send a message, your constituents will be able to discuss what
 you say in a public forum. You can also respond to comments in the
@@ -39,8 +39,8 @@ If you are not interested in using this service at the moment, we will
 send you a reminder when you have <?=$values['next_threshold']?>
 constituents signed up. If you have any further questions, please 
 follow this link:
-    http://www.hearfromyourmp.com/about-mps
-Or email us at team@hearfromyourmp.com, or call us on 07811 082158.
+    http://www.hearfromyourmp.com/about
+Or email us at team@hearfromyourcouncillor.com, or call us on 07811 082158.
 
 All the best,
-The HearFromYourMP Team
+The HearFromYourCouncillor Team
