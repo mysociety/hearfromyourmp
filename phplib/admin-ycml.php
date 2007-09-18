@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.33 2007-09-18 12:58:30 matthew Exp $
+ * $Id: admin-ycml.php,v 1.34 2007-09-18 13:08:42 matthew Exp $
  * 
  */
 
@@ -26,7 +26,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
     function display() {
         $signups = db_getOne('SELECT COUNT(*) FROM constituent');
         $consts = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM constituent');
-    	$consts_posted = db_getOne("select count(distinct area_id) from message where state='approved'");
+            $consts_posted = db_getOne("select count(distinct area_id) from message where state='approved'");
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         $messages_approved = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
@@ -190,11 +190,11 @@ class ADMIN_PAGE_YCML_MAIN {
         $out = array();
         print "<div style='float:left; width:47%;'><h2 style='margin:0'>$area_info[name]";
         if ($id>0) {
-	    foreach ($reps_info as $rep_info) {
-	        print ", $rep_info[name] ($rep_info[party])";
-	    }
-	    print ", $subscribers subscribed";
-	}
+            foreach ($reps_info as $rep_info) {
+                print ", $rep_info[name] ($rep_info[party])";
+            }
+            print ", $subscribers subscribed";
+        }
         print '</h2>';
 
         if ($id>0) {
@@ -393,14 +393,14 @@ if any. This must be set before messages can be posted:</p>
             print '<blockquote><p>' . $content . '</p></blockquote>';
             print '<h3>Email</h3>';
             $preview = preg_replace('#\r#', '', htmlspecialchars($message));
-	    print '<pre>';
+            print '<pre>';
             $paras = preg_split('/\n{2,}/', $preview);
             foreach ($paras as $para) {
                 $para = "     $para";
                 print wordwrap($para, 64, "\n     ");
                 print "\n\n";
             }
-	    print '</pre>';
+            print '</pre>';
             print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
             return 0;
         }
@@ -466,7 +466,7 @@ if any. This must be set before messages can be posted:</p>
             db_commit();
         } elseif ($m_id = get_http_var('resend_confirmation')) {
             db_query("UPDATE message SET state='new' WHERE id=?", $m_id);
-	    db_commit();
+            db_commit();
             print '<p><em>Message set for reconfirmation</em></p>';
         }
 

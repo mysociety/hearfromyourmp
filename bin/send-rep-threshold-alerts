@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-threshold-alerts,v 1.1 2007-09-18 12:58:29 matthew Exp $
+ * $Id: send-rep-threshold-alerts,v 1.2 2007-09-18 13:08:42 matthew Exp $
  * 
  */
 
@@ -127,7 +127,7 @@ function send_rep_threshold_alerts($type) {
         else
             verbose("no previous alert sent for this area");
 
-	foreach ($reps_info as $id => $rep_info) {
+        foreach ($reps_info as $id => $rep_info) {
             if (!isset($rep_info['email']) || $rep_info['email'] === '') {
                 warning("no email address available for ${rep_info['name']} (${area_info['name']}), but need to send threshold alert");
                 if ($rep_info['email'] === '')
@@ -136,8 +136,8 @@ function send_rep_threshold_alerts($type) {
             }
             verbose("email address for this rep is ${rep_info['email']}");
 
-	    # Create account for rep if they don't already have one.
-	    $P = person_get_or_create($rep_info['email'], $rep_info['name']);
+            # Create account for rep if they don't already have one.
+            $P = person_get_or_create($rep_info['email'], $rep_info['name']);
             $already_signed = db_getOne("select id from constituent where 
                 area_id = ? and person_id = ?
                 for update", array( $area_id, $P->id() ) );
@@ -147,10 +147,10 @@ function send_rep_threshold_alerts($type) {
                             postcode, creation_ipaddr
                         )
                         values (?, ?, ?, ?, ?)", array($P->id(), $area_id, true, '', ''));
-	    } else {
+            } else {
                  db_query("update constituent set is_rep = true where person_id=? and area_id=?",
                      array($P->id(), $area_id));
-	    }
+            }
             db_commit();
             $already_present = db_getOne("select confirmation_email from rep_cache where 
                 id = ? for update", array($id) );
@@ -158,8 +158,8 @@ function send_rep_threshold_alerts($type) {
                 db_query("update rep_cache set confirmation_email=? where id=?",
                     array($rep_info['email'], $id));
                 db_commit();
-	    }
-	    $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
+            }
+            $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
             $pp = array(
                 'message_url' => $url,
                 'subscribers' => $current,
@@ -171,11 +171,11 @@ function send_rep_threshold_alerts($type) {
                 'num_people' => $num_people
             );
 
-	    if (OPTION_YCML_STAGING) {
-	        $success = true;
-	    } else {
+            if (OPTION_YCML_STAGING) {
+                $success = true;
+            } else {
                 $success = ycml_send_email_template($rep_info['email'], $template, $pp);
-	    }
+            }
             if ($success) {
                 verbose("mail successfully sent");
                 db_query('

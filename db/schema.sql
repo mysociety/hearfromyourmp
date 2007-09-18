@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.31 2007-09-18 12:58:30 matthew Exp $
+-- $Id: schema.sql,v 1.32 2007-09-18 13:08:42 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -166,7 +166,7 @@ create function rep_threshold(integer, integer, integer) returns integer as '
     declare
         num alias for $1;
         dir alias for $2;
-	scale alias for $3;
+        scale alias for $3;
         n integer;
         m integer;
     begin

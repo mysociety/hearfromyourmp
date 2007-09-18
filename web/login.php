@@ -36,7 +36,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.13 2007-09-18 12:58:31 matthew Exp $
+ * $Id: login.php,v 1.14 2007-09-18 13:08:43 matthew Exp $
  * 
  */
 
@@ -244,7 +244,7 @@ function login_page() {
         $template_data['url'] = $url;
         $template_data['user_name'] = $q_name ? " $q_name" : '';
         $template_data['user_email'] = $q_email;
-	$to = $q_name ? array($q_email, $q_name) : $q_email;
+        $to = $q_name ? array($q_email, $q_name) : $q_email;
         ycml_send_email_template($to,
             array_key_exists('template', $template_data) 
                 ?  $template_data['template'] : 'generic-confirm', 

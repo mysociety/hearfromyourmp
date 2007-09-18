@@ -7,7 +7,7 @@
  * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: check-email-status,v 1.3 2007-09-18 12:58:29 matthew Exp $
+ * $Id: check-email-status,v 1.4 2007-09-18 13:08:42 matthew Exp $
  * 
  */
 
@@ -22,9 +22,9 @@ $q = db_getAll('select id,name,rep_name, confirmation_email from constituency_ca
 foreach ($q as $r) {
     $data[$r['id']] = array(
         'name' => $r['name'],
-	'rep_name' => $r['rep_name'],
-	'email_constituent' => '',
-	'email_confirmation' => strtolower($r['confirmation_email'])
+        'rep_name' => $r['rep_name'],
+        'email_constituent' => '',
+        'email_confirmation' => strtolower($r['confirmation_email'])
     );
 }
 $q = db_getAll("select constituency,person.email from constituent,person where person_id=person.id and is_rep='t'");
@@ -42,16 +42,16 @@ foreach ($data as $id => $arr) {
     $rep_name = $arr['rep_name'];
     if ($email_wtt == $email_confirmation && $email_wtt == $email_constituent) {
         # Email addresses all the same
-	if ($method == 'email' || !$email_wtt)
-	    continue;
-	$out['fax'] .= "WTT set to fax, WTT/HFYMP emails agree: $id,$rep_name,$email_wtt\n";
+        if ($method == 'email' || !$email_wtt)
+            continue;
+        $out['fax'] .= "WTT set to fax, WTT/HFYMP emails agree: $id,$rep_name,$email_wtt\n";
     } elseif ($email_wtt == $email_confirmation) {
         $out['wttconf'] .= "WTT email agrees with confirmation, not constituent: $method,$id,$rep_name,$email_wtt,$email_constituent\n";
     } elseif ($email_wtt == $email_constituent) {
         $out['wttconst'] .= "WTT email agrees with constituent, not confirmation: $method,$id,$rep_name,$email_wtt,$email_confirmation\n";
     } elseif ($email_confirmation == $email_constituent) {
         if (!$email_constituent)
-	    continue;
+            continue;
         $out['confconst'] .= "WTT email disagrees with HFYMP: $method,$id,$rep_name,$email_wtt,$email_confirmation\n";
     } else {
         $out['alldiff'] .= "All emails different: $method,$id,$rep_name,$email_wtt,$email_confirmation,$email_constituent\n"; 

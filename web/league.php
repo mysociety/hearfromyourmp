@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.26 2007-09-18 12:58:31 matthew Exp $
+// $Id: league.php,v 1.27 2007-09-18 13:08:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -127,10 +127,10 @@ function league_table($sort) {
         $row = "";
         $row .= '<td>';
 #        if (file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$r_id.'.jpg'))
-#	    $row .= '<img src="/mpphotos/'.$r_id.'.jpg">';
+#            $row .= '<img src="/mpphotos/'.$r_id.'.jpg">';
 #        else
-#	    $row .= '&nbsp;';
-#	$row .= '</td> <td>';
+#            $row .= '&nbsp;';
+#        $row .= '</td> <td>';
         if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
         $row .= $c_name;
         if ($c_id != -1) $row .= '</a>';
@@ -169,7 +169,7 @@ function table_header($sort) {
         'c' => ucwords(area_type()),
         'p' => ucwords($rep_type),
         's'=>'Signups',
-	'e' => "Emails sent asking $rep_type to post",
+        'e' => "Emails sent asking $rep_type to post",
         'm' => "Messages sent by $rep_type",
         'r'=>'Comments left by constituents',
         'l'=>'Latest signup'

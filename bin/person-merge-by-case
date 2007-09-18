@@ -7,7 +7,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: person-merge-by-case,v 1.1 2007-06-04 14:59:39 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: person-merge-by-case,v 1.2 2007-09-18 13:08:42 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -41,42 +41,42 @@ while (my ($p1_email, $p1, $p2_email, $p2) = $st->fetchrow_array()) {
     if ($constituent1 == 0 && $alert1 == 0 && $comments1 == 0 && $messagesent1 == 0) {
         # Just delete people we don't reference anywhere else (deliberately
         # don't use pb_delete_person to ensure we don't reference them)
-	dbh()->do('delete from person where id = ?', {}, $p1);
+        dbh()->do('delete from person where id = ?', {}, $p1);
     } elsif ($constituent2 == 0 &&  $alert2 == 0 && $comments2 == 0 && $messagesent2 == 0) {
         # Just delete people we don't reference anywhere else (deliberately
         # don't use pb_delete_person to ensure we don't reference them)
-	dbh()->do('delete from person where id = ?', {}, $p2);
+        dbh()->do('delete from person where id = ?', {}, $p2);
     } else {
-	    print "$p1, $p2 $p1_email $p2_email\n";
-	    print "\tConstituent: $constituent1/$constituent2\n";
-	    print "\tAlerts: $alert1/$alert2\n";
-	    print "\tComments: $comments1/$comments2\n";
-	    print "\tMessage Sent: $messagesent1/$messagesent2\n";
+            print "$p1, $p2 $p1_email $p2_email\n";
+            print "\tConstituent: $constituent1/$constituent2\n";
+            print "\tAlerts: $alert1/$alert2\n";
+            print "\tComments: $comments1/$comments2\n";
+            print "\tMessage Sent: $messagesent1/$messagesent2\n";
 
-	    # If case insensitively they signed a pledge twice, remove one signature
-#	    my $st2 = dbh()->prepare('select a.id, a.name, b.id, b.name from signers as a, signers as b where 
-#	    		a.pledge_id = b.pledge_id and a.person_id = ? and b.person_id = ?');
+            # If case insensitively they signed a pledge twice, remove one signature
+#            my $st2 = dbh()->prepare('select a.id, a.name, b.id, b.name from signers as a, signers as b where 
+#                            a.pledge_id = b.pledge_id and a.person_id = ? and b.person_id = ?');
 #            $st2->execute($p1, $p2);
-#	    if ($st2->rows > 5) {
-#	    	die "rows greater than 5";
-#	    }
-#	    while (my ($s1, $s1name, $s2, $s2name) = $st2->fetchrow_array()) {
-#		print "\tTwicesign: $s1 $s1name $s2 $s2name\n";
-#		dbh()->do('select pb_delete_signer(?)', {}, $s2);
-#	    }
+#            if ($st2->rows > 5) {
+#                    die "rows greater than 5";
+#            }
+#            while (my ($s1, $s1name, $s2, $s2name) = $st2->fetchrow_array()) {
+#                print "\tTwicesign: $s1 $s1name $s2 $s2name\n";
+#                dbh()->do('select pb_delete_signer(?)', {}, $s2);
+#            }
 
-#	if ($constituent1 == 1 && $constituent2 == 1) {
-#	    my $cons1 = dbh()->selectrow_array('select constituency from constituent where person_id = ?', {}, $p1);
-#	    my $cons2 = dbh()->selectrow_array('select constituency from constituent where person_id = ?', {}, $p2);
-#    		print "\tConstituencies: $cons1 $cons2\n";
-#		if ($cons1 eq $cons2) {
-#			dbh()->do('delete from constituent where person_id = ?', {}, $p2);
-#		}
-#	}
+#        if ($constituent1 == 1 && $constituent2 == 1) {
+#            my $cons1 = dbh()->selectrow_array('select constituency from constituent where person_id = ?', {}, $p1);
+#            my $cons2 = dbh()->selectrow_array('select constituency from constituent where person_id = ?', {}, $p2);
+#                    print "\tConstituencies: $cons1 $cons2\n";
+#                if ($cons1 eq $cons2) {
+#                        dbh()->do('delete from constituent where person_id = ?', {}, $p2);
+#                }
+#        }
 
-	# Delete any message sents that this will remove
-	dbh()->do('delete from constituent where person_id = ? and constituency in (select constituency from constituent where person_id = ?)', {}, $p1, $p2);
-	dbh()->do('delete from message_sent where person_id = ? and message_id in (select message_id from message_sent where person_id = ?)', {}, $p1, $p2);
+        # Delete any message sents that this will remove
+        dbh()->do('delete from constituent where person_id = ? and constituency in (select constituency from constituent where person_id = ?)', {}, $p1, $p2);
+        dbh()->do('delete from message_sent where person_id = ? and message_id in (select message_id from message_sent where person_id = ?)', {}, $p1, $p2);
 
        # Merge the two people together
        dbh()->do('update constituent set person_id = ? where person_id = ?', {}, $p1, $p2); 

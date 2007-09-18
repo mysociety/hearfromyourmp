@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.55 2007-09-18 12:58:31 matthew Exp $
+# $Id: view.php,v 1.56 2007-09-18 13:08:43 matthew Exp $
 
 require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
@@ -128,14 +128,14 @@ function view_messages($area_id) {
         } elseif (array_key_exists('image', $rep_info)) {
             print '<img alt="" title="Portrait of ' . htmlspecialchars($rep_info['name']) . '" src="' . $rep_info['image'] . '" align="right" hspace="5">';
         }
-	$reps[] = $rep_info['name'] . ' (' . $rep_info['party'] . ')';
+        $reps[] = $rep_info['name'] . ' (' . $rep_info['party'] . ')';
     }
     $reps = (count($reps) > 1 ? join(', ', array_slice($reps, 0, count($reps)-1)) . ' and ' : '') . $reps[count($reps)-1];
 
     if (count($reps_info)) {
         echo '<p>The ', make_plural(count($reps_info), rep_type('single'), rep_type('plural')),
-	    ' for this ', $area_info['type_name'], ' ' , make_plural(count($reps_info), 'is', 'are'),
-	    ' ', $reps, '.';
+            ' for this ', $area_info['type_name'], ' ' , make_plural(count($reps_info), 'is', 'are'),
+            ' ', $reps, '.';
     } else {
         echo '<p>There is currently no ', rep_type('single'), ' for this ' . area_type() . '.';
     }
@@ -147,8 +147,8 @@ So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has'
         $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
         echo 'To discover everything you could possibly want to know about what your MP ', 
             isset($rep_infos[0]['name']) ? 'gets' : 'got',
-	    ' up to in Parliament, see their page on our sister site <a href="',
-	    $twfy_link, '">TheyWorkForYou</a>.';
+            ' up to in Parliament, see their page on our sister site <a href="',
+            $twfy_link, '">TheyWorkForYou</a>.';
     }
     echo '</p>';
 
@@ -182,9 +182,9 @@ over to their successor.&quot;</p>
     $this_or_these = make_plural(count($reps_info), 'this ' . rep_type('single'), 'these ' . rep_type('plural'));
     if ($num_messages==0) {
         echo '<li>We have sent ', make_plural(count($reps_info), 'this ' . rep_type('single'),
-	    'these ' . rep_type('plural')), ' ',
-	    $emails_sent_to_rep, ' ', make_plural($emails_sent_to_rep, 'message'),
-	    ' so far, asking them to send an email to their constituents.
+            'these ' . rep_type('plural')), ' ',
+            $emails_sent_to_rep, ' ', make_plural($emails_sent_to_rep, 'message'),
+            ' so far, asking them to send an email to their constituents.
 We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
     } else { ?>
@@ -200,10 +200,10 @@ We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
     $out = '';
     while ($r = db_fetch_array($q)) {
         $out .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
-	if (count($reps_info)>1) {
-	    $out .= ', by ' . $reps_info[$r['rep_id']]['name'];
-	}
-	$out .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
+        if (count($reps_info)>1) {
+            $out .= ', by ' . $reps_info[$r['rep_id']]['name'];
+        }
+        $out .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
     }
     if ($out) {
         print "<h3>Messages posted</h3> <ul>$out</ul>";

@@ -7,7 +7,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: make-missing-people,v 1.2 2007-09-18 12:58:29 matthew Exp $
+# $Id: make-missing-people,v 1.3 2007-09-18 13:08:42 matthew Exp $
 
 require_once "../conf/general";
 require_once '../../phplib/db.php';
@@ -17,17 +17,17 @@ require_once '../../phplib/mapit.php';
 $right = 0;
 $q = db_query('select id,name,email from constituent where person_id is null');
 while ($r = db_fetch_array($q)) {
-	$id = $r['id'];
-	$name = $r['name'];
-	$email = $r['email'];
-	$person_id = db_getOne('select id from person where email = ?', $email);
-	if (is_null($person_id)) {
-	    $person_id = db_getOne("select nextval('person_id_seq')");
-	    db_query('insert into person (id,name,email) values (?,?,?)', array($person_id, $name, $email));
-	}
-	db_query("update constituent set name=null,email=null,person_id=? where id=?", array($person_id, $id));
-	print "Updating entry $id, email $email to person id $person_id\n";
-	$right++;
+        $id = $r['id'];
+        $name = $r['name'];
+        $email = $r['email'];
+        $person_id = db_getOne('select id from person where email = ?', $email);
+        if (is_null($person_id)) {
+            $person_id = db_getOne("select nextval('person_id_seq')");
+            db_query('insert into person (id,name,email) values (?,?,?)', array($person_id, $name, $email));
+        }
+        db_query("update constituent set name=null,email=null,person_id=? where id=?", array($person_id, $id));
+        print "Updating entry $id, email $email to person id $person_id\n";
+        $right++;
 }
 
 print "\n$right updated\n";

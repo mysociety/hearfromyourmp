@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: contact.php,v 1.3 2007-09-18 12:58:31 matthew Exp $
+// $Id: contact.php,v 1.4 2007-09-18 13:08:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -63,16 +63,16 @@ function contact_form_submitted() {
     $subject = get_http_var('subject');
     $message = get_http_var('message');
     $errors = array();
-	if (!$name) $errors[] = _('Please enter your name');
-	if (!$email) $errors[] = _('Please enter your email address');
-	if (!validate_email($email)) $errors[] = _('Please enter a valid email address');
-	if (!$subject) $errors[] = _('Please enter a subject');
-	if (!$message) $errors[] = _('Please enter your message');
-	if (sizeof($errors)) {
-		contact_form($errors);
-	} else {
-		send_contact_form($name, $email, $subject, $message);
-	}
+    if (!$name) $errors[] = _('Please enter your name');
+    if (!$email) $errors[] = _('Please enter your email address');
+    if (!validate_email($email)) $errors[] = _('Please enter a valid email address');
+    if (!$subject) $errors[] = _('Please enter a subject');
+    if (!$message) $errors[] = _('Please enter your message');
+    if (sizeof($errors)) {
+        contact_form($errors);
+    } else {
+        send_contact_form($name, $email, $subject, $message);
+    }
 }
 
 function send_contact_form($name, $email, $subject, $message) {

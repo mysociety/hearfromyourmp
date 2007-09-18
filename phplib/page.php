@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.19 2007-09-18 12:58:30 matthew Exp $
+// $Id: page.php,v 1.20 2007-09-18 13:08:42 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -29,7 +29,7 @@ function page_header($title='', $params = array()) {
     $_SERVER['site_name'] = $site_name;
     if (OPTION_AREA_ID) {
         $area_info = mapit_get_voting_area_info(OPTION_AREA_ID);
-	$site_name .= ' &ndash; ' . short_name($area_info['name']);
+        $site_name .= ' &ndash; ' . short_name($area_info['name']);
     }
 
     header('Content-Type: text/html; charset=utf-8');
@@ -79,7 +79,7 @@ function page_header($title='', $params = array()) {
     if (count($devwarning) > 0) {
         echo '<p class="noprint" align="center" style="color: #cc0000;">';
         echo join('<br>', $devwarning);
-	echo '</p>';
+        echo '</p>';
     }
 }
 

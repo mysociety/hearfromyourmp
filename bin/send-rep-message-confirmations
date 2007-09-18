@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-message-confirmations,v 1.1 2007-09-18 12:58:29 matthew Exp $
+ * $Id: send-rep-message-confirmations,v 1.2 2007-09-18 13:08:42 matthew Exp $
  * 
  */
 
@@ -80,7 +80,7 @@ function send_rep_message_confirmations() {
         verbose("sending mail about message #$id as from ${rep_info['name']} to $email...");
 
         $row = array(
-	        'subject' => $subject,
+                'subject' => $subject,
                 'content' => $content,
                 'confirm_url' => $url,
                 'subscribers' => db_getOne('select count(id) from constituent where constituency = ?', $constituency)
