@@ -5,12 +5,13 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.9 2007-09-18 12:58:31 matthew Exp $
+// $Id: post.php,v 1.10 2007-09-18 14:50:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/importparams.php';
+require_once '../../phplib/dadem.php';
 
 $title = 'Post a message';
 page_header($title);

@@ -8,12 +8,15 @@ now <?=$values['subscribers']?> constituents in
 All you have to do to send a new message is visit:
     <?=$values['message_url']?>
 
-You've used the service before, so this is just a short email. We'll
-remind you again when you have <?=$values['next_threshold']?>, but
-we won't email again for at least one month.
+You or another councillor for your ward have used the service before,
+so this is just a short email. We'll remind you again when you have
+<?=$values['next_threshold']?>, but we won't email again for at least
+one month.
 
 As always, if you have any further questions, please follow this link
+
     http://www.hearfromyourmp.com/about
+
 Or email us at team@hearfromyourmp.com, or call us on 07811 082158.
 
 All the best,

@@ -5,7 +5,7 @@
  * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: cheltenham.css,v 1.1 2007-09-18 13:47:14 matthew Exp $
+ * $Id: cheltenham.css,v 1.2 2007-09-18 14:50:43 matthew Exp $
  * 
  */
 
@@ -18,7 +18,7 @@ img#cobrand_logo {
 }
 
 #subscribeBox, #commentform, #formreplace, #miniSubscribeBox {
-    background-color: #ccffff;
+    background-color: #eeffee;
     border: solid 2px #02927b;
 }
 #miniSubscribeBox {
@@ -27,32 +27,27 @@ img#cobrand_logo {
 
 h1 {
     color: #02927b;
-    background-color: #eeffff;
+    background-color: #eeffee;
     border-bottom: solid 2px #02927b;
 }
 h1 a, h1 a:link, h1 a:visited {
     color: #02927b;
-    background-color: #eeffff;
+    background-color: #eeffee;
 }
 
 #footer {
     border: solid 1px #02927B;
-    background-color: #eeffff;
+    background-color: #eeffee;
     border-width: 1px 0;
 }
 
 #pledges, #message, pre.htmlsource {
     border: solid 1px #02927b;
 }
-.box, #pledges, li.by_rep {
-    background-color: #eeffff;
+.box, #pledges, li.by_rep, .alt {
+    background-color: #eeffee;
 }
 .box h2, #pledges h2 {
     border-bottom: solid 1px #02927b;
-}
-
-.alt {
-    background-color: #eeffff;
-    color: #000000;
 }
 
