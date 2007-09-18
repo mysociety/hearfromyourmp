@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.20 2007-09-18 13:08:42 matthew Exp $
+// $Id: page.php,v 1.21 2007-09-18 13:47:14 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -48,9 +48,16 @@ function page_header($title='', $params = array()) {
         echo " &ndash; Sign up to hear from your $rep_type about local issues, and to discuss them with other constituents";
 ?></title>
 <style type="text/css">@import url("/ycml.css");</style>
-</head>
-<body>
-<h1><? if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">';
+<?
+    if (OPTION_AREA_ID==2326) {
+        echo '<style type="text/css">@import url("/css/cheltenham.css");</style>';
+    }
+    echo '</head><body>';
+    if (OPTION_AREA_ID==2326) {
+        echo '<a title="Back to Cheltenham Council website" href="http://www.cheltenham.gov.uk/"><img id="cobrand_logo" alt="Return to www.cheltenham.gov.uk" src="http://www.cheltenham.gov.uk/libraries/images/logo.gif"></a>';
+    }
+    echo '<h1>';
+    if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">';
     echo $site_name;
     if ($_SERVER['REQUEST_URI']!='/') print '</a>';
     print ' <span id="betatest">Beta&nbsp;Test</span>';
