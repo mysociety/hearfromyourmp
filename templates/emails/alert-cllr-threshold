@@ -15,10 +15,9 @@ www.PledgeBank.com and www.TheyWorkForYou.com .
 
 HearFromYourCouncillor.com is a strictly non-partisan site which is trying to
 build healthier and more productive long-term relationships between
-representatives and represented. That is why have launched the site
-now, long before the next election. <?=$values['reps_using']?>
-councillors have already used HearFromYourCouncillor to send messages to their
-constituents -- you can see what they said at
+representatives and represented. <?=$values['reps_using']?> councillors have
+already used HearFromYourCouncillor to send messages to their constituents --
+you can see what they said at
     http://www.hearfromyourcouncillor.com/about
  
 When you send a message, your constituents will be able to discuss what
