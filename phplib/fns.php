@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.21 2007-09-18 14:50:42 matthew Exp $
+// $Id: fns.php,v 1.22 2007-10-02 11:06:14 matthew Exp $
 
 require_once "../../phplib/evel.php";
 require_once "../../phplib/utility.php";
@@ -143,13 +143,17 @@ function ycml_send_email_template($to, $template_name, $values, $headers = array
     }
 
     # If being run from cron... :-/
-    if (!isset($_SERVER['site_name'])) {
+    if (!isset($values['rep_type'])) {
         if (OPTION_AREA_TYPE=='WMC')
             $rep_type = 'MP';
         else
             $rep_type = 'Councillor';
-        $_SERVER['site_name'] = "HearFromYour$rep_type";
+        $values['rep_type'] = $rep_type;
     }
+    if (!isset($_SERVER['site_name'])) {
+        $_SERVER['site_name'] = "HearFromYour$values[rep_type]";
+    }
+    $values['site_name'] = $_SERVER['site_name'];
     $values['signature'] = "--\nthe " . $_SERVER['site_name'] . ' team';
 
     if (is_file("../templates/emails/$lang/$template_name"))

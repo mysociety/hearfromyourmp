@@ -1,8 +1,0 @@
-Subject: New comments on HearFromYourMP
-
-The following comments have been left on HearFromYourMP:
-
-<?=$values['content']?>
-
-<?=$values['signature']?>
-

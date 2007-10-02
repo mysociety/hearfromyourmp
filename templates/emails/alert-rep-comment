@@ -1,0 +1,10 @@
+Subject: New comments on <?=$values['site_name']?>
+
+Dear <?=$values['rep_name']?>,
+
+The following new comments have been left on <?=$values['site_name']?>:
+
+<?=$values['content']?>
+
+<?=$values['signature']?>
+

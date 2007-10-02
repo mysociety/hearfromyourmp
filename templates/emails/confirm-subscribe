@@ -1,9 +1,9 @@
-Subject: Subscribe to HearFromYourMP
+Subject: Subscribe to <?=$values['site_name']?>
 
 Hello <?=$values['user_name']?>,
 
 Please click on the link below to confirm that you wish to subscribe
-to HearFromYourMP:
+to <?=$values['site_name']?>:
 
 <?=$values['url']?>
 

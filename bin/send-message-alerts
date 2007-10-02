@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-message-alerts,v 1.11 2007-09-18 13:08:42 matthew Exp $
+ * $Id: send-message-alerts,v 1.12 2007-10-02 11:06:13 matthew Exp $
  *
  */
 
@@ -52,14 +52,15 @@ function send_message_alerts() {
 
     // Search for alert
     $q = db_query("
-            select message.id as message_id, message.constituency,
-                    message.subject, message.content, person.id as person_id,
-                    person.name, person.email,
-                    constituent.id as constituent_id, constituent.postcode
+            select message.id as message_id, message.area_id,
+                    message.subject, message.content, message.rep_id,
+                    person.id as person_id, person.name, person.email,
+                    constituent.id as constituent_id, constituent.postcode,
+                    constituent.is_rep
             from message, constituent, person
             where
                 message.state = 'approved' and
-                message.constituency = constituent.constituency and
+                message.area_id = constituent.area_id and
                 constituent.person_id = person.id and
                 posted >= creation_time and
                 (select whenqueued from message_sent where
@@ -71,8 +72,7 @@ function send_message_alerts() {
     while ($row = db_fetch_array($q)) {
         verbose("person #${row['person_id']} (${row['email']}) has alert on message ${row['message_id']}");
 
-        $area_info = ycml_get_area_info($row['constituency']);
-        $rep_info = ycml_get_mp_info($row['constituency']);
+        $rep_info = ycml_get_rep_info($row['rep_id']);
 
 #        # Grab a lock, making sure alert hasn't been deleted meanwhile
 #        $stillthere = db_getOne('select id from alert where id = ? for update', $row['alert_id']);
@@ -88,14 +88,16 @@ function send_message_alerts() {
                  array($row['person_id'], $row['message_id']));
 
         # Send email
-        $row['mp_name'] = $rep_info['name'];
-        $row['constituency_name'] = $area_info['name'];
+        $row['rep_name'] = $rep_info['name'];
         $row['message_url'] = ycml_make_view_url($row['message_id'], $row['email']);
         $row['unsubscribe_url'] = constituent_unsubscribe_link($row['constituent_id'], $row['email']);
         $row['writetothem_url'] = 'http://www.writetothem.com/?a='
             . OPTION_AREA_TYPE . '&pc=' . urlencode($row['postcode']);
-        $f = ycml_send_email_template(array($row['email'], $row['name']),
-            'alert-message', $row);
+        if (!OPTION_YCML_STAGING || $row['is_rep']=='f')
+            $f = ycml_send_email_template(array($row['email'], $row['name']),
+                'alert-message', $row);
+        else
+            $f = true;
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();

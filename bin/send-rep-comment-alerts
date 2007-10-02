@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-comment-alerts,v 1.3 2007-09-18 14:14:19 matthew Exp $
+ * $Id: send-rep-comment-alerts,v 1.4 2007-10-02 11:06:13 matthew Exp $
  *
  */
 
@@ -54,7 +54,7 @@ function send_rep_comment_alerts() {
     // Search for alert
     $q = db_query("
             select comment.id as comment_id, comment.content, extract(epoch from comment.date) as epoch,
-                message.id as message_id, message.constituency, message.subject,
+                message.id as message_id, message.area_id, message.rep_id, message.subject,
                 person.name
             from comment, message, person
             where comment.message = message.id and
@@ -62,12 +62,12 @@ function send_rep_comment_alerts() {
                 comment.visible > 0 and
                 (select whenqueued from comment_sent where
                     comment_sent.comment_id = comment.id) is null
-            order by constituency,message_id,date
+            order by rep_id,message_id,date
             ");
 
     $comments = array();
     while ($row = db_fetch_array($q)) {
-        verbose("${row['constituency']} representative has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['name']})");
+        verbose("$row[rep_id] representative has alert on message $row[message_id] for comment #$row[comment_id] (by $row[name])");
 
         # Grab a lock, making sure alert hasn't been deleted meanwhile
         $stillthere = db_getOne('select id from comment where id = ? for update', $row['comment_id']);
@@ -79,12 +79,13 @@ function send_rep_comment_alerts() {
         if ($alreadysent) continue;
 
         $date = preg_replace('#&nbsp;\s*#', ' ', prettify($row['epoch']));
-        $comments[$row['constituency']][$row['message_id']][$row['comment_id']] = "$row[name] wrote at $date: $row[content]";
+        $comments[$row['rep_id']][$row['message_id']][$row['comment_id']] = "$row[name] wrote at $date: $row[content]";
         $subjects[$row['message_id']] = $row['subject'];
     }
 
-    foreach ($comments as $constituency_id => $messages) {
-        $email = db_getOne('select confirmation_email from constituency_cache where id = ?', $constituency_id);
+    foreach ($comments as $rep_id => $messages) {
+        $rep_info = ycml_get_rep_info($rep_id);
+        $email = $rep_info['email'];
         $body = '';
         foreach ($messages as $message_id => $comments) {
             $body .= $subjects[$message_id] . "\n\n"; # . str_repeat('-', strlen($subjects[$message_id])) . "\n\n";
@@ -95,16 +96,20 @@ function send_rep_comment_alerts() {
                 db_query("insert into comment_sent (comment_id) values (?)", $comment_id);
             }
         }
+        $values = array(
+            'content' => $body,
+            'rep_name' => $rep_info['name']
+        );
         # Send email
         if (OPTION_YCML_STAGING) {
-            $f = ycml_send_email_template(OPTION_CONTACT_EMAIL, 'alert-rep-comment', array('content'=>$body) );
+            $f = ycml_send_email_template(OPTION_CONTACT_EMAIL, 'alert-rep-comment', $values);
         } else {
-            $f = ycml_send_email_template($email, 'alert-rep-comment', array('content'=>$body) );
+            $f = ycml_send_email_template($email, 'alert-rep-comment', $values);
         }
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();
-            error("Failed to send comments alert to $constituency_id representative");
+            error("Failed to send comments alert to $area_id representative");
         } else {
             # Commit that it has been sent
             db_commit();
