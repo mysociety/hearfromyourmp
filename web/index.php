@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.27 2007-09-18 12:58:31 matthew Exp $
+// $Id: index.php,v 1.28 2007-10-30 10:03:45 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -27,11 +27,17 @@ function front_page() {
 
     echo recent_messages();
     echo recent_replies();
+    echo '<div id="indented">
+<h2 align="center">Get email from your ', $rep_type_plural,
+    '<br>Discuss it with ';
+    if ($rep_type != $rep_type_plural) {
+        echo 'them';
+    } else {
+        echo $rep_type_plural;
+    }
+    echo ' and other local people</h2>';
+    constituent_subscribe_box();
 ?>
-<div id="indented">
-<h2 align="center">Get email from your <?=$rep_type_plural ?>
-<br>Discuss it with your <?=$rep_type_plural ?> and other local people</h2>
-<?  constituent_subscribe_box(); ?>
 
 <p>If you enter your details, we&rsquo;ll add you to a queue of other people in
 your <?=area_type() ?>. When enough have signed up, your <?=$rep_type_plural ?> will get sent

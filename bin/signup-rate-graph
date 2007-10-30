@@ -5,7 +5,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francsi@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: signup-rate-graph,v 1.7 2006-03-08 19:20:36 chris Exp $
+# $Id: signup-rate-graph,v 1.8 2007-10-30 10:03:45 matthew Exp $
 
 SOURCE=/tmp/ycml-signup-rate-graph-data-$RANDOM$RANDOM
 GPSCRIPT=/tmp/ycml-signup-rate-graph-script-$RANDOM$RANDOM
@@ -17,7 +17,7 @@ source shlib/deployfns
 read_conf ycml/conf/general
 
 echo "select date(creation_time), count(*) from constituent
-    where constituency is not null group by
+    where area_id is not null group by
     date(creation_time) order by date(creation_time);" | psql --host $OPTION_YCML_DB_HOST --port $OPTION_YCML_DB_PORT -A -F " " $OPTION_YCML_DB_NAME $OPTION_YCML_DB_USER | egrep -v "date|rows" >$SOURCE
 #echo "source $SOURCE"
 

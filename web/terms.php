@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: terms.php,v 1.3 2007-09-18 12:58:31 matthew Exp $
+// $Id: terms.php,v 1.4 2007-10-30 10:03:45 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -34,7 +34,7 @@ in your posts being deleted, and/or your account being removed: ad
 hominem attacks on a <?=$rep_type ?> or other users, irrelevant and off-topic
 responses (see 2), and partisan posturing which isn't really trying to
 solve the problems being discussed. This may all seem a bit tough, but
-HearFromYourMP is a public space, and we reserve all rights to keep it
+<?=$_SERVER['site_name'] ?> is a public space, and we reserve all rights to keep it
 a nice one.
 
 <li>We do not allow you to hit reply and write directly back to your <?=$rep_type ?>

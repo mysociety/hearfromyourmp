@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: privacy.php,v 1.3 2007-09-18 12:58:31 matthew Exp $
+// $Id: privacy.php,v 1.4 2007-10-30 10:03:45 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -27,7 +27,7 @@ two limited circumstances:</p>
 <li>a constituent uses the link we include to WriteToThem.com to contact
 their <?=$rep_type ?>, in which case they are obliged to reveal their email and postal
 addresses to the <?=$rep_type ?>, in accordance with that site's usage policy.</li>
-<li>a constituent chooses to respond on the public forum on HearFromYourMP.com,
+<li>a constituent chooses to respond on the public forum on <?=$_SERVER['site_name'] ?>,
 in which case we will reveal their name only, adjacent to their post(s). We
 will not reveal any other information, unless the user includes personal
 information on their post.</li>
@@ -38,5 +38,5 @@ representatives say without revealing their identities &mdash; this is what
 happens every time someone buys a local newspaper, or stands anonymously
 in a crowd listening to an MP. We see no reason to challenge it.</p>
 
-<? }
-?>
+<?
+}
