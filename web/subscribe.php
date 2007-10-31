@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.34 2007-10-31 17:15:52 matthew Exp $
+// $Id: subscribe.php,v 1.35 2007-10-31 23:55:16 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -70,7 +70,7 @@ function do_subscribe() {
     } elseif (count($reps_info)>1) {
         $rep_name = 'your ' . strtolower($area_info['rep_name_plural']);
     } else {
-        list($rep_id, $rep_info) = each($reps_info);
+        foreach ($reps_info as $rep_id => $rep_info) { }
         $rep_name = $rep_info['name'];
     }
 
