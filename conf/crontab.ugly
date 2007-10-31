@@ -4,9 +4,13 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.9 2007-09-18 12:58:29 matthew Exp $
+# $Id: crontab.ugly,v 1.10 2007-10-31 18:14:02 matthew Exp $
 
+!!(* if ($user eq 'matthew') { *)!!
+MAILTO=matthew@mysociety.org
+!!(* } else { *)!!
 MAILTO=team@hearfromyourmp.com
+!!(* } *)!!
 
 !!(* if ($hostname eq "bitter") { *)!!
 # Frequently, on one machine only as not concurrent

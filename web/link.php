@@ -5,10 +5,9 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: link.php,v 1.5 2007-10-31 17:15:52 matthew Exp $
+// $Id: link.php,v 1.6 2007-10-31 18:14:02 matthew Exp $
 
 require_once '../phplib/ycml.php';
-require_once '../../phplib/mapit.php';
 
 page_header();
 link_to_us_page();
@@ -16,10 +15,7 @@ page_footer();
 
 function link_box() {
     $rep_type = rep_type();
-    if (OPTION_AREA_ID) 
-        $example_postcode = canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
-    else
-        $example_postcode = 'OX1 3DR';
+    $example_postcode = get_example_postcode();
     $html = '
 <form style="text-align: left; position: relative; background-color: #d9ecff;
         color: #000000; font-family: Georgia, serif; display:table; _width: 24em;

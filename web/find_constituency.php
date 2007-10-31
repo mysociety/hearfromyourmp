@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: etienne@ejhp.net WWW: http://www.mysociety.org
 //
-// $Id: find_constituency.php,v 1.5 2007-10-31 17:15:52 matthew Exp $
+// $Id: find_constituency.php,v 1.6 2007-10-31 18:14:02 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -30,7 +30,7 @@ function postcode_page() {
         page_footer();
     } else {
         $wmc_id = ycml_get_constituency_id($q_postcode);
-        header('Location: http://'.OPTION_WEB_DOMAIN."/view/$wmc_id");
+        header('Location: ' . OPTION_BASE_URL . "/view/$wmc_id");
     }
 }
 ?>

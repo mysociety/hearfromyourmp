@@ -14,7 +14,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.12 2007-09-24 11:40:39 francis Exp $
+ * $Id: general-example,v 1.13 2007-10-31 18:14:02 matthew Exp $
  * 
  */
 
@@ -25,10 +25,6 @@ define('OPTION_YCML_DB_HOST', null);
 define('OPTION_YCML_DB_PORT', null);
 define('OPTION_PHP_MAINDB', 'YCML');
 
-// Base domain of the website. This is used to distinguish internal from
-// external referrers, for instance.
-define('OPTION_WEB_DOMAIN', 'www.---.com');
-
 // Top-level URL of current website
 define('OPTION_BASE_URL', 'http://www.---.com');
 define('OPTION_ADMIN_URL', 'https://secure.---.com');
@@ -36,11 +32,6 @@ define('OPTION_ADMIN_URL', 'https://secure.---.com');
 // Domain name for emails to current website
 define('OPTION_EMAIL_DOMAIN', '---.com');
 define('OPTION_CONTACT_EMAIL', 'contact@'.OPTION_EMAIL_DOMAIN);
-
-// Who do we want to Hear From?
-define('OPTION_AREA_TYPE', 'WMC');
-define('OPTION_AREA_ID', '0');
-define('OPTION_THRESHOLD_STEP', '25');
 
 // Debug log level for PHP website
 define('OPTION_PHP_DEBUG_LEVEL', 0);

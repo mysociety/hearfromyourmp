@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.20 2007-10-31 17:15:52 matthew Exp $
+ * $Id: ycml.php,v 1.21 2007-10-31 18:14:02 matthew Exp $
  * 
  */
 
@@ -17,6 +17,7 @@ require_once "../conf/general";
 require_once '../../phplib/db.php';
 require_once '../../phplib/stash.php';
 require_once "../../phplib/error.php";
+require_once '../../phplib/mapit.php';
 require_once "../../phplib/utility.php";
 require_once '../../phplib/votingarea.php';
 require_once 'page.php';
@@ -53,9 +54,6 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
 }
 err_set_handler_display('ycml_handle_error');
 
-/* POST redirects */
-stash_check_for_post_redirect();
-
 /* ycml_show_error MESSAGE
  * General purpose error display. */
 function ycml_show_error($message) {
@@ -64,6 +62,22 @@ function ycml_show_error($message) {
         "\n" . $message;
     page_footer();
 }
+
+/* Find out what domain we're on */
+preg_match('#^([^.]+)\.(.*)$#', strtolower($_SERVER['HTTP_HOST']), $m);
+if ($m[1] == 'cheltenham' || $m[1] == 'matthew') {
+    define('OPTION_AREA_ID', 2326);
+    define('OPTION_AREA_TYPE', 'DIW');
+    define('OPTION_THRESHOLD_STEP', '5');
+} else {
+    # Will do for now!
+    define('OPTION_AREA_ID', 0);
+    define('OPTION_AREA_TYPE', 'WMC');
+    define('OPTION_THRESHOLD_STEP', '25');
+}
+
+/* POST redirects */
+stash_check_for_post_redirect();
 
 /*
 function postcode_to_constituency_form() {
@@ -100,5 +114,11 @@ function area_type($type = '', $plural = 0) {
         else $area_type .= 's';
     }
     return $area_type;
+}
+
+function get_example_postcode() {
+    if (OPTION_AREA_ID)
+        return canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
+    return 'OX1 3DR';
 }
 

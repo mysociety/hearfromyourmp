@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: constituent.php,v 1.6 2007-09-18 12:58:30 matthew Exp $
+// $Id: constituent.php,v 1.7 2007-10-31 18:14:02 matthew Exp $
 
 require_once '../../phplib/person.php';
 
@@ -56,10 +56,7 @@ function constituent_subscribe_box($array = array()) {
             $email = $P->email();
     }
 
-    if (OPTION_AREA_ID)
-        $example_postcode = canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
-    else
-        $example_postcode = 'OX1 3DR';
+    $example_postcode = get_example_postcode();
 
 ?>
 <form accept-charset="utf-8" method="post" action="/subscribe" name="subscribe_form">
