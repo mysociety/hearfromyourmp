@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.21 2007-10-31 18:14:02 matthew Exp $
+ * $Id: ycml.php,v 1.22 2007-10-31 18:33:34 matthew Exp $
  * 
  */
 
@@ -65,12 +65,13 @@ function ycml_show_error($message) {
 
 /* Find out what domain we're on */
 preg_match('#^([^.]+)\.(.*)$#', strtolower($_SERVER['HTTP_HOST']), $m);
-if ($m[1] == 'cheltenham' || $m[1] == 'matthew') {
+if ($m[2] == 'hearfromyourcouncillor.com' # XXX Only site for now...
+    || $m[1] == 'cheltenham') {
     define('OPTION_AREA_ID', 2326);
     define('OPTION_AREA_TYPE', 'DIW');
     define('OPTION_THRESHOLD_STEP', '5');
 } else {
-    # Will do for now!
+    # XXX Will do for now!
     define('OPTION_AREA_ID', 0);
     define('OPTION_AREA_TYPE', 'WMC');
     define('OPTION_THRESHOLD_STEP', '25');
