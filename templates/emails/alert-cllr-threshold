@@ -2,10 +2,10 @@ Subject: <?=$values['subscribers']?> of your constituents would like to hear fro
 
 Dear <?=$values['rep_forename']?>,
 
-This is an email to let you know that there are <?=$values['subscribers']?> constituents
-in <?=$values['area_name']?> who would like to hear from you
-about any issue you consider to be of particular importance at the
-moment. All you have to do to talk to them is visit:
+This is an email, sent to all the councillors in <=$values['area_name']?>,
+to let you know that there are <?=$values['subscribers']?> of your constituents
+who would like to hear from you about any issue you consider to be of particular
+importance at the moment. All you have to do to talk to them is visit:
     <?=$values['message_url']?>
 
 This mail has been sent by HearFromYourCouncillor.com, a free service from
