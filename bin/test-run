@@ -14,8 +14,16 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
+# XXX Missing:
+#   Threshold email sending
+#   Contact form
+#   Recent messages/replies
+#   League table
+#   Posting a message (web, emails)
+#   Posting a comment (+ comment alerts)
+#   Reporting a comment
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.8 2007-09-18 12:58:29 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.9 2007-10-31 22:22:37 matthew Exp $';
 
 use strict;
 require 5.8.0;
