@@ -5,7 +5,7 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: reps.php,v 1.1 2007-10-31 17:15:52 matthew Exp $
+// $Id: reps.php,v 1.2 2007-10-31 19:10:31 matthew Exp $
 
 require_once "../../phplib/utility.php";
 require_once "../../phplib/mapit.php";
@@ -108,7 +108,7 @@ function ycml_get_all_reps_info($area_ids) {
         $reps_info2 = array();
         foreach ($reps as $c_id => $row) {
             if (isset($row[0])) {
-                $reps_info2 += $row;
+                $reps_info2 = array_merge($reps_info2, $row);
             } else {
                 $reps_info[$c_id][] = array('id' => 0, 'name' => '-');
             }
