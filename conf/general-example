@@ -14,7 +14,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.13 2007-10-31 18:14:02 matthew Exp $
+ * $Id: general-example,v 1.14 2007-10-31 23:44:57 matthew Exp $
  * 
  */
 
@@ -24,6 +24,9 @@ define('OPTION_YCML_DB_PASS', '');
 define('OPTION_YCML_DB_HOST', null);
 define('OPTION_YCML_DB_PORT', null);
 define('OPTION_PHP_MAINDB', 'YCML');
+
+// Needed for person.php, it turns out!
+define('OPTION_WEB_DOMAIN', 'www.---.com');
 
 // Top-level URL of current website
 define('OPTION_BASE_URL', 'http://www.---.com');
