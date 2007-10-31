@@ -5,10 +5,11 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: about-mps.php,v 1.2 2007-06-02 19:46:23 francis Exp $
+// $Id: about-mps.php,v 1.3 2007-10-31 17:15:52 matthew Exp $
 
 require_once '../phplib/ycml.php';
-require_once '../phplib/fns.php';
+require_once '../phplib/recent.php';
+
 page_header();
 about_mps_page();
 page_footer();

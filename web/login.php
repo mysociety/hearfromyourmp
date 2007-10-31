@@ -36,18 +36,16 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: login.php,v 1.14 2007-09-18 13:08:43 matthew Exp $
+ * $Id: login.php,v 1.15 2007-10-31 17:15:52 matthew Exp $
  * 
  */
 
 require_once '../phplib/ycml.php';
-require_once '../../phplib/auth.php';
 require_once '../phplib/fns.php';
 require_once '../phplib/constituent.php';
-# require_once '../../pb/phplib/page.php';
+require_once '../../phplib/auth.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/stash.php';
-
 require_once '../../phplib/importparams.php';
 
 /* As a first step try to set a cookie and read it on redirect, so that we can

@@ -5,10 +5,11 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.10 2007-09-18 14:50:43 matthew Exp $
+// $Id: post.php,v 1.11 2007-10-31 17:15:52 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
+require_once '../phplib/comment.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/importparams.php';
 require_once '../../phplib/dadem.php';
@@ -119,4 +120,5 @@ function post_message_form() {
 </tr></table>
 <input type="submit" value="Preview">
 </form>
-<?  } ?>
+<?
+}

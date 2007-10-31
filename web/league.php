@@ -5,10 +5,10 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.27 2007-09-18 13:08:43 matthew Exp $
+// $Id: league.php,v 1.28 2007-10-31 17:15:52 matthew Exp $
 
 require_once '../phplib/ycml.php';
-require_once '../phplib/fns.php';
+require_once '../phplib/reps.php';
 
 $sort = get_http_var('s');
 if (!$sort || preg_match('/[^csmelrp]/', $sort)) $sort = 's';

@@ -10,12 +10,13 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.56 2007-09-18 13:08:43 matthew Exp $
+# $Id: view.php,v 1.57 2007-10-31 17:15:52 matthew Exp $
 
-require_once '../phplib/alert.php';
 require_once '../phplib/ycml.php';
-require_once '../phplib/fns.php';
+require_once '../phplib/alert.php';
 require_once '../phplib/constituent.php';
+require_once '../phplib/reps.php';
+require_once '../phplib/comment.php';
 require_once '../../phplib/person.php';
 require_once '../../phplib/utility.php';
 require_once '../../phplib/importparams.php';
@@ -180,6 +181,7 @@ over to their successor.&quot;</p>
 <ul>
 <?
     $this_or_these = make_plural(count($reps_info), 'this ' . rep_type('single'), 'these ' . rep_type('plural'));
+    $this_or_these_possessive = count($reps_info)>1 ? $this_or_these . '&rsquo;' : $this_or_these . '&rsquo;s';
     if ($num_messages==0) {
         echo '<li>We have sent ', make_plural(count($reps_info), 'this ' . rep_type('single'),
             'these ' . rep_type('plural')), ' ',
@@ -192,7 +194,7 @@ We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
     <li><?=ucfirst($this_or_these) ?> <?=make_plural(count($reps_info), 'has', 'have') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
         <?=$_SERVER['site_name']?><?=$num_messages>1?', most recently':'' ?> at <?=prettify($latest_message) ?>.
     <li>Constituents have left <?=$num_comments==0?'no':"a total of $num_comments" ?> comment<?=$num_comments!=1?'s':'' ?>
-        on <?=$this_or_these ?>&rsquo;s <?=make_plural($num_messages, 'message') ?>.
+        on <?=$this_or_these_possessive ?> <?=make_plural($num_messages, 'message') ?>.
 <?  } ?>
 </ul>
 
@@ -278,30 +280,6 @@ function view_message($message) {
 </p>
 <?
     }
-}
-
-function comment_show($cc, $first, $last) {
-    global $q_message;
-    $html = '';
-    for ($i = $first; $i <= $last; ++$i) {
-        $r = $cc[$i];
-        $r['posted_by_rep'] = ($r['posted_by_rep']=='t') ? true : false;
-        $html .= '<li';
-        if ($r['posted_by_rep']) $html .= ' class="by_rep"';
-        $html .= '>' . comment_show_one($r);
-/*      XXX COMMENTED OUT AS NO THREADING TO START
-        $html .= '<a href="view?mode=post;article=$q_message;replyid=$id">Reply to this</a>.';
-        # Consider whether the following comments are replies to this comment.
-        $R = "$refs,$id";
-        for ($j = $i + 1; $j <= $last && preg_match("/^$R(,|$)/", $cc[$j][1]); ++$j) {}
-        --$j;
-        if ($j > $i)
-            $html .= "<ul>" . comment_show($cc, $i + 1, $j) . "</ul>";
-        $i = $j;
-*/
-        $html .= "</li>";
-    }
-    return $html;
 }
 
 function message_get($id) {

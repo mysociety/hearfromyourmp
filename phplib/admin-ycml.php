@@ -6,12 +6,13 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.34 2007-09-18 13:08:42 matthew Exp $
+ * $Id: admin-ycml.php,v 1.35 2007-10-31 17:15:52 matthew Exp $
  * 
  */
 
 require_once "ycml.php";
-require_once "fns.php";
+require_once 'reps.php';
+require_once 'comment.php';
 require_once "../../phplib/db.php";
 require_once "../../phplib/mapit.php";
 require_once "../../phplib/dadem.php";

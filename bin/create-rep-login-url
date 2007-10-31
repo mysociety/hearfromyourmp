@@ -10,7 +10,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: create-rep-login-url,v 1.1 2007-09-18 12:58:29 matthew Exp $
+ * $Id: create-rep-login-url,v 1.2 2007-10-31 17:15:52 matthew Exp $
  * 
  */
 
@@ -23,7 +23,7 @@ require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';
 require_once "../../phplib/person.php";
 require_once '../conf/general';
-require_once '../phplib/fns.php';
+require_once '../phplib/reps.php';
 
 $switches = $options[0];
 $args = $options[1];
@@ -37,7 +37,7 @@ YCML show representative login URL.
 
 Usage: create-rep-login-url --rep=ID [--verbose]
 
---constituency  Representative ID to return URL for
+--rep           Representative ID to return URL for
 --help          Display this help message
 --verbose       Display more information
 
@@ -49,10 +49,9 @@ Usage: create-rep-login-url --rep=ID [--verbose]
 db_connect();
 $rep_info = ycml_get_rep_info($rep);
 dadem_check_error($rep_info);
-$area_info = ycml_get_area_info($rep_info['voting_area']);
                     
 if (!isset($rep_info['email']) || $rep_info['email'] === '') {
-    warning("no email address available for ${rep_info['name']} representative (${area_info['name']}), but need to send threshold alert");
+    warning("no email address available for ${rep_info['name']}");
     if ($rep_info['email'] === '')
         error("email address returned by DaDem was blank; should be null");
     exit;
@@ -63,4 +62,3 @@ $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL .
 db_commit();
 print "URL: $url\n";
 
-?>

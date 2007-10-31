@@ -7,13 +7,14 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-message-alerts,v 1.13 2007-10-11 09:00:46 matthew Exp $
+ * $Id: send-message-alerts,v 1.14 2007-10-31 17:15:52 matthew Exp $
  *
  */
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once "../conf/general";
 require_once '../phplib/fns.php';
+require_once '../phplib/reps.php';
 require_once '../phplib/constituent.php';
 require_once '../../phplib/cli.php';
 require_once '../../phplib/db.php';

@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.19 2007-09-18 13:08:42 matthew Exp $
+ * $Id: ycml.php,v 1.20 2007-10-31 17:15:52 matthew Exp $
  * 
  */
 
@@ -65,74 +65,7 @@ function ycml_show_error($message) {
     page_footer();
 }
 
-function comment_show_one($r, $noabuse = false) {
-    if (is_string($r['posted_by_rep']))
-        $r['posted_by_rep'] = ($r['posted_by_rep']=='t') ? true : false;
-    if (isset($r['date']))
-        $ds = prettify($r['date']);
-    else
-        $ds = '';
-    $comment = '<p><a name="comment' . $r['id'] .'"></a>Posted by ';
-    if ($r['posted_by_rep']) $comment .= '<strong>';
-    if ($r['website'])
-        $comment .= '<a href="' . $r['website'] . '">';
-    $comment .= $r['name'];
-    if ($r['website'])
-        $comment .= '</a>';
-    $comment .= ', ';
-    $comment .= $ds;
-    if ($r['posted_by_rep']) $comment .= '</strong>';
-    $content = comment_prettify($r['content']);
-    $comment .= ':';
-    if (!$noabuse)
-        $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
-    /* Permalink to this comment. */
-    $comment .= " <a href=\"#comment${r['id']}\" class=\"comment-permalink\" title=\"Link to this comment\">#</a>";
-    $comment .= "</p>\n<div><p>$content</p></div>";
-    return $comment;
-}
-
-function comment_prettify($content) {
-    $content = htmlspecialchars($content);
-    $content = preg_replace('#\r#', '', $content);
-    $content = preg_replace('#\n{2,}#', "</p>\n<p>", $content);
-    $content = ms_make_clickable($content);
-    $content = str_replace('@', '&#64;', $content);
-    return $content;
-}
-
-function recent_messages() {
-    $q = db_query("SELECT id, subject, area_id, rep_id FROM message
-        where state = 'approved' ORDER BY posted DESC LIMIT 5");
-    $out = '';
-    while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['area_id']) && !OPTION_YCML_STAGING) continue;
-        $area_info = ycml_get_area_info($r['area_id']);
-        $rep_info = ycml_get_rep_info($r['rep_id']);
-        $rep_name = trim("$area_info[rep_prefix] $rep_info[name] $area_info[rep_suffix]");
-        $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_name, $area_info[name]</li>";
-    }
-//    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
-    if ($out) $out = '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';
-    return $out;
-}
-
-function recent_replies() {
-  $q = db_query('SELECT comment.id,message,area_id,extract(epoch from date) as date,name
-        FROM comment,message,person
-        WHERE visible=1 AND comment.message = message.id AND comment.person_id = person.id
-        ORDER BY date DESC LIMIT 5');
-    $out = '';
-    while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['area_id'])) continue;
-        $ds = prettify($r['date']);
-        $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
-    }
-//    if ($out) print '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
-    if ($out) $out = '<div class="box"><h2>Latest replies</h2> <ul>' . $out . '</ul></div>';
-    return $out;
-}
-
+/*
 function postcode_to_constituency_form() {
 ?>
 <form method="get" action="/find_constituency" name="find_constituency_from_postcode" accept-charset="utf-8">
@@ -145,6 +78,7 @@ function postcode_to_constituency_form() {
 </form>
 <?
 }
+*/
 
 # rep_type PLURALIZATION
 # Returns the type of representative, by default pluralised if there's
