@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.13 2007-11-01 15:05:22 matthew Exp $
+// $Id: post.php,v 1.14 2007-11-01 15:12:24 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -24,20 +24,20 @@ seeing this page, then your browser does not have cookies enabled, which we
 use to track logins. Please enable cookies and try again.');
 
 importparams(
-    array('constituency', '/^\d+$/', '', null),
+    array('area_id', '/^\d+$/', '', null),
     array('rep', '/^\d+$/', '', null),
     array('post', '/^\d$/', '', null)
 );
-if ($q_rep && !$q_constituency) {
+if ($q_rep && !$q_area_id) {
     $rep_info = dadem_get_representative_info($q_rep);
-    $q_constituency = $rep_info['voting_area'];
+    $q_area_id = $rep_info['voting_area'];
 }
-if (!$q_rep && $q_constituency) {
-    $reps = dadem_get_representatives($q_constituency);
+if (!$q_rep && $q_area_id) {
+    $reps = dadem_get_representatives($q_area_id);
     $q_rep = $reps[0];
 }
 
-$is_rep = constituent_is_rep($P->id(), $q_constituency);
+$is_rep = constituent_is_rep($P->id(), $q_area_id);
 if (!$is_rep || $is_rep == 'f')
     err('You cannot use this form, sorry.');
 
@@ -48,9 +48,9 @@ if ($q_post == 2) { # Post
     ))
         err("Blank subject or message when confirming - should not happen!");
     $q_message = str_replace("\r", '', $q_message);
-    db_query("INSERT INTO message (constituency, subject, content, state, rep_id)
+    db_query("INSERT INTO message (area_id, subject, content, state, rep_id)
                 VALUES (?, ?, ?, 'approved', ?)",
-                array($q_constituency, $q_subject, $q_message, $q_rep));
+                array($q_area_id, $q_subject, $q_message, $q_rep));
     db_commit();
     print '<p><em>Thank you; your message has been posted, and will be emailed to the subscribed constituents shortly.</em></p>';
     # TODO: Cross-sell TheyWorkForYou!? Maybe ask for copyright-free photos of them?
@@ -101,7 +101,7 @@ and re-edit your message before it is confirmed and sent.</p>
             date_trunc('second', posted) as posted
         from message
         where area_id=? and state='approved'
-        order by posted desc limit 1", $q_constituency);
+        order by posted desc limit 1", $q_area_id);
     if ($r) {
         if ($r['rep_id'] == $q_rep) {
             $last_name = $rep_info['name'];
