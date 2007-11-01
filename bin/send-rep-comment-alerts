@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-comment-alerts,v 1.6 2007-11-01 11:49:57 matthew Exp $
+ * $Id: send-rep-comment-alerts,v 1.7 2007-11-01 19:15:16 matthew Exp $
  *
  */
 
@@ -46,8 +46,6 @@ Usage: send-rep-comment-alerts [--verbose]
 
 db_connect();
 send_rep_comment_alerts();
-
-# XXX: Needs to only alert the rep. who posted the message
 
 // send_rep_comment_alerts sends alerts for a summary of new comments to representatives
 function send_rep_comment_alerts() {

@@ -1,12 +1,12 @@
-Subject: New comment on message '<?=$values['subject']?>' at HearFromYourMP
+Subject: New comments on message '<?=$values['subject']?>' at HearFromYourMP
 
 Hi <?=$values['alerted_name']?>,
 
-<?=$values['comment_author_name']?> has left a comment saying:
+The following comments have been left:
 
-'<?=$values['comment_text']?>'
+<?=$values['comments']?>
 
-View or reply to this comment: <?=$values['comment_url']?>
+View or reply to these comments: <?=$values['comment_url']?>
 
 <?=$values['signature']?>
 

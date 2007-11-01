@@ -1,0 +1,68 @@
+#!/usr/bin/php -q
+<?php
+/*
+ * initial-populate-reps:
+ * Run once to put cllrs in the database at the start, rather than only
+ * when a threshold is met.
+ * 
+ * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+ *
+ * $Id: initial-populate-reps,v 1.1 2007-11-01 19:15:16 matthew Exp $
+ * 
+ */
+
+chdir(dirname($_SERVER['SCRIPT_FILENAME']));
+require_once '../conf/general';
+require_once '../../phplib/phpcli.php';
+require_once '../phplib/reps.php';
+require_once '../../phplib/cli.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/mapit.php';
+require_once '../../phplib/person.php';
+
+db_connect();
+
+# XXX Cheltenham specific!
+define('OPTION_AREA_ID', 2326);
+define('OPTION_AREA_TYPE', 'DIW');
+define('OPTION_THRESHOLD_STEP', '5');
+$areas = mapit_get_voting_area_children(2326);
+
+foreach ($areas as $area_id) {
+    $reps_info = ycml_get_reps_for_area($area_id);
+    foreach ($reps_info as $id => $rep_info) {
+        if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+            warning("no email address available for ${rep_info['name']}");
+            if ($rep_info['email'] === '')
+                error("email address returned by DaDem was blank; should be null");
+            continue;
+        }
+        verbose("email address for this rep is ${rep_info['email']}");
+
+        # Create account for rep if they don't already have one.
+        $P = person_get_or_create($rep_info['email'], $rep_info['name']);
+        $already_signed = db_getOne("select id from constituent where 
+            area_id = ? and person_id = ?
+            for update", array( $area_id, $P->id() ) );
+        if (!$already_signed) {
+            db_query("insert into constituent (
+                        person_id, area_id, is_rep,
+                        postcode, creation_ipaddr
+                    )
+                    values (?, ?, ?, ?, ?)", array($P->id(), $area_id, true, '', ''));
+        } else {
+             db_query("update constituent set is_rep = true where person_id=? and area_id=?",
+                 array($P->id(), $area_id));
+        }
+        db_commit();
+        $already_present = db_getOne("select confirmation_email from rep_cache where 
+            id = ? for update", array($id) );
+        if (!$already_present) {
+            db_query("update rep_cache set confirmation_email=? where id=?",
+                array($rep_info['email'], $id));
+            db_commit();
+        }
+    }
+}
+

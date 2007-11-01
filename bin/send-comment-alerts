@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-comment-alerts,v 1.8 2007-11-01 11:49:57 matthew Exp $
+ * $Id: send-comment-alerts,v 1.9 2007-11-01 19:15:16 matthew Exp $
  *
  */
 
@@ -35,7 +35,7 @@ foreach ($switches as $switch) {
     if ($switch[0]=='--help') {
 ?>
 
-YCML comment alert sending script.
+HearFromYourMP comment alert sending script.
 
 Usage: send-comment-alerts [--verbose]
 
@@ -68,39 +68,57 @@ function send_comment_alerts() {
                 left join person as alerted on alert.person_id = alerted.id
             where
                 date >= whensubscribed and
+                comment.visible > 0 and
                 (select whenqueued from alert_sent where
                     alert_sent.alert_id = alert.id and
                     alert_sent.comment_id = comment.id) is null
                 and comment.person_id <> alert.person_id
-            order by date
+            order by alert_id, date
             ");
 
+    $data = array();
     while ($row = db_fetch_array($q)) {
+        $alert_id = $row['alert_id'];
         verbose("person #${row['person_id']} (${row['alerted_email']}) has alert on message ${row['message_id']} for comment #${row['comment_id']} (by ${row['comment_author_name']})");
 
         # Grab a lock, making sure alert hasn't been deleted meanwhile
-        $stillthere = db_getOne('select id from alert where id = ? for update', $row['alert_id']);
+        $stillthere = db_getOne('select id from alert where id = ? for update', $alert_id);
         if (!$stillthere) continue;
 
         # Check to see if the alert has been sent meanwhile
         $alreadysent = db_getOne('select alert_id from alert_sent where alert_id = ? and comment_id = ?', 
-                 array($row['alert_id'], $row['comment_id']));
+                 array($alert_id, $row['comment_id']));
         if ($alreadysent) continue;
 
-        # Store that alert has been sent
-        db_query("insert into alert_sent (alert_id, comment_id) values (?, ?)", 
-                 array($row['alert_id'], $row['comment_id']));
+        $data[$alert_id]['comments'][$row['comment_id']] = "$row[comment_author_name]: $row[comment_content]";
+        $data[$alert_id]['subject'] = $row['subject'];
+        $data[$alert_id]['alerted'] = array($row['alerted_email'], $row['alerted_name']);
+        $data[$alert_id]['message_id'] = $row['message_id'];
+    }
 
-        # Send email
-        $row['comment_url'] = ycml_make_view_url($row['message_id'], $row['alerted_email']);
-        $row['comment_text'] = trim($row['comment_content']);
-        $row['unsubscribe_url'] = alert_unsubscribe_link($row['alert_id'], $row['alerted_email']);
-        $f = ycml_send_email_template(array($row['alerted_email'], $row['alerted_name']),
-            'alert-comment', $row);
+    foreach ($data as $alert_id => $alert) {
+        $comments = $alert['comments'];
+        $email = $alert['alerted'][0];
+
+        # Store that alert has been sent
+        foreach (array_keys($comments) as $comment_id) {
+            db_query("insert into alert_sent (alert_id, comment_id) values (?, ?)", 
+                array($alert_id, $comment_id));
+        }
+
+        $values = array(
+            'subject' => $alert['subject'],
+            'alerted_name' => $alert['alerted'][1],
+            'comments' => '* ' . join("\n\n* ", array_values($comments)),
+            'comment_url' => ycml_make_view_url($alert['message_id'], $email),
+            'unsubscribe_url' => alert_unsubscribe_link($alert_id, $email)
+        );
+        $f = ycml_send_email_template($alert['alerted'], 'alert-comment', $values);
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();
-            error("Failed to send comment alert to " . $row['alerted_email'] . " alert #" . $row['alert_id'] . " comment #" . $row['comment_id']);
+            error("Failed to send comment alert to " . $alerted[$alert_id][0]
+                . " alert #" . $alert_id . " comments #" . join(',',  array_keys($comments)));
         } else {
             # Commit that it has been sent
             db_commit();
