@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.11 2007-10-31 17:15:52 matthew Exp $
+// $Id: post.php,v 1.12 2007-11-01 11:14:41 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -93,11 +93,31 @@ please enter a subject and
 message in the boxes below, then click "Preview". You will be given the opportunity to preview
 and re-edit your message before it is confirmed and sent.</p>
 
-<? # XXX: Very MP specific ?>
-<p>We find that the MPs who succeed in provoking the largest number of interesting comments
+<?
+    $r = db_getRow("select id, rep_id, subject,
+            date_trunc('second', posted) as posted
+        from message
+        where area_id=? and state='approved'
+        order by posted desc limit 1", $q_constituency);
+    if ($r) {
+        if ($r['rep_id'] == $q_rep) {
+            $last_name = $rep_info['name'];
+        } else {
+            $last_rep = dadem_get_representative_info($r['rep_id']);
+            $last_name = $last_rep['name'];
+        }
+        print '<p>The last message in this ' . area_type() . ' was ';
+        print '<a href="/view/message/' . $r['id'] . '">';
+        print "$r[subject]</a> by $last_name on ";
+        print prettify($r['posted']);
+        print '.</p>';
+    }
+?>
+
+<p>We find that the <?=rep_type('plural') ?> who succeed in provoking the largest number of interesting comments
 from their constituents tend to send short messages on a single topic. Often asking your
 constituents for their views on something provokes interesting responses. Here are a couple
-of example: Stephen William's
+of examples on HearFromYourMP: Stephen William's
 <a href="http://www.hearfromyourmp.com/view/message/6" target="_blank">post on smoking in public places</a>,
 and Ed Vaizey's
 <a href="http://www.hearfromyourmp.com/view/message/91" target="_blank">post on climate change</a>.
