@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.36 2007-11-01 00:01:23 matthew Exp $
+ * $Id: admin-ycml.php,v 1.37 2007-11-01 00:04:49 matthew Exp $
  * 
  */
 
@@ -636,7 +636,7 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
                     print '<table>';
                     $comment = db_getRow('
                                         select comment.id, extract(epoch from date) as date,
-                                            content, posted_by_mp, name, email, website
+                                            content, posted_by_rep, name, email, website
                                         from comment, person
                                         where comment.person_id = person.id
                                             and comment.id = ?', $comment_id);
