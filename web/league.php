@@ -5,16 +5,16 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.28 2007-10-31 17:15:52 matthew Exp $
+// $Id: league.php,v 1.29 2007-11-01 15:22:43 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
 
 $sort = get_http_var('s');
 if (!$sort || preg_match('/[^csmelrp]/', $sort)) $sort = 's';
-$sort_orders = array('l'=>'latest DESC', 'c'=>'constituency', 'm'=>'messages DESC',
+$sort_orders = array('l'=>'latest DESC', 'c'=>'area_id', 'm'=>'messages DESC',
                      'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_mp DESC',
-                     'p'=>'constituency');
+                     'p'=>'area_id');
 
 if (array_key_exists('csv', $_GET)) {
     header('Content-Type: text/csv');
