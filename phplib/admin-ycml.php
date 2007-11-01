@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.35 2007-10-31 17:15:52 matthew Exp $
+ * $Id: admin-ycml.php,v 1.36 2007-11-01 00:01:23 matthew Exp $
  * 
  */
 
@@ -37,8 +37,8 @@ class ADMIN_PAGE_YCML_SUMMARY {
         if (count($messages_notresponded)) {
             $notresponded_details = ':<ul>';
             foreach ($messages_notresponded as $row) {
-                $area_info = ycml_get_area_info($row['are_id']);
-                $rep_info = ycml_get_mp_info($row['area_id']);
+                $area_info = ycml_get_area_info($row['area_id']);
+                $rep_info = ycml_get_rep_info($row['rep_id']);
                 $notresponded_details .= "<li>$rep_info[name], $area_info[name], $row[posted], subject '$row[subject]'";
             }
             $notresponded_details .= '</ul>';
@@ -97,10 +97,12 @@ class ADMIN_PAGE_YCML_MAIN {
         elseif ($sort=='s') $order = 'count DESC';
 
         if (get_http_var('makerepurl')) {
+	    print '<p>Currently broken!</p>';
+	    exit;
             $area_id = get_http_var('makerepurl');
 
             $area_info = ycml_get_area_info($area_id);
-            $rep_info = ycml_get_mp_info($area_id); # XXX
+            $rep_info = ycml_get_rep_info($area_id); # XXX
 
             print "<p><i>";
             if (!isset($rep_info['email']) || $rep_info['email'] === '') {
