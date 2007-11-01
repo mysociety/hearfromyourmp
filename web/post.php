@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.14 2007-11-01 15:12:24 matthew Exp $
+// $Id: post.php,v 1.15 2007-11-01 15:14:56 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -35,6 +35,7 @@ if ($q_rep && !$q_area_id) {
 if (!$q_rep && $q_area_id) {
     $reps = dadem_get_representatives($q_area_id);
     $q_rep = $reps[0];
+    $rep_info = dadem_get_representative_info($q_rep);
 }
 
 $is_rep = constituent_is_rep($P->id(), $q_area_id);
