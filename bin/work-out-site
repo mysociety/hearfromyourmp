@@ -1,0 +1,16 @@
+<?
+
+# Used by cron scripts to work out which site they're running on
+# As front end uses HTTP_HOST which we don't have here.
+
+if (OPTION_EMAIL_DOMAIN == 'hearfromyourcouncillor.com') {
+    # XXX Cheltenham specific!
+    define('OPTION_AREA_ID', 2326);
+    define('OPTION_AREA_TYPE', 'DIW');
+    define('OPTION_THRESHOLD_STEP', '5');
+} else {
+    define('OPTION_AREA_ID', 0);
+    define('OPTION_AREA_TYPE', 'WMC');
+    define('OPTION_THRESHOLD_STEP', '25');
+}
+
