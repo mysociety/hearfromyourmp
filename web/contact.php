@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: contact.php,v 1.4 2007-09-18 13:08:43 matthew Exp $
+// $Id: contact.php,v 1.5 2007-11-12 14:10:07 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -40,7 +40,7 @@ We make %s and thrive off feedback, good and bad.
 Use this form to contact us.
 If you prefer, you can email %s instead of using the form.</p>', $_SERVER['site_name'], '<a href="mailto:' . $contact_email . '">' . $contact_email . '</a>');
     print "<p>If you would like to comment on a message from a representative, please use the 'comments' section on the appropriate page. These messages go to the " . $_SERVER['site_name'] . " Team, <strong>not</strong> your representative.</p>";
-    print '<p><a href="/faq">Read the FAQ</a> first, it might be a quicker way to answer your question.</p>';
+    print '<p><a href="/about">Read the FAQ</a> first, it might be a quicker way to answer your question.</p>';
     if (sizeof($errors)) {
         print '<ul id="errors"><li>';
         print join ('</li><li>', $errors);
@@ -52,7 +52,7 @@ If you prefer, you can email %s instead of using the form.</p>', $_SERVER['site_
 <div class="fr"><label for="email">Your email:</label> <input type="text" id="email" name="email" value="<?=htmlentities($email) ?>" size="32"></div>
 <div class="fr"><label for="subject">Subject:</label> <input type="text" id="subject" name="subject" value="<?=htmlentities(get_http_var('subject')) ?>" size="50"></div>
 <div><label for="cf_message">Message:</label><textarea rows="7" cols="60" name="message" id="cf_message"><?=htmlentities(get_http_var('message')) ?></textarea></div>
-<?  print '<p>' . _('Did you <a href="/faq">read the FAQ</a> first?') . '
+<?  print '<p>' . _('Did you <a href="/about">read the FAQ</a> first?') . '
 --&gt; <input type="submit" name="submit" value="' . _('Send') . '"></p>';
     print '</form>';
 }
