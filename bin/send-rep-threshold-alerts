@@ -8,15 +8,19 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-threshold-alerts,v 1.7 2007-11-01 11:49:57 matthew Exp $
+ * $Id: send-rep-threshold-alerts,v 1.8 2007-12-10 11:29:54 angie Exp $
  * 
  */
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once '../conf/general';
+/* for some reason phpcli.php has to be included immediately
+ * after conf/general or you get an error
+ * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
+require_once '../../phplib/phpcli.php';
+
 $short_opts = '';
 $long_opts = array('verbose','help','nowarn');
-require_once '../../phplib/phpcli.php';
 
 require_once '../phplib/fns.php';
 require_once '../phplib/reps.php';

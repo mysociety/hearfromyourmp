@@ -15,15 +15,15 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
 # XXX Missing:
-#   Threshold email sending
-#   Contact form
+#   Threshold email sending - Done
+#   Contact form -Done
 #   Recent messages/replies
-#   League table
+#   League table - Done ish
 #   Posting a message (web, emails)
 #   Posting a comment (+ comment alerts)
 #   Reporting a comment
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.9 2007-10-31 22:22:37 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.10 2007-12-10 11:29:54 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -54,9 +54,12 @@ END
 # Parse command line
 our $verbose = 0; # currently 3 levels: 0, 1 and 2
 our $help;
+our $multispawn = 1;
+
 if (!GetOptions(
         'verbose=i' =>  \$verbose,
-        'help' =>               \$help
+        'help' =>               \$help,
+        'multispawn=i' => \$multispawn,
     )) {
     help();
     exit(1);
@@ -67,12 +70,18 @@ if ($help) {
 }
 
 # Set up options
-
 our $base_url = mySociety::Config::get('BASE_URL');
 our $admin_url = mySociety::Config::get('ADMIN_URL');
 our $track_url = mySociety::Config::get('TRACKING_URL');
 our $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
 our $httpd_error_log = mySociety::Config::get('HTTPD_ERROR_LOG');
+our $rep_post_url = '';
+# set the threshold for testing send-rep-threshold-alerts
+our $threshold = mySociety::Config::get('THRESHOLD_STEP_STAGING');;
+our $postcode = 'ZZ9 9zz';
+
+our $reps_message = 'we hope everything is working well';
+
 sub email_n { my $n = shift; return "ycmlharness+$n\@$email_domain"; }
 sub name_n { my $n = shift; return "Cara Constituent $n"; }
 
@@ -87,8 +96,17 @@ $wth->log_watcher_self_test($base_url . "/test.php?error=1", "deliberate_error_t
 $wth->database_connect('YCML_');
 $wth->database_drop_reload('../db/schema.sql');
 $wth->database_cycle_sequences(200);
-$wth->email_setup({ eveld_bin => "$FindBin::Bin/../../services/EvEl/bin/eveld",
+#$wth->email_setup({ eveld_bin => "$FindBin::Bin/../../services/EvEl/bin/eveld",
+ #                   log_mailbox => "log_mailbox" });
+
+
+my $eveld_bin = "$FindBin::Bin/../../services/EvEl/bin/eveld";
+$eveld_bin = undef if ! -e $eveld_bin; # when running on servers rely on EvEl daemon, rather than calling EvEl binary directly as on Francis'' laptop XXX need more explicit way of distinguishing this case, than just checking evel isn't checked out in the same tree
+$wth->email_setup({ eveld_bin => $eveld_bin,
+                    eveld_multispawn => $multispawn,
                     log_mailbox => "log_mailbox" });
+
+#dbh()->{RaiseError};
 
 # Syntax check all .php files
 print "Syntax check all PHP files...\n" if $verbose > 0;
@@ -97,6 +115,21 @@ $wth->php_check_syntax("../../ycml/templates/emails/", qr//);
 
 print "Basic signup test...\n" if $verbose > 0;
 do_basic_signup_test();
+
+print "Testing threshold: threshold set to $threshold...\n" if $verbose > 0;
+do_threshold();
+
+print "Rep Sending Message \n" if $verbose > 0;
+do_rep_send_message();
+
+print "Sending Message Alerts\n" if $verbose > 0;
+do_send_message_alerts();
+
+print "Testing Contact Form\n" if $verbose > 0;
+do_contact_form();
+
+print "Testing League Table\n" if $verbose > 0;
+do_league_table();
 
 # Check for any unhandled mails or errors
 #call_fyrqd();
@@ -131,14 +164,14 @@ sub do_basic_signup_test {
 
     # Sign up as constituent
     $wth->browser_submit_form(form_name => 'subscribe_form',
-        fields => { name => name_n(1), email => email_n(1), postcode => "ZZ9 9zz"},  
+        fields => { name => name_n(1), email => email_n(1), postcode => "$postcode"},  
         );
     $wth->browser_check_contents("Now check your email!"); 
 
     # Confirm email
-    my $confirmation_email = $wth->email_get_containing(
-        '%To: '.email_n(1).'%%');
-    die "Pledge confirmation link not found\n" if ($confirmation_email !~ m#^\s+(http://.*$)#m);
+
+    my $confirmation_email = $wth->email_get_containing('%To: "' . name_n(1) . '" <' . email_n(1) . '>%');
+    die "HFYMP confirmation link not found\n" if ($confirmation_email !~ m#^\s+(http://.*$)#m);
     my $confirmation_url = $1;
     $wth->email_check_url($confirmation_url);
     print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
@@ -150,4 +183,107 @@ sub do_basic_signup_test {
 
 #############################################################################
 
+sub do_threshold {
+	# test script will take forever if we actually submit the form, wait for the email and click on the confirmation link for 
+	# everyone of them, so go straight into the db instead after doing 1 so we can get the area id etc.
+	
+    $wth->browser_get($base_url);
+    $wth->browser_check_contents("Sign up to hear from your MP");
+    $wth->browser_check_contents("This is a test site"); 
 
+	$wth->browser_get('/logout');
+	$wth->browser_get($base_url);
+	$wth->browser_submit_form(form_name => 'subscribe_form',
+		fields => { name => name_n(2), email => email_n(2), postcode => "$postcode"},
+		);
+	$wth->browser_check_contents("Now check your email!");
+	my $confirmation_email = $wth->email_get_containing('%To: "' . name_n(2) . '" <' . email_n(2) . '>%');
+    die "HFYMP confirmation link not found\n" if ($confirmation_email !~ m#^\s+(http://.*$)#m);
+    my $confirmation_url = $1;
+    $wth->email_check_url($confirmation_url);
+    print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
+    $wth->browser_get($confirmation_url);
+	
+	# not pretty but it is fast. Could have used Person.pm but doesn't look like it's in use anywhere anymore
+	# start by getting the area_id, creation_ipaddr and is_rep for someone so that we can cheat.
+	my ($area_id, $creation_ipaddr, $is_rep) = dbh()->selectrow_array("select  area_id, creation_ipaddr, is_rep FROM constituent WHERE postcode = '$postcode' ");
+	# insert persons x threshold.
+    my $dbid = dbh()->selectrow_array("select nextval('person_id_seq')");
+	my $sth = dbh()->prepare("insert into person (id, email, name) values (?, ?, ?)");
+	print "creating person(s) for threshold test \n" if $verbose > 1;
+	for (my $i = 3; $i <= $threshold; $i++) {
+		$sth->execute(($dbid + $i), email_n($i), name_n($i));	
+		#print 'db error is ' . dbh()->errstr;
+	}
+	dbh()->commit();
+	
+	print "creating constituent(s) for threshold test \n" if $verbose > 1;
+	$sth = dbh()->prepare_cached("insert into constituent (person_id, area_id, postcode, creation_ipaddr) values (?, ?, ?, ?)");
+    for (my $i = 3; $i <= $threshold; $i++) {
+    	$sth->execute(($dbid + $i), $area_id, $postcode, $creation_ipaddr);
+    }
+	dbh()->commit();
+	#./send-rep-threshold-alerts --verbose
+	my $status = system("./send-rep-threshold-alerts", "--verbose");
+	
+	
+}
+
+sub do_contact_form {
+	$wth->browser_get('/contact');
+    $wth->browser_check_contents("Contact Us");
+    $wth->browser_check_contents("This is a test site"); 
+    $wth->browser_submit_form(form_name => 'contact',
+        fields => { name => name_n(1), email => email_n(1), subject => "a ycml test subject", message => ('a ycml test message from test-run')},  
+        );
+    $wth->browser_check_contents("Thanks for your feedback"); 
+    my $confirmation_email = $wth->email_get_containing('%a ycml test message from test-run%');
+	
+}
+
+sub do_rep_send_message {
+	#currently the message link is the first in the email
+	my $signup_email = $wth->email_get_containing('%your constituents would like to hear from you%');
+	die "HFYMP reps confirmation link not found\n" if ($signup_email !~ m#^\s+(http://.*$)#m);
+    my $confirmation_url = $1;
+    $wth->email_check_url($confirmation_url);	
+    print "Reps Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
+    $wth->browser_get($confirmation_url);
+    $wth->browser_check_contents("This is a test site"); 
+    $wth->browser_check_contents("To post a message through HearFromYourMP"); 
+    
+    $wth->browser_submit_form(form_name => 'message_form',
+        fields => { 'subject' => 'hello from the test suite', 'message' => $reps_message},
+        );
+    $wth->browser_check_contents("please click this button to confirm your message");
+    
+    $wth->browser_submit_form(form_name => 'confirm_form',
+        fields => {},  
+        );
+    $wth->browser_check_contents("your message has been posted");
+}
+
+sub do_send_message_alerts {
+	my $status = system("./send-message-alerts", "--verbose");
+	$wth->email_run_eveld();
+	
+	my $sentcount = 0;
+	for (my $i = 1; $i <= $threshold; $i++) {
+	my $confirmation_email = $wth->email_get_containing('%To: "' . name_n($i) . '" <' . email_n($i) . '>%');
+		if ($confirmation_email =~ /$reps_message/) {
+			++$sentcount;
+		}
+	}
+	unless ($threshold == $sentcount) {
+		print "Messages were sent to constituents\n" if $verbose > 0;
+	}
+	#now check that the emails have been received
+}
+
+sub do_league_table {
+    $wth->browser_get('/league');
+    $wth->browser_check_contents("Current Status");
+    $wth->browser_check_contents("This is a test site"); 
+    my $constcount = $threshold + 1;
+    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$constcount</td><td align="center">0</td><td align="center">1</td><td align="center">0</td>]); 
+}

@@ -5,7 +5,7 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: reps.php,v 1.2 2007-10-31 19:10:31 matthew Exp $
+// $Id: reps.php,v 1.3 2007-12-10 11:29:54 angie Exp $
 
 require_once "../../phplib/utility.php";
 require_once "../../phplib/mapit.php";
@@ -66,8 +66,11 @@ function ycml_get_all_areas_info($q, $ignore_fictional = true) {
 # Given a REP_ID, return data for it
 function ycml_get_rep_info($rep_id) {
     $rep_info = dadem_get_representative_info($rep_id);
-    if (OPTION_YCML_STAGING)
+    if (OPTION_YCML_STAGING) {
         $rep_info['name'] = spoonerise($rep_info['name']);
+        $emailparts = explode('@', $rep_info['email']);
+        $rep_info['email'] = ('ycmlharness+' . $emailparts[0] . '@' . OPTION_EMAIL_DOMAIN);
+	}
     if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
         $rep_info['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     return $rep_info;
@@ -85,8 +88,11 @@ function ycml_get_reps_for_area($area_id, $all = 0) {
     $reps_info = dadem_get_representatives_info($reps);
     # TODO: Get method (email only?) from here
     foreach ($reps_info as $id => $rep_info) {
-        if (OPTION_YCML_STAGING)
-            $reps_info[$id]['name'] = spoonerise($rep_info['name']);
+        if (OPTION_YCML_STAGING) {
+            	$reps_info[$id]['name'] = spoonerise($rep_info['name']);
+            	$emailparts = explode('@', $reps_info[$id]['email']);
+            	$reps_info[$id]['email'] = ('ycmlharness+' . $emailparts[0] . '@' . OPTION_EMAIL_DOMAIN);
+            }
         if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
             $reps_info[$id]['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     }
@@ -114,11 +120,12 @@ function ycml_get_all_reps_info($area_ids) {
             }
         }
         $reps_info2 = dadem_get_representatives_info($reps_info2);
+
         foreach ($reps_info2 as $id => $row) {
             $reps_info[$row['voting_area']]['ids'][] = $id;
             $reps_info[$row['voting_area']]['names'][] = $row['name'];
             db_query('insert into rep_cache (id, name, created, area_id) values (?, ?, ?, ?)',
-                $row['id'], $row['name'], $row['whencreated'], $row['voting_area']
+                $id, $row['name'], $row['whencreated'], $row['voting_area']
             );
         }
         db_commit();

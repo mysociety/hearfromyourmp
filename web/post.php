@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.15 2007-11-01 15:14:56 matthew Exp $
+// $Id: post.php,v 1.16 2007-12-10 11:29:55 angie Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -81,7 +81,7 @@ if ($q_post == 2) { # Post
 ?>
 </pre>
 <p>If you are happy with this, please click this button to confirm your message:</p>
-<form method="post" accept-charset="UTF-8">
+<form method="post" name="confirm_form" accept-charset="UTF-8">
 <input type="hidden" name="post" value="2">
 <input type="hidden" name="subject" value="<?=$q_h_subject ?>">
 <input type="hidden" name="message" value="<?=$q_h_message ?>">
@@ -133,7 +133,7 @@ page_footer();
 function post_message_form() {
     global $q_h_subject, $q_h_message;
 ?>
-<form method="post" accept-charset="UTF-8">
+<form method="post" name="message_form" accept-charset="UTF-8">
 <input type="hidden" name="post" value="1">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>

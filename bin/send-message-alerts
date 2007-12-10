@@ -7,12 +7,16 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-message-alerts,v 1.15 2007-11-01 15:46:27 matthew Exp $
+ * $Id: send-message-alerts,v 1.16 2007-12-10 11:29:54 angie Exp $
  *
  */
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once "../conf/general";
+/* for some reason phpcli.php has to be included immediately
+ * after conf/general or you get an error
+ * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
+require_once '../../phplib/phpcli.php';
 require_once '../phplib/fns.php';
 require_once '../phplib/reps.php';
 require_once '../phplib/constituent.php';
@@ -73,13 +77,10 @@ function send_message_alerts() {
 
     while ($row = db_fetch_array($q)) {
         verbose("person #${row['person_id']} (${row['email']}) has alert on message ${row['message_id']}");
-
         $rep_info = ycml_get_rep_info($row['rep_id']);
-
         # Grab a lock, making sure alert hasn't been deleted meanwhile
         $stillthere = db_getOne('select id from constituent where id = ? for update', $row['constituent_id']);
         if (!$stillthere) continue;
-
         # Check to see if the alert has been sent meanwhile
         $alreadysent = db_getOne('select person_id from message_sent where person_id = ? and message_id = ?', 
                  array($row['person_id'], $row['message_id']));
@@ -103,6 +104,7 @@ function send_message_alerts() {
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();
+            verbose("Failed to send message alert to " . $row['email'] . " message #" . $row['message_id']);
             error("Failed to send message alert to " . $row['email'] . " message #" . $row['message_id']);
         } else {
             # Commit that it has been sent

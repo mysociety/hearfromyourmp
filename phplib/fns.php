@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: fns.php,v 1.23 2007-10-31 17:15:52 matthew Exp $
+// $Id: fns.php,v 1.24 2007-12-10 11:29:54 angie Exp $
 
 require_once '../../phplib/evel.php';
 require_once '../../phplib/utility.php';
@@ -68,7 +68,6 @@ function ycml_send_email_internal($to, $spec) {
     if (!array_key_exists("From", $spec)) {
         $spec['From'] = $_SERVER['site_name'] . ' <' . OPTION_CONTACT_EMAIL . ">";
     }
-
     $spec['To'] = array($to);
     $recip = is_array($to) ? $to[0] : $to;
     $result = evel_send($spec, $recip);

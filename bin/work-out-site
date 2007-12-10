@@ -11,6 +11,10 @@ if (OPTION_EMAIL_DOMAIN == 'hearfromyourcouncillor.com') {
 } else {
     define('OPTION_AREA_ID', 0);
     define('OPTION_AREA_TYPE', 'WMC');
-    define('OPTION_THRESHOLD_STEP', '25');
+    if (OPTION_THRESHOLD_STEP_STAGING) {
+	    define('OPTION_THRESHOLD_STEP', OPTION_THRESHOLD_STEP_STAGING);
+    } else {
+    	define('OPTION_THRESHOLD_STEP', '25');
+    }
 }
 
