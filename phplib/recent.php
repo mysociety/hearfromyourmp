@@ -6,7 +6,7 @@
  * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: recent.php,v 1.1 2007-10-31 17:15:52 matthew Exp $
+ * $Id: recent.php,v 1.2 2007-12-11 20:03:01 angie Exp $
  * 
  */
 
@@ -36,7 +36,7 @@ function recent_replies() {
         ORDER BY date DESC LIMIT 5');
     $out = '';
     while ($r = db_fetch_array($q)) {
-        if (va_is_fictional_area($r['area_id'])) continue;
+        if (va_is_fictional_area($r['area_id']) && !OPTION_YCML_STAGING) continue;
         $ds = prettify($r['date']);
         $out .= "<li><a href='/view/message/$r[message]#comment$r[id]'>$r[name]</a> at $ds</li>";
     }

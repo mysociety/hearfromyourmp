@@ -14,7 +14,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.14 2007-10-31 23:44:57 matthew Exp $
+ * $Id: general-example,v 1.15 2007-12-11 20:03:00 angie Exp $
  * 
  */
 
@@ -40,6 +40,8 @@ define('OPTION_CONTACT_EMAIL', 'contact@'.OPTION_EMAIL_DOMAIN);
 define('OPTION_PHP_DEBUG_LEVEL', 0);
 // Is this a staging site?  Affects how errors are displayed.
 define('OPTION_YCML_STAGING', 0);
+// This is only used to overide threshold settings is OPTION_YCML_STAGING is on
+define('OPTION_THRESHOLD_STEP_STAGING', 0);
 
 // Where web services used are
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');

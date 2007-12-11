@@ -17,13 +17,13 @@
 # XXX Missing:
 #   Threshold email sending - Done
 #   Contact form -Done
-#   Recent messages/replies
-#   League table - Done ish
-#   Posting a message (web, emails)
-#   Posting a comment (+ comment alerts)
+#   Posting a message (web, emails) - Done
+#   Posting a comment (+ comment alerts) - Done
 #   Reporting a comment
+#   Recent messages/replies on home page
+#   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.10 2007-12-10 11:29:54 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.11 2007-12-11 20:02:59 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -82,6 +82,8 @@ our $postcode = 'ZZ9 9zz';
 
 our $reps_message = 'we hope everything is working well';
 
+our $store = {};
+
 sub email_n { my $n = shift; return "ycmlharness+$n\@$email_domain"; }
 sub name_n { my $n = shift; return "Cara Constituent $n"; }
 
@@ -122,11 +124,23 @@ do_threshold();
 print "Rep Sending Message \n" if $verbose > 0;
 do_rep_send_message();
 
-print "Sending Message Alerts\n" if $verbose > 0;
-do_send_message_alerts();
+print "Sending Message Alerts After Reps Posting \n" if $verbose > 0;
+do_send_message_alerts_postrep();
+
+print "Posting Reply\n" if $verbose > 0;
+do_post_reply();
+
+print "Sending Rep Comment Alerts \n" if $verbose > 0;
+do_send_rep_comments_alerts();
+
+#print "Sending Comment Alerts \n" if $verbose > 0;
+#do_send_comments_alerts();
 
 print "Testing Contact Form\n" if $verbose > 0;
 do_contact_form();
+
+print "Testing Latest Messages and Latest Replies\n" if $verbose > 0;
+do_recent_messages_replies();
 
 print "Testing League Table\n" if $verbose > 0;
 do_league_table();
@@ -263,7 +277,7 @@ sub do_rep_send_message {
     $wth->browser_check_contents("your message has been posted");
 }
 
-sub do_send_message_alerts {
+sub do_send_message_alerts_postrep {
 	my $status = system("./send-message-alerts", "--verbose");
 	$wth->email_run_eveld();
 	
@@ -271,13 +285,63 @@ sub do_send_message_alerts {
 	for (my $i = 1; $i <= $threshold; $i++) {
 	my $confirmation_email = $wth->email_get_containing('%To: "' . name_n($i) . '" <' . email_n($i) . '>%');
 		if ($confirmation_email =~ /$reps_message/) {
+			if ($i == 1 && $confirmation_email =~ m#^\s+(http://.*$)#m) {
+				$store->{'post_comment_url'} = $1;
+			}
 			++$sentcount;
 		}
 	}
-	unless ($threshold == $sentcount) {
+	if ($threshold == $sentcount) {
 		print "Messages were sent to constituents\n" if $verbose > 0;
 	}
 	#now check that the emails have been received
+}
+
+sub do_post_reply {
+	unless ($store->{'post_comment_url'}) {return 0;}
+	
+	$wth->browser_get($store->{'post_comment_url'});
+    $wth->browser_submit_form(form_name => 'commentform',
+        fields => { text => 'a reply to the message', emailreplies => '1'},
+    );
+    $wth->browser_check_contents("Previewing your comment"); 	
+
+    $wth->browser_submit_form(form_name => 'commentform',
+        button => 'Post'
+    );
+    $wth->browser_check_contents("Thank you for your comment"); 	
+
+}
+
+sub do_send_rep_comments_alerts {
+	my $status = system("./send-rep-comment-alerts", "--verbose");
+	$wth->email_run_eveld();
+	
+	#now check that the emails have been received
+	my $lookfor = 1;
+	for (my $i = 1; $i <= $lookfor; $i++) {
+		my $emailcontent = $wth->email_get_containing('%Subject: New comments on %' . name_n($i) . ' wrote at%');
+	}
+
+}
+
+sub do_send_comments_alerts {
+	my $status = system("./send-comment-alerts", "--verbose");
+	$wth->email_run_eveld();
+	
+	#now check that the emails have been received
+	my $lookfor = 1;
+	for (my $i = 1; $i <= $lookfor; $i++) {
+		my $emailcontent = $wth->email_get_containing('%Hi ' . name_n($i) . '%The following comments have been left%');
+	}
+
+}
+
+sub do_recent_messages_replies {
+	$wth->browser_get($base_url);
+    $wth->browser_check_contents("Latest messages");
+    $wth->browser_check_contents("Latest replies"); 
+	
 }
 
 sub do_league_table {
@@ -285,5 +349,5 @@ sub do_league_table {
     $wth->browser_check_contents("Current Status");
     $wth->browser_check_contents("This is a test site"); 
     my $constcount = $threshold + 1;
-    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$constcount</td><td align="center">0</td><td align="center">1</td><td align="center">0</td>]); 
+    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$constcount</td><td align="center">0</td><td align="center">1</td><td align="center">1</td>]); 
 }

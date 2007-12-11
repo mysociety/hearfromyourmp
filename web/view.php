@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.57 2007-10-31 17:15:52 matthew Exp $
+# $Id: view.php,v 1.58 2007-12-11 20:03:01 angie Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -344,8 +344,9 @@ function view_post_comment_form() {
         $preview .= ':</p> <div>' . comment_prettify($q_text) . '</div></li></ul>';
     }
 
-    if (!preg_match('#[^\s]#', $q_text))
+    if (!preg_match('#[^\s]#', $q_text)) {
         $q_counter = null;
+   }
 
     if (!$q_Post || is_null($q_counter)) {
         print $preview;
@@ -376,7 +377,7 @@ function comment_form($P) {
     else
         $counter = $q_counter + 1;
 ?>
-<form id="commentform" action="/view" method="post" accept-charset="utf-8">
+<form id="commentform" name="commentform" action="/view" method="post" accept-charset="utf-8">
 <input type="hidden" name="mode" value="post">
 <input type="hidden" name="counter" value="<?=$counter ?>">
 <input type="hidden" name="message" value="<?=$q_message ?>">
