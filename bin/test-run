@@ -23,7 +23,7 @@
 #   Recent messages/replies on home page
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.11 2007-12-11 20:02:59 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.12 2007-12-12 19:02:29 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -84,7 +84,7 @@ our $reps_message = 'we hope everything is working well';
 
 our $store = {};
 
-sub email_n { my $n = shift; return "ycmlharness+$n\@$email_domain"; }
+sub email_n { my $n = shift; return "ycml-testharness+$n\@$email_domain"; }
 sub name_n { my $n = shift; return "Cara Constituent $n"; }
 
 #############################################################################
