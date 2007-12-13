@@ -19,11 +19,11 @@
 #   Contact form -Done
 #   Posting a message (web, emails) - Done
 #   Posting a comment (+ comment alerts) - Done
-#   Reporting a comment
-#   Recent messages/replies on home page
+#   Reporting a comment	
+#   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.12 2007-12-12 19:02:29 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.13 2007-12-13 18:59:13 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -145,6 +145,8 @@ do_recent_messages_replies();
 print "Testing League Table\n" if $verbose > 0;
 do_league_table();
 
+print "Doing Abuse Report\n" if $verbose > 0;
+do_abuse_report();
 # Check for any unhandled mails or errors
 #call_fyrqd();
 #print "Checking no emails left at end...\n" if $verbose > 1;
@@ -351,3 +353,21 @@ sub do_league_table {
     my $constcount = $threshold + 1;
     $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$constcount</td><td align="center">0</td><td align="center">1</td><td align="center">1</td>]); 
 }
+
+sub do_abuse_report {
+	# get a comment to complain about
+    $wth->browser_get($base_url);
+    # find the link to the message and follow it.
+    $wth->browser_follow_link(url_regex => qr#/view/message/#i );
+    # find the link to the abuse report form and follow it.
+    $wth->browser_follow_link(text => 'Is this post abusive?', n => 1);
+	print "Submitting abuse report\n" if $verbose > 1;
+    $wth->browser_submit_form(form_name => 'abuse',
+        fields => { reason => 'this message is spam not ham', email => email_n(10)},  
+	);
+	$wth->browser_check_contents("One of our team will investigate that comment as soon as possible."); 
+
+    my $abuse_email = $wth->email_get_containing('%Reason given: this message is spam not ham%');	
+	
+}
+
