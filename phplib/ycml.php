@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: ycml.php,v 1.24 2007-12-12 10:38:01 matthew Exp $
+ * $Id: ycml.php,v 1.25 2007-12-14 15:11:41 matthew Exp $
  * 
  */
 
@@ -64,8 +64,8 @@ function ycml_show_error($message) {
 }
 
 /* Find out what domain we're on */
-preg_match('#^([^.]+)\.(.*)$#', strtolower($_SERVER['HTTP_HOST']), $m);
-if ($m[2] == 'hearfromyourcouncillor.com') {
+preg_match('#^(.+)\.(.+?)\.(.+?)$#', strtolower($_SERVER['HTTP_HOST']), $m);
+if ($m[2] == 'hearfromyourcouncillor') {
     if ($m[1] != 'cheltenham') {
         # XXX Only site for now is Cheltenham
 	header('Location: http://cheltenham.hearfromyourcouncillor.com'
