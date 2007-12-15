@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.30 2007-11-01 15:26:03 matthew Exp $
+// $Id: league.php,v 1.31 2007-12-15 14:40:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -34,7 +34,7 @@ function csv_league_table($sort) {
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
     (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
         AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp
-    FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id ORDER BY " . 
+    FROM constituent WHERE area_id IS NOT NULL and is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
     list($areas_info, $rows) = ycml_get_all_areas_info($q);
@@ -60,7 +60,7 @@ function league_table($sort) {
     (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
         AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp,
     (SELECT status FROM rep_nothanks WHERE area_id = constituent.area_id) AS nothanks
-    FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id ORDER BY " . 
+    FROM constituent WHERE area_id IS NOT NULL AND is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
     list($areas_info, $rows) = ycml_get_all_areas_info($q);

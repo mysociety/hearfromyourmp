@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.36 2007-12-12 11:26:42 matthew Exp $
+// $Id: subscribe.php,v 1.37 2007-12-15 14:40:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -133,7 +133,7 @@ continue
         db_commit();
         $extra = "subscribed=1";
     }
-    $count = db_getOne("select count(*) from constituent where area_id = ?", $area_id);
+    $count = db_getOne("select count(*) from constituent where is_rep='f' and area_id = ?", $area_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM rep_nothanks WHERE area_id = ?', $area_id);
 ?>
 <p id="loudmessage"><?

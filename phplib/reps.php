@@ -5,7 +5,7 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: reps.php,v 1.4 2007-12-12 19:02:30 angie Exp $
+// $Id: reps.php,v 1.5 2007-12-15 14:40:29 matthew Exp $
 
 require_once "../../phplib/utility.php";
 require_once "../../phplib/mapit.php";
@@ -70,7 +70,7 @@ function ycml_get_rep_info($rep_id) {
         $rep_info['name'] = spoonerise($rep_info['name']);
         $emailparts = explode('@', $rep_info['email']);
         $rep_info['email'] = ('ycml-testharness+' . $emailparts[0] . '@' . OPTION_EMAIL_DOMAIN);
-	}
+        }
     if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
         $rep_info['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     return $rep_info;
@@ -89,10 +89,10 @@ function ycml_get_reps_for_area($area_id, $all = 0) {
     # TODO: Get method (email only?) from here
     foreach ($reps_info as $id => $rep_info) {
         if (OPTION_YCML_STAGING) {
-            	$reps_info[$id]['name'] = spoonerise($rep_info['name']);
-            	$emailparts = explode('@', $reps_info[$id]['email']);
-            	$reps_info[$id]['email'] = ('ycml-testharness+' . $emailparts[0] . '@' . OPTION_EMAIL_DOMAIN);
-            }
+            $reps_info[$id]['name'] = spoonerise($rep_info['name']);
+            $emailparts = explode('@', $reps_info[$id]['email']);
+            $reps_info[$id]['email'] = ('ycml-testharness+' . $emailparts[0] . '@' . OPTION_EMAIL_DOMAIN);
+        }
         if (array_key_exists('id', $rep_info) && file_exists('/data/vhost/www.hearfromyourmp.com/docs/mpphotos/'.$rep_info['id'].'.jpg'))
             $reps_info[$id]['image'] = 'http://www.hearfromyourmp.com/mpphotos/' . $rep_info['id'] . '.jpg';
     }

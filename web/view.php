@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.58 2007-12-11 20:03:01 angie Exp $
+# $Id: view.php,v 1.59 2007-12-15 14:40:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -100,7 +100,7 @@ function view_messages($area_id) {
     foreach ($reps_info as $rep) {
         if ($rep['whencreated'] > $max_created) $max_created = $rep['whencreated'];
     }
-    $signed_up = db_getOne('SELECT count(*) FROM constituent WHERE area_id = ?', $area_id);
+    $signed_up = db_getOne("SELECT count(*) FROM constituent WHERE is_rep='f' and area_id = ?", $area_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM rep_nothanks WHERE area_id = ?', $area_id);
     $q = db_query("SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id

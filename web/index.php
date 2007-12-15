@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: index.php,v 1.29 2007-10-31 17:15:52 matthew Exp $
+// $Id: index.php,v 1.30 2007-12-15 14:40:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -22,8 +22,8 @@ function front_page() {
     $rep_type_anti_plural = 's';
     if (OPTION_AREA_TYPE != 'WMC')
         $rep_type_anti_plural = '';
-    $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-    $consts = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM constituent');
+    $people = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE is_rep='f'");
+    $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
 
     echo recent_messages();
     echo recent_replies();

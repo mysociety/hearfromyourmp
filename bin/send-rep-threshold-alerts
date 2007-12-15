@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-threshold-alerts,v 1.8 2007-12-10 11:29:54 angie Exp $
+ * $Id: send-rep-threshold-alerts,v 1.9 2007-12-15 14:40:28 matthew Exp $
  * 
  */
 
@@ -85,7 +85,7 @@ function send_rep_threshold_alerts($type) {
     /* Find out how many reps and people have used the service, in an attempt to convince
      * others through peer pressure. */
     $num_reps_using = db_getOne('select count(distinct area_id) from message');
-    $num_people = db_getOne('select count(distinct person_id) from constituent');
+    $num_people = db_getOne("select count(distinct person_id) from constituent where is_rep='f'");
     
     $threshold_step = OPTION_THRESHOLD_STEP;
     $q = db_query("
@@ -110,6 +110,7 @@ function send_rep_threshold_alerts($type) {
                     on rep_threshold_alert.area_id
                         = constituent.area_id
             where constituent.area_id is not null
+	        and is_rep='f'
             group by constituent.area_id
             having $having
                 and count(distinct(constituent.id)) >= $threshold_step
