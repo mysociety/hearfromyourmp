@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.31 2007-12-15 14:40:29 matthew Exp $
+// $Id: league.php,v 1.32 2007-12-15 14:43:06 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -66,10 +66,10 @@ function league_table($sort) {
     list($areas_info, $rows) = ycml_get_all_areas_info($q);
     $reps_info = ycml_get_all_reps_info(array_keys($areas_info));
 
-    $consts = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM constituent');
-    $people = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-    $people_lastday = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval \'1 day\'');
-    $morethan = db_getAll('SELECT area_id FROM constituent WHERE area_id IS NOT NULL GROUP BY area_id HAVING count(*)>=' . OPTION_THRESHOLD_STEP);
+    $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
+    $people = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE is_rep='f'");
+    $people_lastday = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE creation_time > current_timestamp - interval '1 day' AND is_rep='f'");
+    $morethan = db_getAll("SELECT area_id FROM constituent WHERE area_id IS NOT NULL AND is_rep='f' GROUP BY area_id HAVING count(*)>=" . OPTION_THRESHOLD_STEP);
     $morethan = count($morethan);
     # This way is far too slow:
     # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
