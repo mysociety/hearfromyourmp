@@ -19,11 +19,11 @@
 #   Contact form -Done
 #   Posting a message (web, emails) - Done
 #   Posting a comment (+ comment alerts) - Done
-#   Reporting a comment	
+#   Reporting a comment 
 #   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.13 2007-12-13 18:59:13 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.14 2007-12-17 18:03:27 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -115,37 +115,39 @@ print "Syntax check all PHP files...\n" if $verbose > 0;
 $wth->php_check_syntax("../../ycml/");
 $wth->php_check_syntax("../../ycml/templates/emails/", qr//);
 
+$wth->browser_set_validator("/usr/bin/validate");
+
 print "Basic signup test...\n" if $verbose > 0;
 do_basic_signup_test();
 
 print "Testing threshold: threshold set to $threshold...\n" if $verbose > 0;
 do_threshold();
 
-print "Rep Sending Message \n" if $verbose > 0;
+print "Rep sending message...\n" if $verbose > 0;
 do_rep_send_message();
 
-print "Sending Message Alerts After Reps Posting \n" if $verbose > 0;
+print "Sending message alerts after Reps posting...\n" if $verbose > 0;
 do_send_message_alerts_postrep();
 
-print "Posting Reply\n" if $verbose > 0;
+print "Posting reply...\n" if $verbose > 0;
 do_post_reply();
 
-print "Sending Rep Comment Alerts \n" if $verbose > 0;
+print "Sending Rep comment alerts...\n" if $verbose > 0;
 do_send_rep_comments_alerts();
 
 #print "Sending Comment Alerts \n" if $verbose > 0;
 #do_send_comments_alerts();
 
-print "Testing Contact Form\n" if $verbose > 0;
+print "Testing contact form...\n" if $verbose > 0;
 do_contact_form();
 
-print "Testing Latest Messages and Latest Replies\n" if $verbose > 0;
+print "Testing latest messages and latest replies...\n" if $verbose > 0;
 do_recent_messages_replies();
 
-print "Testing League Table\n" if $verbose > 0;
+print "Testing league table...\n" if $verbose > 0;
 do_league_table();
 
-print "Doing Abuse Report\n" if $verbose > 0;
+print "Doing abuse report...\n" if $verbose > 0;
 do_abuse_report();
 # Check for any unhandled mails or errors
 #call_fyrqd();
@@ -200,53 +202,53 @@ sub do_basic_signup_test {
 #############################################################################
 
 sub do_threshold {
-	# test script will take forever if we actually submit the form, wait for the email and click on the confirmation link for 
-	# everyone of them, so go straight into the db instead after doing 1 so we can get the area id etc.
-	
+    # test script will take forever if we actually submit the form, wait for the email and click on the confirmation link for 
+    # everyone of them, so go straight into the db instead after doing 1 so we can get the area id etc.
+    
     $wth->browser_get($base_url);
     $wth->browser_check_contents("Sign up to hear from your MP");
     $wth->browser_check_contents("This is a test site"); 
 
-	$wth->browser_get('/logout');
-	$wth->browser_get($base_url);
-	$wth->browser_submit_form(form_name => 'subscribe_form',
-		fields => { name => name_n(2), email => email_n(2), postcode => "$postcode"},
-		);
-	$wth->browser_check_contents("Now check your email!");
-	my $confirmation_email = $wth->email_get_containing('%To: "' . name_n(2) . '" <' . email_n(2) . '>%');
+    $wth->browser_get('/logout');
+    $wth->browser_get($base_url);
+    $wth->browser_submit_form(form_name => 'subscribe_form',
+        fields => { name => name_n(2), email => email_n(2), postcode => "$postcode"},
+        );
+    $wth->browser_check_contents("Now check your email!");
+    my $confirmation_email = $wth->email_get_containing('%To: "' . name_n(2) . '" <' . email_n(2) . '>%');
     die "HFYMP confirmation link not found\n" if ($confirmation_email !~ m#^\s+(http://.*$)#m);
     my $confirmation_url = $1;
     $wth->email_check_url($confirmation_url);
     print "Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
     $wth->browser_get($confirmation_url);
-	
-	# not pretty but it is fast. Could have used Person.pm but doesn't look like it's in use anywhere anymore
-	# start by getting the area_id, creation_ipaddr and is_rep for someone so that we can cheat.
-	my ($area_id, $creation_ipaddr, $is_rep) = dbh()->selectrow_array("select  area_id, creation_ipaddr, is_rep FROM constituent WHERE postcode = '$postcode' ");
-	# insert persons x threshold.
+    
+    # not pretty but it is fast. Could have used Person.pm but doesn't look like it's in use anywhere anymore
+    # start by getting the area_id, creation_ipaddr and is_rep for someone so that we can cheat.
+    my ($area_id, $creation_ipaddr, $is_rep) = dbh()->selectrow_array("select  area_id, creation_ipaddr, is_rep FROM constituent WHERE postcode = '$postcode' ");
+    # insert persons x threshold.
     my $dbid = dbh()->selectrow_array("select nextval('person_id_seq')");
-	my $sth = dbh()->prepare("insert into person (id, email, name) values (?, ?, ?)");
-	print "creating person(s) for threshold test \n" if $verbose > 1;
-	for (my $i = 3; $i <= $threshold; $i++) {
-		$sth->execute(($dbid + $i), email_n($i), name_n($i));	
-		#print 'db error is ' . dbh()->errstr;
-	}
-	dbh()->commit();
-	
-	print "creating constituent(s) for threshold test \n" if $verbose > 1;
-	$sth = dbh()->prepare_cached("insert into constituent (person_id, area_id, postcode, creation_ipaddr) values (?, ?, ?, ?)");
+    my $sth = dbh()->prepare("insert into person (id, email, name) values (?, ?, ?)");
+    print "creating person(s) for threshold test \n" if $verbose > 1;
     for (my $i = 3; $i <= $threshold; $i++) {
-    	$sth->execute(($dbid + $i), $area_id, $postcode, $creation_ipaddr);
+        $sth->execute(($dbid + $i), email_n($i), name_n($i));   
+        #print 'db error is ' . dbh()->errstr;
     }
-	dbh()->commit();
-	#./send-rep-threshold-alerts --verbose
-	my $status = system("./send-rep-threshold-alerts", "--verbose");
-	
-	
+    dbh()->commit();
+    
+    print "creating constituent(s) for threshold test \n" if $verbose > 1;
+    $sth = dbh()->prepare_cached("insert into constituent (person_id, area_id, postcode, creation_ipaddr) values (?, ?, ?, ?)");
+    for (my $i = 3; $i <= $threshold; $i++) {
+        $sth->execute(($dbid + $i), $area_id, $postcode, $creation_ipaddr);
+    }
+    dbh()->commit();
+    #./send-rep-threshold-alerts --verbose
+    my $status = system("./send-rep-threshold-alerts", "--verbose");
+    
+    
 }
 
 sub do_contact_form {
-	$wth->browser_get('/contact');
+    $wth->browser_get('/contact');
     $wth->browser_check_contents("Contact Us");
     $wth->browser_check_contents("This is a test site"); 
     $wth->browser_submit_form(form_name => 'contact',
@@ -254,15 +256,15 @@ sub do_contact_form {
         );
     $wth->browser_check_contents("Thanks for your feedback"); 
     my $confirmation_email = $wth->email_get_containing('%a ycml test message from test-run%');
-	
+    
 }
 
 sub do_rep_send_message {
-	#currently the message link is the first in the email
-	my $signup_email = $wth->email_get_containing('%your constituents would like to hear from you%');
-	die "HFYMP reps confirmation link not found\n" if ($signup_email !~ m#^\s+(http://.*$)#m);
+    #currently the message link is the first in the email
+    my $signup_email = $wth->email_get_containing('%your constituents would like to hear from you%');
+    die "HFYMP reps confirmation link not found\n" if ($signup_email !~ m#^\s+(http://.*$)#m);
     my $confirmation_url = $1;
-    $wth->email_check_url($confirmation_url);	
+    $wth->email_check_url($confirmation_url);   
     print "Reps Confirmation URL: " . $confirmation_url . "\n" if $verbose > 1;
     $wth->browser_get($confirmation_url);
     $wth->browser_check_contents("This is a test site"); 
@@ -280,70 +282,70 @@ sub do_rep_send_message {
 }
 
 sub do_send_message_alerts_postrep {
-	my $status = system("./send-message-alerts", "--verbose");
-	$wth->email_run_eveld();
-	
-	my $sentcount = 0;
-	for (my $i = 1; $i <= $threshold; $i++) {
-	my $confirmation_email = $wth->email_get_containing('%To: "' . name_n($i) . '" <' . email_n($i) . '>%');
-		if ($confirmation_email =~ /$reps_message/) {
-			if ($i == 1 && $confirmation_email =~ m#^\s+(http://.*$)#m) {
-				$store->{'post_comment_url'} = $1;
-			}
-			++$sentcount;
-		}
-	}
-	if ($threshold == $sentcount) {
-		print "Messages were sent to constituents\n" if $verbose > 0;
-	}
-	#now check that the emails have been received
+    my $status = system("./send-message-alerts", "--verbose");
+    $wth->email_run_eveld();
+    
+    my $sentcount = 0;
+    for (my $i = 1; $i <= $threshold; $i++) {
+    my $confirmation_email = $wth->email_get_containing('%To: "' . name_n($i) . '" <' . email_n($i) . '>%');
+        if ($confirmation_email =~ /$reps_message/) {
+            if ($i == 1 && $confirmation_email =~ m#^\s+(http://.*$)#m) {
+                $store->{'post_comment_url'} = $1;
+            }
+            ++$sentcount;
+        }
+    }
+    if ($threshold == $sentcount) {
+        print "Messages were sent to constituents\n" if $verbose > 0;
+    }
+    #now check that the emails have been received
 }
 
 sub do_post_reply {
-	unless ($store->{'post_comment_url'}) {return 0;}
-	
-	$wth->browser_get($store->{'post_comment_url'});
+    unless ($store->{'post_comment_url'}) {return 0;}
+    
+    $wth->browser_get($store->{'post_comment_url'});
     $wth->browser_submit_form(form_name => 'commentform',
         fields => { text => 'a reply to the message', emailreplies => '1'},
     );
-    $wth->browser_check_contents("Previewing your comment"); 	
+    $wth->browser_check_contents("Previewing your comment");    
 
     $wth->browser_submit_form(form_name => 'commentform',
         button => 'Post'
     );
-    $wth->browser_check_contents("Thank you for your comment"); 	
+    $wth->browser_check_contents("Thank you for your comment");     
 
 }
 
 sub do_send_rep_comments_alerts {
-	my $status = system("./send-rep-comment-alerts", "--verbose");
-	$wth->email_run_eveld();
-	
-	#now check that the emails have been received
-	my $lookfor = 1;
-	for (my $i = 1; $i <= $lookfor; $i++) {
-		my $emailcontent = $wth->email_get_containing('%Subject: New comments on %' . name_n($i) . ' wrote at%');
-	}
+    my $status = system("./send-rep-comment-alerts", "--verbose");
+    $wth->email_run_eveld();
+    
+    #now check that the emails have been received
+    my $lookfor = 1;
+    for (my $i = 1; $i <= $lookfor; $i++) {
+        my $emailcontent = $wth->email_get_containing('%Subject: New comments on %' . name_n($i) . ' wrote at%');
+    }
 
 }
 
 sub do_send_comments_alerts {
-	my $status = system("./send-comment-alerts", "--verbose");
-	$wth->email_run_eveld();
-	
-	#now check that the emails have been received
-	my $lookfor = 1;
-	for (my $i = 1; $i <= $lookfor; $i++) {
-		my $emailcontent = $wth->email_get_containing('%Hi ' . name_n($i) . '%The following comments have been left%');
-	}
+    my $status = system("./send-comment-alerts", "--verbose");
+    $wth->email_run_eveld();
+    
+    #now check that the emails have been received
+    my $lookfor = 1;
+    for (my $i = 1; $i <= $lookfor; $i++) {
+        my $emailcontent = $wth->email_get_containing('%Hi ' . name_n($i) . '%The following comments have been left%');
+    }
 
 }
 
 sub do_recent_messages_replies {
-	$wth->browser_get($base_url);
+    $wth->browser_get($base_url);
     $wth->browser_check_contents("Latest messages");
     $wth->browser_check_contents("Latest replies"); 
-	
+    
 }
 
 sub do_league_table {
@@ -355,19 +357,19 @@ sub do_league_table {
 }
 
 sub do_abuse_report {
-	# get a comment to complain about
+    # get a comment to complain about
     $wth->browser_get($base_url);
     # find the link to the message and follow it.
     $wth->browser_follow_link(url_regex => qr#/view/message/#i );
     # find the link to the abuse report form and follow it.
     $wth->browser_follow_link(text => 'Is this post abusive?', n => 1);
-	print "Submitting abuse report\n" if $verbose > 1;
+    print "Submitting abuse report\n" if $verbose > 1;
     $wth->browser_submit_form(form_name => 'abuse',
         fields => { reason => 'this message is spam not ham', email => email_n(10)},  
-	);
-	$wth->browser_check_contents("One of our team will investigate that comment as soon as possible."); 
+    );
+    $wth->browser_check_contents("One of our team will investigate that comment as soon as possible."); 
 
-    my $abuse_email = $wth->email_get_containing('%Reason given: this message is spam not ham%');	
-	
+    my $abuse_email = $wth->email_get_containing('%Reason given: this message is spam not ham%');   
+    
 }
 
