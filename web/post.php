@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.20 2007-12-17 19:18:28 angie Exp $
+// $Id: post.php,v 1.21 2007-12-17 20:27:41 angie Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -17,6 +17,7 @@ require_once '../../phplib/dadem.php';
 $title = 'Post a message';
 page_header($title);
 $P = person_if_signed_on();
+
 if (!$P) 
     err('You must be logged in to view this page. Please click the unique link
 in an email that has been sent to you. If you have done that and are still
@@ -81,7 +82,7 @@ if ($q_post == 2) { # Post
 ?>
 </pre>
 <p>If you are happy with this, please click this button to confirm your message:</p>
-<form method="post" name="confirm_form" accept-charset="UTF-8">
+<form method="post" name="confirm_form" action="<?=$_SERVER['REQUEST_URI']?>" accept-charset="UTF-8">
 <input type="hidden" name="post" value="2">
 <input type="hidden" name="subject" value="<?=$q_h_subject ?>">
 <input type="hidden" name="message" value="<?=$q_h_message ?>">
@@ -133,7 +134,7 @@ page_footer();
 function post_message_form() {
     global $q_h_subject, $q_h_message;
 ?>
-<form method="post" name="message_form" accept-charset="UTF-8">
+<form method="post" name="message_form" action="<?=$_SERVER['REQUEST_URI']?>" accept-charset="UTF-8">
 <input type="hidden" name="post" value="1">
 <table cellpadding="3" cellspacing="0" border="0">
 <tr><th><label for="subject">Subject:</label></th>
