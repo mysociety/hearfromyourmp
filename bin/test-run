@@ -23,7 +23,7 @@
 #   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.15 2007-12-17 19:09:46 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.16 2007-12-17 19:15:12 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -122,8 +122,6 @@ do_basic_signup_test();
 
 print "Testing threshold: threshold set to $threshold...\n" if $verbose > 0;
 do_threshold();
-
-die;
 
 print "Rep sending message...\n" if $verbose > 0;
 do_rep_send_message();
