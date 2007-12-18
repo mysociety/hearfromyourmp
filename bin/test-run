@@ -23,7 +23,7 @@
 #   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.16 2007-12-17 19:15:12 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.17 2007-12-18 11:45:33 angie Exp $';
 
 use strict;
 require 5.8.0;
@@ -353,7 +353,7 @@ sub do_league_table {
     $wth->browser_check_contents("Current Status");
     $wth->browser_check_contents("This is a test site"); 
     my $constcount = $threshold + 1;
-    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$constcount</td><td align="center">0</td><td align="center">1</td><td align="center">1</td>]); 
+    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$threshold</td><td align="center">0</td><td align="center">1</td><td align="center">1</td>]); 
 }
 
 sub do_abuse_report {
