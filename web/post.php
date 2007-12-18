@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.21 2007-12-17 20:27:41 angie Exp $
+// $Id: post.php,v 1.22 2007-12-18 11:31:16 angie Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -68,7 +68,7 @@ if ($q_post == 2) { # Post
         $content = comment_prettify($q_message);
         $content = preg_replace('#<p>\*(.*?)\*</p>#', "<h3>$1</h3>", $content);
         $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
-        print '<div id="message"><h2>' . $q_h_subject . '</h2> <blockquote><p>' . $content . '</p></blockquote></div>';
+        print '<div id="dispmessage"><h2>' . $q_h_subject . '</h2> <blockquote><p>' . $content . '</p></blockquote></div>';
         print '<p>And this is how it will appear in the email to constituents:</p>';
         $preview = preg_replace('#\r#', '', htmlspecialchars($q_message));
         print '<pre>';

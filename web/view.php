@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.59 2007-12-15 14:40:29 matthew Exp $
+# $Id: view.php,v 1.60 2007-12-18 11:31:16 angie Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -236,7 +236,7 @@ function view_message($message) {
         WHERE state = 'approved' and area_id = ? AND posted < ?
         ORDER BY posted DESC LIMIT 1",
         array($area_id, $r['posted']) );
-    print '<div id="message">';
+    print '<div id="dispmessage">';
     print '<p id="nav">';
     if ($prev) print '<a href="/view/message/' . $prev . '">Previous message</a> | ';
     print '<a href="/view/' . $area_id . '">Messages for this ' . area_type() . '</a>';
