@@ -8,9 +8,12 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-threshold-alerts,v 1.9 2007-12-15 14:40:28 matthew Exp $
+ * $Id: send-rep-threshold-alerts,v 1.10 2007-12-24 14:11:23 matthew Exp $
  * 
  */
+
+$short_opts = '';
+$long_opts = array('verbose','help','nowarn');
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
 require_once '../conf/general';
@@ -18,9 +21,6 @@ require_once '../conf/general';
  * after conf/general or you get an error
  * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
 require_once '../../phplib/phpcli.php';
-
-$short_opts = '';
-$long_opts = array('verbose','help','nowarn');
 
 require_once '../phplib/fns.php';
 require_once '../phplib/reps.php';
