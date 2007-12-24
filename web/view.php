@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.60 2007-12-18 11:31:16 angie Exp $
+# $Id: view.php,v 1.61 2007-12-24 10:57:17 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -135,7 +135,7 @@ function view_messages($area_id) {
 
     if (count($reps_info)) {
         echo '<p>The ', make_plural(count($reps_info), rep_type('single'), rep_type('plural')),
-            ' for this ', $area_info['type_name'], ' ' , make_plural(count($reps_info), 'is', 'are'),
+            ' for this ', area_type(), ' ' , make_plural(count($reps_info), 'is', 'are'),
             ' ', $reps, '.';
     } else {
         echo '<p>There is currently no ', rep_type('single'), ' for this ' . area_type() . '.';
@@ -269,7 +269,7 @@ function view_message($message) {
         if (person_allowed_to_reply($P->id(), $area_id, $message)) {
             comment_form($P);
         } else {
-            print '<p id="formreplace">You are not subscribed to ' . $_SERVER['site_name'] . ' in this ' . $area_info['type_name'] . ', or subscribed after this message was posted.</p>';
+            print '<p id="formreplace">You are not subscribed to ' . $_SERVER['site_name'] . ' in this ' . area_type() . ', or subscribed after this message was posted.</p>';
         }
     } else { ?>
 <p id="formreplace">If you are subscribed to <?=$_SERVER['site_name']?> in this <?=area_type() ?>,
@@ -285,7 +285,7 @@ function view_message($message) {
 function message_get($id) {
     $r = db_getRow("SELECT *,extract(epoch from posted) as epoch FROM message WHERE state = 'approved' and id = ?", $id);
     if (!$r)
-        err('Unknown message ID');
+        err('Unknown message ID', E_USER_NOTICE);
     return $r;
 }
 

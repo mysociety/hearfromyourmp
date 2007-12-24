@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.37 2007-12-15 14:40:29 matthew Exp $
+// $Id: subscribe.php,v 1.38 2007-12-24 10:57:17 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -117,7 +117,7 @@ continue
         area_id = ? and person_id = ?
         for update", array( $area_id, $person_id ) );
     if ($already_signed) { ?>
-<p class="loudmessage" align="center">You have already signed up to <?=$_SERVER['site_name'] ?> in this <?=$area_info['type']?>!</p>
+<p class="loudmessage" align="center">You have already signed up to <?=$_SERVER['site_name'] ?> in this <?=area_type() ?>!</p>
 <?  #    return;
     }
 
@@ -139,7 +139,7 @@ continue
 <p id="loudmessage"><?
     if (!$already_signed)
         print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in %s %s. ",
-            english_ordinal($count), $rep_name, $area_info['name'], $area_info['type_name']);
+            english_ordinal($count), $rep_name, $area_info['name'], area_type());
     if ($nothanks['status'] == 't') {
         $rep_gender = $nothanks['gender'];
         if ($rep_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
@@ -155,7 +155,7 @@ service<?
 
 <p>In accordance with our site policy we will continue to allow signups for
 <?=$area_info['name'] ?>. As our FAQ says &quot;There is one list per
-<?=$area_info['type'] ?>, not per <?=$area_info['rep_name'] ?>, and we will continue to accept subscribers
+<?=area_type() ?>, not per <?=$area_info['rep_name'] ?>, and we will continue to accept subscribers
 regardless of whether your current <?=$area_info['rep_name'] ?> chooses to use the site or not.
 If your <?=$area_info['rep_name'] ?> changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
