@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.38 2007-12-24 10:57:17 matthew Exp $
+// $Id: subscribe.php,v 1.39 2008-01-03 10:57:20 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -79,8 +79,8 @@ function do_subscribe() {
     if ($external_auth) {
         $person = person_get_or_create($q_email, $q_name);
     } else {
-        $person = person_if_signed_on();
-        if (!$person || $person->email() != $q_email) {
+        $person = person_already_signed_on($q_email, $q_name);
+        if (!$person) {
             /* Otherwise get the user to log in. */
             $template_data = array();
             $template_data['reason_web'] = 'Before adding you to ' . $_SERVER['site_name'] . ', we need to confirm your email address.';
