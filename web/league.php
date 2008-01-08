@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.32 2007-12-15 14:43:06 matthew Exp $
+// $Id: league.php,v 1.33 2008-01-08 11:15:53 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -13,7 +13,7 @@ require_once '../phplib/reps.php';
 $sort = get_http_var('s');
 if (!$sort || preg_match('/[^csmelrp]/', $sort)) $sort = 's';
 $sort_orders = array('l'=>'latest DESC', 'c'=>'area_id', 'm'=>'messages DESC',
-                     'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_mp DESC',
+                     'r'=>'comments DESC', 's'=>'count DESC', 'e'=>'emails_to_rep DESC',
                      'p'=>'area_id');
 
 if (array_key_exists('csv', $_GET)) {
@@ -33,7 +33,8 @@ function csv_league_table($sort) {
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
     (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
-        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp
+        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created)
+        / (select count(*) from rep_cache where constituent.area_id=rep_cache.area_id) AS emails_to_rep
     FROM constituent WHERE area_id IS NOT NULL and is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
@@ -58,7 +59,8 @@ function league_table($sort) {
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
     (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
-        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created) AS emails_to_mp,
+        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created)
+        / (select count(*) from rep_cache where constituent.area_id=rep_cache.area_id) AS emails_to_rep,
     (SELECT status FROM rep_nothanks WHERE area_id = constituent.area_id) AS nothanks
     FROM constituent WHERE area_id IS NOT NULL AND is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
@@ -140,7 +142,7 @@ function league_table($sort) {
         if ($r['nothanks']) {
             $row .= '<td colspan="3" align="center"><a href="' . OPTION_BASE_URL . '/view/' . $c_id . '">This MP has asked not to use this service</a></td>';
         } else {
-            $row .= '<td align="center">' . $r['emails_to_mp'] . '</td>';
+            $row .= '<td align="center">' . $r['emails_to_rep'] . '</td>';
             $row .= '<td align="center">' . $r['messages'] . '</td>';
             $row .= '<td align="center">' . $r['comments'] . '</td>';
         }

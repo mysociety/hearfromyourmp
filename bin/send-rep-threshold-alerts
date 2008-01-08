@@ -8,7 +8,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-threshold-alerts,v 1.10 2007-12-24 14:11:23 matthew Exp $
+ * $Id: send-rep-threshold-alerts,v 1.11 2008-01-08 11:15:53 matthew Exp $
  * 
  */
 
@@ -110,7 +110,7 @@ function send_rep_threshold_alerts($type) {
                     on rep_threshold_alert.area_id
                         = constituent.area_id
             where constituent.area_id is not null
-	        and is_rep='f'
+                and is_rep='f'
             group by constituent.area_id
             having $having
                 and count(distinct(constituent.id)) >= $threshold_step
@@ -134,6 +134,7 @@ function send_rep_threshold_alerts($type) {
         else
             verbose("no previous alert sent for this area");
 
+        $some_success = false;
         foreach ($reps_info as $id => $rep_info) {
             if (!isset($rep_info['email']) || $rep_info['email'] === '') {
                 warning("no email address available for ${rep_info['name']} (${area_info['name']}), but need to send threshold alert");
@@ -185,14 +186,14 @@ function send_rep_threshold_alerts($type) {
             }
             if ($success) {
                 verbose("mail successfully sent");
-                db_query('
-                    insert into rep_threshold_alert
-                        (area_id, num_subscribers)
-                    values (?, ?)', array($area_id, $current));
+                $some_success = true;
             } else {
                 warning("failed to send mail to ${rep_info['name']} (${area_info['name']}) <${rep_info['email']}>");
             }
         }
+        if ($some_success)
+            db_query('insert into rep_threshold_alert (area_id, num_subscribers)
+                      values (?, ?)', array($area_id, $current));
     }
 
     db_commit();

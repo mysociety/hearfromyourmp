@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.61 2007-12-24 10:57:17 matthew Exp $
+# $Id: view.php,v 1.62 2008-01-08 11:15:53 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -111,7 +111,6 @@ function view_messages($area_id) {
     $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?', $area_id);
     $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert WHERE area_id = ?
         and extract(epoch from whensent) > ?', $area_id, $max_created);
-    $emails_sent_to_rep /= count($reps_info);
     $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
     $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND area_id = ?", $area_id);
     

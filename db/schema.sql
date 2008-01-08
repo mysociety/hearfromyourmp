@@ -5,7 +5,7 @@
 -- Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 -- Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.32 2007-09-18 13:08:42 matthew Exp $
+-- $Id: schema.sql,v 1.33 2008-01-08 11:15:53 matthew Exp $
 --
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
@@ -192,6 +192,7 @@ create function rep_threshold(integer, integer, integer) returns integer as '
     end;
 ' language 'plpgsql';
 
+-- More like area_threshold_alert, really
 create table rep_threshold_alert (
     area_id integer not null,
     whensent timestamp not null default current_timestamp,
