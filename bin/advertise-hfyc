@@ -1,0 +1,67 @@
+#!/usr/bin/php
+<?php
+/* 
+ * advertise-hfyc:
+ * Used to send an email about HFYC to people in a particular constituency
+ *
+ * Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+ *
+ * $Id: advertise-hfyc,v 1.1 2008-01-15 13:10:36 matthew Exp $
+ *
+ */
+
+chdir(dirname($_SERVER['SCRIPT_FILENAME']));
+require_once "../conf/general";
+/* for some reason phpcli.php has to be included immediately
+ * after conf/general or you get an error
+ * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
+require_once '../../phplib/phpcli.php';
+
+require_once '../phplib/fns.php';
+require_once '../../phplib/db.php';
+require_once '../../phplib/auth.php';
+
+$const_name = 'Cheltenham';
+$council_name = 'Cheltenham';
+
+# select person.name, person.email,
+#   from constituent, person
+#  where area_id = ?
+#    and constituent.person_id = person.id and is_rep='f'
+
+db_connect();
+
+while (!feof(STDIN)) {
+    $row = trim(fgets(STDIN));
+    if (!$row) continue;
+    list ($name, $email) = explode(',', $row);
+    if (!validate_email($email)) continue;
+    $token = auth_token_store('login', array(
+        'email' => $email,
+        'name' => $name,
+        'stash' => stash_new_request('GET', 'http://www.hearfromyourcouncillor.com/subscribe', null),
+        'direct' => 1
+    ));
+    db_commit();
+    $url = 'http://www.hearfromyourcouncillor.com/L/' . $token;
+
+    $headers = array();
+    $headers['From'] = array('team@hearfromyourmp.com', 'HearFromYourMP');
+    $success = ycml_send_email(array($email, $name), 'HearFromYourCouncillor',
+"Hi $name,
+
+You're getting this email because you've previously subscribed to HearFromYourMP in the $const_name constituency.
+
+We're writing because we've just experimentally expanded this service to cover councillors in $council_name too. It's the first location in the UK to get this service, and we hope you'll be interested in having a go.
+
+To sign up to HearFromYourCouncillor in $council_name, just follow this link:
+    $url
+
+Yours,
+The HearFromYourMP team", $headers);
+    if (!$success) {
+        print "Failed to send message alert to $email\n";
+    }
+}
+
