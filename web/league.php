@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.33 2008-01-08 11:15:53 matthew Exp $
+// $Id: league.php,v 1.34 2008-01-16 09:37:24 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -113,8 +113,12 @@ function league_table($sort) {
         elseif ($consts==645)
             print "<li>There is 1 constituency with nobody signed up";
     }
-    print "<li>$morethan constituencies have " . OPTION_THRESHOLD_STEP . " or more subscribers, $morethan_emailed have been sent emails";
-    print "<li>$mp_written_messages messages sent by " . rep_type('plural') . ", $comments comments made by constituents";
+    echo "<li>$morethan ", make_plural($morethan, area_type() . ' has', area_type('plural') . ' have'),
+         ' ', OPTION_THRESHOLD_STEP, " or more subscribers, $morethan_emailed ",
+         make_plural($morethan_emailed, 'has', 'have'), ' have been sent emails';
+    echo "<li>$mp_written_messages ", make_plural($mp_written_messages, 'message'),
+         ' sent by ', rep_type('plural'), ", $comments ",
+         make_plural($comments, 'comment'), ' made by constituents';
     print '</ul>';
     print '<p><strong>Click on the headings (e.g. ' . area_type() . ') to sort the table by different columns.</strong></p>';
 
