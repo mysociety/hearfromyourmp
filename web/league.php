@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.34 2008-01-16 09:37:24 matthew Exp $
+// $Id: league.php,v 1.35 2008-01-16 09:38:29 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -115,7 +115,7 @@ function league_table($sort) {
     }
     echo "<li>$morethan ", make_plural($morethan, area_type() . ' has', area_type('plural') . ' have'),
          ' ', OPTION_THRESHOLD_STEP, " or more subscribers, $morethan_emailed ",
-         make_plural($morethan_emailed, 'has', 'have'), ' have been sent emails';
+         make_plural($morethan_emailed, 'has', 'have'), ' been sent emails';
     echo "<li>$mp_written_messages ", make_plural($mp_written_messages, 'message'),
          ' sent by ', rep_type('plural'), ", $comments ",
          make_plural($comments, 'comment'), ' made by constituents';
