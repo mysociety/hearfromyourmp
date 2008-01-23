@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.37 2007-11-01 00:04:49 matthew Exp $
+ * $Id: admin-ycml.php,v 1.38 2008-01-23 09:29:15 matthew Exp $
  * 
  */
 
@@ -97,26 +97,26 @@ class ADMIN_PAGE_YCML_MAIN {
         elseif ($sort=='s') $order = 'count DESC';
 
         if (get_http_var('makerepurl')) {
-	    print '<p>Currently broken!</p>';
-	    exit;
             $area_id = get_http_var('makerepurl');
 
             $area_info = ycml_get_area_info($area_id);
-            $rep_info = ycml_get_rep_info($area_id); # XXX
-
-            print "<p><i>";
-            if (!isset($rep_info['email']) || $rep_info['email'] === '') {
-                print("No email address available for ${rep_info['name']} MP (${area_info['name']}). ");
-                if ($rep_info['email'] === '')
-                    print("Email address returned by DaDem was blank; should be null.");
-            } else {
-                print "Email address for ${rep_info['name']} MP is ${rep_info['email']}.";
-
-                $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $rep_id, null);
-                db_commit();
-                print "<br>New MP login URL: <a href=\"$url\">$url</a>\n";
-            }
-            print "</i></p>";
+            $reps_info = ycml_get_reps_for_area($area_id);
+            print "<ul>";
+	    foreach ($reps_info as $id => $rep_info) {
+		print '<li><i>';
+                if (!isset($rep_info['email']) || $rep_info['email'] === '') {
+                    print("No email address available for ${rep_info['name']} (${area_info['name']}). ");
+                    if ($rep_info['email'] === '')
+                        print("Email address returned by DaDem was blank; should be null.");
+                } else {
+                    print "Email address for ${rep_info['name']} is ${rep_info['email']}.";
+                    $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
+                    db_commit();
+                    print "<br>New login URL: <a href=\"$url\">$url</a>\n";
+                }
+		print '</i></li>';
+	    }
+            print "</ul>";
         }
 
         $q = db_query('SELECT COUNT(id) AS count,area_id,EXTRACT(epoch FROM MAX(creation_time)) AS latest FROM constituent GROUP BY area_id' . 
