@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: contact.php,v 1.7 2007-12-17 18:17:46 angie Exp $
+// $Id: contact.php,v 1.8 2008-01-25 09:54:34 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -81,8 +81,11 @@ function send_contact_form($name, $email, $subject, $message) {
 
     $postfix = '[ Sent by contact.php from IP address ' . $_SERVER['REMOTE_ADDR'] . (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) ? ' (forwarded from '.$_SERVER['HTTP_X_FORWARDED_FOR'].')' : '') . ' ]';
     $headers = array();
-    $headers['From'] = '"' . str_replace(array('\\','"'), array('\\\\','\"'), $name) . '" <' . $email . '>';
-    $success = ycml_send_email(OPTION_CONTACT_EMAIL, $subject, $message . "\n\n" . $postfix, $headers);
+    $headers['From'] = array($email, $name);
+    if (!preg_match('#\[url#i', $message))
+        $success = ycml_send_email(OPTION_CONTACT_EMAIL, $subject, $message . "\n\n" . $postfix, $headers);
+    else
+        $success = true;
     if (!$success)
         err(_("Failed to send message.  Please try again, or <a href=\"mailto:team@" . OPTION_EMAIL_DOMAIN . '">email us</a>.'));
     print _('Thanks for your feedback.  We\'ll get back to you as soon as we can!');
