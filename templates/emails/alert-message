@@ -12,6 +12,8 @@ Or you can send them a private message through this link:
 
 -------------------
 
+<?=$values['subject']?>
+
 <?=$values['content']?>
 
 -------------------
