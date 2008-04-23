@@ -6,7 +6,12 @@ This is just an automatic update email to let you know that there are
 now <?=$values['subscribers']?> constituents in
 <?=$values['area_name']?> who would like to hear from you.
 All you have to do to send a new message is visit:
+
     <?=$values['message_url']?>
+
+Remember, you can send email to your constituents whenever you want, just by
+clicking on the link, not only when you receive an email from us. Why not
+bookmark it?
 
 You or another councillor for your ward have used the service before,
 so this is just a short email. We'll remind you again when you have
@@ -20,4 +25,5 @@ As always, if you have any further questions, please follow this link
 Or email us at team@hearfromyourcouncillor.com, or call us on 07811 082158.
 
 All the best,
+
 The HearFromYourCouncillor Team

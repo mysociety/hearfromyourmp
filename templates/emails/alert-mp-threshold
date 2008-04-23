@@ -6,31 +6,32 @@ This is an email to let you know that there are <?=$values['subscribers']?> cons
 in <?=$values['area_name']?> who would like to hear from you
 about any issue you consider to be of particular importance at the
 moment. All you have to do to talk to them is visit:
+
     <?=$values['message_url']?>
 
-This mail has been sent by HearFromYourMP.com, a free service from
-charitable project mySociety.org. mySociety.org also runs
-www.WriteToThem.com (formerly FaxYourMP.com), civic action site
-www.PledgeBank.com and www.TheyWorkForYou.com .
+This mail has been sent by HearFromYourMP, a free service from mySociety, who
+also run WriteToThem, civic action site PledgeBank and TheyWorkForYou.
 
-HearFromYourMP.com is a strictly non-partisan site which is trying to
+HearFromYourMP is a strictly non-partisan site which is trying to
 build healthier and more productive long-term relationships between
 representatives and represented. <?=$values['reps_using']?> MPs have already
 used HearFromYourMP to send messages to their constituents -- you can see what
-they said at
-    http://www.hearfromyourmp.com/about
+they said at http://www.hearfromyourmp.com/about
  
 When you send a message, your constituents will be able to discuss what
 you say in a public forum. You can also respond to comments in the
 forum if you so wish. The forum has 'post-hoc' moderation, and we have
 a strict code of good behavior that we will enforce -- no unconstructive
-partisanship, no ad hominem attacks, etc. You can write to your
-constituents whenever you feel like by visiting:
+partisanship, no ad hominem attacks, etc.
+
+This is not a one-off; you can write to your constituents whenever you feel
+like, simply by visiting:
+
     <?=$values['message_url']?>
 
 Constituents will not be able to reply to your mail and write back to
 you directly, filling up your inbox. If a constituent wants to write
-to you privately they will be passed through to WriteToThem.com with
+to you privately they will be passed through to WriteToThem with
 all the anti-abuse filters we have built to protect all the UK's
 elected representatives, from councillors to MEPs.
 
@@ -44,4 +45,5 @@ follow this link:
 Or email us at team@hearfromyourmp.com, or call us on 07811 082158.
 
 All the best,
+
 The HearFromYourMP Team

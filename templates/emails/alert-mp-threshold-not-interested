@@ -8,6 +8,7 @@ this reminder in case you'd changed your mind.
 
 There are now <?=$values['subscribers']?> people in your constituency who'd like to hear from
 you - all you have to do to talk to them is follow this link:
+
     <?=$values['message_url']?>
 
 Thus far <?=$values['reps_using']?> MPs have sent messages through the service, and it has over
@@ -20,4 +21,5 @@ it, then follow this link:
     http://www.hearfromyourmp.com/about-mps
 
 All the best,
+
 The HearFromYourMP.com team
