@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.62 2008-01-08 11:15:53 matthew Exp $
+# $Id: view.php,v 1.63 2008-04-24 16:19:16 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -130,9 +130,9 @@ function view_messages($area_id) {
         }
         $reps[] = $rep_info['name'] . ' (' . $rep_info['party'] . ')';
     }
-    $reps = (count($reps) > 1 ? join(', ', array_slice($reps, 0, count($reps)-1)) . ' and ' : '') . $reps[count($reps)-1];
 
     if (count($reps_info)) {
+        $reps = (count($reps) > 1 ? join(', ', array_slice($reps, 0, count($reps)-1)) . ' and ' : '') . $reps[count($reps)-1];
         echo '<p>The ', make_plural(count($reps_info), rep_type('single'), rep_type('plural')),
             ' for this ', area_type(), ' ' , make_plural(count($reps_info), 'is', 'are'),
             ' ', $reps, '.';
