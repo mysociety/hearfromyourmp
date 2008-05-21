@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.22 2008-04-10 11:06:14 matthew Exp $
+// $Id: page.php,v 1.23 2008-05-21 13:13:32 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -60,6 +60,7 @@ function page_header($title='', $params = array()) {
     if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">';
     echo $site_name;
     if ($_SERVER['REQUEST_URI']!='/') print '</a>';
+    echo '<a href="http://www.mysociety.org/"><img src="/mysociety-dark-50.png" id="logo"></a>';
     echo '</h1>';
     // Display who is logged in 
     if ($P) {

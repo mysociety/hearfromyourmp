@@ -10,7 +10,7 @@
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: view.php,v 1.63 2008-04-24 16:19:16 matthew Exp $
+# $Id: view.php,v 1.64 2008-05-21 13:13:33 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -182,9 +182,8 @@ over to their successor.&quot;</p>
     $this_or_these = make_plural(count($reps_info), 'this ' . rep_type('single'), 'these ' . rep_type('plural'));
     $this_or_these_possessive = count($reps_info)>1 ? $this_or_these . '&rsquo;' : $this_or_these . '&rsquo;s';
     if ($num_messages==0) {
-        echo '<li>We have sent ', make_plural(count($reps_info), 'this ' . rep_type('single'),
-            'these ' . rep_type('plural')), ' ',
-            $emails_sent_to_rep, ' ', make_plural($emails_sent_to_rep, 'message'),
+        echo '<li>We have sent ', $this_or_these, ' ', $emails_sent_to_rep,
+            ' ', make_plural($emails_sent_to_rep, 'message'),
             ' so far, asking them to send an email to their constituents.
 We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
