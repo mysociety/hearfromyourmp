@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.25 2008-05-21 14:41:24 matthew Exp $
+// $Id: page.php,v 1.26 2008-05-21 15:45:45 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -61,7 +61,7 @@ function page_header($title='', $params = array()) {
         echo '<a title="Back to Cheltenham Council website" href="http://www.cheltenham.gov.uk/"><img id="cobrand_logo" alt="Return to www.cheltenham.gov.uk" src="http://www.cheltenham.gov.uk/libraries/images/logo.gif"></a>';
     }
     echo '<h1>';
-    echo '<a href="http://www.mysociety.org/"><img src="/mysociety-dark-50.png" id="logo"><span id="logoie"></span></a>';
+    echo '<a href="http://www.mysociety.org/"><img alt="Visit mySociety.org" src="/mysociety-dark-50.png" id="logo"><span id="logoie"></span></a>';
     if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">';
     echo $site_name;
     if ($_SERVER['REQUEST_URI']!='/') print '</a>';
