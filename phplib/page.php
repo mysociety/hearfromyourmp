@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.27 2008-08-27 09:00:28 francis Exp $
+// $Id: page.php,v 1.28 2008-08-27 09:20:15 francis Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -122,7 +122,7 @@ Powered by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
 <a href="/privacy">Privacy policy</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>
-<?  if (OPTION_WEB_DOMAIN == 'hearfromyourmp.com') { ?>
+<?  if (OPTION_WEB_DOMAIN == 'www.hearfromyourmp.com') { ?>
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.mysociety.org/" : "http://piwik.mysociety.org/");
