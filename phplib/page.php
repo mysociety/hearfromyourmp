@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.26 2008-05-21 15:45:45 matthew Exp $
+// $Id: page.php,v 1.27 2008-08-27 09:00:28 francis Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -122,11 +122,26 @@ Powered by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
 <a href="/privacy">Privacy policy</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>
-
+<?  if (OPTION_WEB_DOMAIN == 'hearfromyourmp.com') { ?>
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.mysociety.org/" : "http://piwik.mysociety.org/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+<!--
+piwik_action_name = '';
+piwik_idsite = 3;
+piwik_url = pkBaseURL + "piwik.php";
+piwik_log(piwik_action_name, piwik_idsite, piwik_url);
+//-->
+</script>
+<noscript><img src="http://piwik.mysociety.org/piwik.php?i=1" style="border:0" alt=""></noscript>
+<!-- /Piwik -->
+<?  } ?>
 </body>
 </html>
-<?  }
-}
+<? } }
 
 function short_name($name) {
     # Special case Durham as it's the only place with two councils of the same name
