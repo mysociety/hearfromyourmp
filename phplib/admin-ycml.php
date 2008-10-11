@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.38 2008-01-23 09:29:15 matthew Exp $
+ * $Id: admin-ycml.php,v 1.39 2008-10-11 13:03:51 matthew Exp $
  * 
  */
 
@@ -102,8 +102,8 @@ class ADMIN_PAGE_YCML_MAIN {
             $area_info = ycml_get_area_info($area_id);
             $reps_info = ycml_get_reps_for_area($area_id);
             print "<ul>";
-	    foreach ($reps_info as $id => $rep_info) {
-		print '<li><i>';
+            foreach ($reps_info as $id => $rep_info) {
+                print '<li><i>';
                 if (!isset($rep_info['email']) || $rep_info['email'] === '') {
                     print("No email address available for ${rep_info['name']} (${area_info['name']}). ");
                     if ($rep_info['email'] === '')
@@ -114,8 +114,8 @@ class ADMIN_PAGE_YCML_MAIN {
                     db_commit();
                     print "<br>New login URL: <a href=\"$url\">$url</a>\n";
                 }
-		print '</i></li>';
-	    }
+                print '</i></li>';
+            }
             print "</ul>";
         }
 
@@ -635,17 +635,18 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
                     print '<tr style="background-color: #eee;"><td colspan="4">';
                     print '<table>';
                     $comment = db_getRow('
-                                        select comment.id, extract(epoch from date) as date,
+                                        select comment.id, message, extract(epoch from date) as date,
                                             content, posted_by_rep, name, email, website
                                         from comment, person
                                         where comment.person_id = person.id
                                             and comment.id = ?', $comment_id);
 
                     print '<tr class="break">';
-                    print '<td>' . comment_show_one($comment, true);
-                    print " <input type=\"submit\" name=\"delete_comment_${comment_id}\" value=\"Delete this comment\">";
-                    print '</td></tr>';
-                    print '</table>';
+                    $commentT = comment_show_one($comment, true);
+                    $commentT = preg_replace('/<a href="#/', '<a href="http://www.hearfromyourmp.com/view/message/'
+                        . $comment['message'] . '#', $commentT);
+                    print "<td>$commentT <input type='submit' name='delete_comment_${comment_id}' value='Delete this comment'>";
+                    print '</td></tr></table>';
                     $old_id = $comment_id;
                 }
 
