@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.36 2009-01-07 17:03:37 matthew Exp $
+// $Id: league.php,v 1.37 2009-01-07 17:40:45 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -27,17 +27,7 @@ if (array_key_exists('csv', $_GET)) {
 }
 
 function csv_league_table($sort) {
-    global $sort_orders;
-    $q = db_query("SELECT COUNT(id) AS count, area_id,
-    EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
-    (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM rep_threshold_alert WHERE rep_threshold_alert.area_id = constituent.area_id) AS emails_to_rep
-    FROM constituent WHERE area_id IS NOT NULL and is_rep='f' GROUP BY area_id ORDER BY " . 
-    $sort_orders[$sort] );
-
-    list($areas_info, $rows) = ycml_get_all_areas_info($q);
-
+    list($areas_info, $rows) = league_fetch_data($sort);
     foreach ($rows as $k=>$r) {
         $c_id = $r['area_id'] ? $r['area_id'] : -1;
         $c_name = $areas_info[$c_id]['name'];
@@ -48,10 +38,8 @@ function csv_league_table($sort) {
     }
 }
 
-function league_table($sort) {
-    # Gah, so that they're available in the sort routines...
-    global $reps_info, $areas_info, $sort_orders;
-
+function league_fetch_data($osrt) {
+    global $sort_orders;
     $q = db_query("SELECT COUNT(id) AS count,area_id,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
@@ -60,9 +48,20 @@ function league_table($sort) {
     (SELECT status FROM rep_nothanks WHERE area_id = constituent.area_id) AS nothanks
     FROM constituent WHERE area_id IS NOT NULL AND is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
+    return ycml_get_all_areas_info($q);
+}
 
-    list($areas_info, $rows) = ycml_get_all_areas_info($q);
-    $reps_info = ycml_get_all_reps_info(array_keys($areas_info));
+function league_table($sort) {
+    # Gah, so that they're available in the sort routines...
+    global $reps_info, $areas_info;
+
+    $area_ids = array();
+    $q = db_query('select distinct(area_id) from constituent where area_id is not null');
+    while ($r = db_fetch_row($q)) {
+        $area_ids[] = $r[0];
+    }
+    $reps_info = ycml_get_all_reps_info($area_ids);
+    list($areas_info, $rows) = league_fetch_data($sort);
 
     $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
     $people = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE is_rep='f'");
