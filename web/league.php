@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.37 2009-01-07 17:40:45 matthew Exp $
+// $Id: league.php,v 1.38 2009-01-07 17:53:40 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -38,7 +38,7 @@ function csv_league_table($sort) {
     }
 }
 
-function league_fetch_data($osrt) {
+function league_fetch_data($sort) {
     global $sort_orders;
     $q = db_query("SELECT COUNT(id) AS count,area_id,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
