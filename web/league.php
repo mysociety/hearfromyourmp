@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.35 2008-01-16 09:38:29 matthew Exp $
+// $Id: league.php,v 1.36 2009-01-07 17:03:37 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -32,9 +32,7 @@ function csv_league_table($sort) {
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
-        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created)
-        / (select count(*) from rep_cache where constituent.area_id=rep_cache.area_id) AS emails_to_rep
+    (SELECT COUNT(*) FROM rep_threshold_alert WHERE rep_threshold_alert.area_id = constituent.area_id) AS emails_to_rep
     FROM constituent WHERE area_id IS NOT NULL and is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
 
@@ -58,9 +56,7 @@ function league_table($sort) {
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
     (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
-    (SELECT COUNT(*) FROM rep_threshold_alert,rep_cache WHERE rep_threshold_alert.area_id = constituent.area_id
-        AND rep_threshold_alert.area_id=rep_cache.area_id AND extract(epoch from whensent)>created)
-        / (select count(*) from rep_cache where constituent.area_id=rep_cache.area_id) AS emails_to_rep,
+    (SELECT COUNT(*) FROM rep_threshold_alert WHERE rep_threshold_alert.area_id = constituent.area_id) AS emails_to_rep,
     (SELECT status FROM rep_nothanks WHERE area_id = constituent.area_id) AS nothanks
     FROM constituent WHERE area_id IS NOT NULL AND is_rep='f' GROUP BY area_id ORDER BY " . 
     $sort_orders[$sort] );
