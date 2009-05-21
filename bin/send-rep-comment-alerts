@@ -7,7 +7,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
  *
- * $Id: send-rep-comment-alerts,v 1.7 2007-11-01 19:15:16 matthew Exp $
+ * $Id: send-rep-comment-alerts,v 1.8 2009-05-21 15:09:19 matthew Exp $
  *
  */
 
@@ -109,7 +109,7 @@ function send_rep_comment_alerts() {
         if (!$f) {
             # Revert record that it has been sent
             db_rollback();
-            error("Failed to send comments alert to $area_id representative");
+            error("Failed to send comments alert to rep #$rep_id ($rep_info[name] <$email>)");
         } else {
             # Commit that it has been sent
             db_commit();
