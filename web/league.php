@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: league.php,v 1.39 2009-01-07 20:37:33 matthew Exp $
+// $Id: league.php,v 1.40 2009-06-23 15:51:10 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/reps.php';
@@ -121,7 +121,10 @@ function league_table($sort) {
     foreach ($rows as $k=>$r) {
         $c_id = $r['area_id'] ? $r['area_id'] : -1;
         $c_name = $areas_info[$c_id]['name'];
-        $r_name = join(', ', $reps_info[$c_id]['names']);
+        if (isset($reps_info[$c_id]['names']))
+            $r_name = join(', ', $reps_info[$c_id]['names']);
+        else
+            $r_name = '<em>Unknown</em>';
         #$r_id = $reps_info[$c_id]['ids'];
         if (OPTION_YCML_STAGING) {
             $r_name = spoonerise($r_name);
