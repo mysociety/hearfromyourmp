@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: subscribe.php,v 1.41 2008-04-17 13:23:55 matthew Exp $
+// $Id: subscribe.php,v 1.42 2009-06-29 14:48:59 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
@@ -58,6 +58,7 @@ function do_subscribe() {
     if (!is_null($errors))
         return $errors;
 
+    $q_postcode = canonicalise_postcode($q_postcode);
     $area_id = ycml_get_area_id($q_postcode);
     if (!$area_id)
         return array('That postcode does not appear to be in the correct region');

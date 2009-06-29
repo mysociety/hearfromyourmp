@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.28 2008-08-27 09:20:15 francis Exp $
+// $Id: page.php,v 1.29 2009-06-29 14:48:59 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -58,7 +58,7 @@ function page_header($title='', $params = array()) {
     }
     echo '</head><body>';
     if (OPTION_AREA_ID==2326) {
-        echo '<a title="Back to Cheltenham Council website" href="http://www.cheltenham.gov.uk/"><img id="cobrand_logo" alt="Return to www.cheltenham.gov.uk" src="http://www.cheltenham.gov.uk/libraries/images/logo.gif"></a>';
+        echo '<a title="Back to Cheltenham Council website" href="http://www.cheltenham.gov.uk/"><img id="cobrand_logo" alt="Return to www.cheltenham.gov.uk" src="/cheltenham-logo.jpg"></a>';
     }
     echo '<h1>';
     echo '<a href="http://www.mysociety.org/"><img alt="Visit mySociety.org" src="/mysociety-dark-50.png" id="logo"><span id="logoie"></span></a>';

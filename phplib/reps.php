@@ -5,7 +5,7 @@
 // Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: reps.php,v 1.5 2007-12-15 14:40:29 matthew Exp $
+// $Id: reps.php,v 1.6 2009-06-29 14:48:59 matthew Exp $
 
 require_once "../../phplib/utility.php";
 require_once "../../phplib/mapit.php";
@@ -15,7 +15,6 @@ require_once "../../phplib/votingarea.php";
 # ycml_get_area_id POSTCODE
 # Given a postcode, returns the appropriate area id
 function ycml_get_area_id($postcode) {
-    $postcode = canonicalise_postcode($postcode);
     $areas = mapit_get_voting_areas($postcode);
     if (mapit_get_error($areas)) {
         /* This error should never happen, as earlier postcode validation in form will stop it */
