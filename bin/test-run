@@ -23,7 +23,7 @@
 #   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.17 2007-12-18 11:45:33 angie Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.18 2009-07-16 15:30:03 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -40,42 +40,16 @@ mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 
-sub help {
-print <<END
-
-Usage: test-run [OPTION}
-
-Options are
-    --verbose=n   Choose 0 (no progress), 1 (basic actions), 2 (full debug)
-
-END
-}
-
-# Parse command line
-our $verbose = 0; # currently 3 levels: 0, 1 and 2
-our $help;
-our $multispawn = 1;
-
-if (!GetOptions(
-        'verbose=i' =>  \$verbose,
-        'help' =>               \$help,
-        'multispawn=i' => \$multispawn,
-    )) {
-    help();
-    exit(1);
-}
-if ($help) {
-    help();
-    exit(0);
-}
+print "Set up web test harness...\n" if $verbose > 0;
+my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::setup({
+    actions => [],
+    actions_desc => [],
+    dbname => 'YCML',
+});
 
 # Set up options
 our $base_url = mySociety::Config::get('BASE_URL');
-our $admin_url = mySociety::Config::get('ADMIN_URL');
-our $track_url = mySociety::Config::get('TRACKING_URL');
 our $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
-our $httpd_error_log = mySociety::Config::get('HTTPD_ERROR_LOG');
-our $rep_post_url = '';
 # set the threshold for testing send-rep-threshold-alerts
 our $threshold = mySociety::Config::get('THRESHOLD_STEP_STAGING');;
 our $postcode = 'ZZ9 9zz';
@@ -91,63 +65,44 @@ sub name_n { my $n = shift; return "Cara Constituent $n"; }
 # Main code
 
 # Configure test harness class
-print "Set up web test harness...\n" if $verbose > 0;
-our $wth = new mySociety::WebTestHarness();
-$wth->log_watcher_setup($httpd_error_log);
 $wth->log_watcher_self_test($base_url . "/test.php?error=1", "deliberate_error_to_test_error_handling");
-$wth->database_connect('YCML_');
-$wth->database_drop_reload('../db/schema.sql');
-$wth->database_cycle_sequences(200);
-#$wth->email_setup({ eveld_bin => "$FindBin::Bin/../../services/EvEl/bin/eveld",
- #                   log_mailbox => "log_mailbox" });
-
-
-my $eveld_bin = "$FindBin::Bin/../../services/EvEl/bin/eveld";
-$eveld_bin = undef if ! -e $eveld_bin; # when running on servers rely on EvEl daemon, rather than calling EvEl binary directly as on Francis'' laptop XXX need more explicit way of distinguishing this case, than just checking evel isn't checked out in the same tree
-$wth->email_setup({ eveld_bin => $eveld_bin,
-                    eveld_multispawn => $multispawn,
-                    log_mailbox => "log_mailbox" });
-
-#dbh()->{RaiseError};
 
 # Syntax check all .php files
 print "Syntax check all PHP files...\n" if $verbose > 0;
 $wth->php_check_syntax("../../ycml/");
 $wth->php_check_syntax("../../ycml/templates/emails/", qr//);
 
-$wth->browser_set_validator("/usr/bin/validate");
-
-print "Basic signup test...\n" if $verbose > 0;
+date_print("Basic signup test...");
 do_basic_signup_test();
 
-print "Testing threshold: threshold set to $threshold...\n" if $verbose > 0;
+date_print("Testing threshold: threshold set to $threshold...");
 do_threshold();
 
-print "Rep sending message...\n" if $verbose > 0;
+date_print("Rep sending message...");
 do_rep_send_message();
 
-print "Sending message alerts after Reps posting...\n" if $verbose > 0;
+date_print("Sending message alerts after Reps posting...");
 do_send_message_alerts_postrep();
 
-print "Posting reply...\n" if $verbose > 0;
+date_print("Posting reply...");
 do_post_reply();
 
-print "Sending Rep comment alerts...\n" if $verbose > 0;
+date_print("Sending Rep comment alerts...");
 do_send_rep_comments_alerts();
 
-#print "Sending Comment Alerts \n" if $verbose > 0;
+#date_print("Sending Comment Alerts");
 #do_send_comments_alerts();
 
-print "Testing contact form...\n" if $verbose > 0;
+date_print("Testing contact form...");
 do_contact_form();
 
-print "Testing latest messages and latest replies...\n" if $verbose > 0;
+date_print("Testing latest messages and latest replies...");
 do_recent_messages_replies();
 
-print "Testing league table...\n" if $verbose > 0;
+date_print("Testing league table...");
 do_league_table();
 
-print "Doing abuse report...\n" if $verbose > 0;
+date_print("Doing abuse report...");
 do_abuse_report();
 # Check for any unhandled mails or errors
 #call_fyrqd();
@@ -157,6 +112,13 @@ print "Checking no log file errors at end...\n" if $verbose > 1;
 $wth->log_watcher_check();
 print "Everything completed successfully\n";
 
+# Print log line with date
+sub date_print {
+    $_ = shift;
+    print scalar localtime() . " $_\n" if $verbose > 0;
+}
+
+
 #############################################################################
 # General functions
 
@@ -165,13 +127,6 @@ print "Everything completed successfully\n";
 #    system("./fyrqd", "--debug", "--once", "--email", # $verbose > 1 ? qw(--verbose) : ()
 #        ) and die "Failed to call fyrqd";
 #}
-
-sub get_web_bug {
-    my $webbug = $wth->{useragent}->find_image(url_regex => qr/$track_url/);
-    print "Tracking URL: ".$webbug->{url}."\n" if $verbose > 1;
-    $wth->browser_get($webbug->{url});
-    $wth->{useragent}->back();
-}
 
 #############################################################################
 
