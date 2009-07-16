@@ -23,7 +23,7 @@
 #   Recent messages/replies on home page -Done
 #   League table - Done ish
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.20 2009-07-16 15:40:31 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.21 2009-07-16 15:57:19 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -207,11 +207,16 @@ sub do_contact_form {
     $wth->browser_check_contents("Contact Us");
     $wth->browser_check_contents("This is a test site"); 
     $wth->browser_submit_form(form_name => 'contact',
-        fields => { name => name_n(1), email => email_n(1), subject => "a ycml test subject", message => ('a ycml test message from test-run')},  
-        );
+        fields => {
+            name => name_n(1),
+            email => email_n(1),
+            subject => "a ycml test subject",
+            dest => 'us',
+            message => ('a ycml test message from test-run')
+        },  
+    );
     $wth->browser_check_contents("Thanks for your feedback"); 
     my $confirmation_email = $wth->email_get_containing('%a ycml test message from test-run%');
-    
 }
 
 sub do_rep_send_message {
@@ -307,8 +312,7 @@ sub do_league_table {
     $wth->browser_get('/league');
     $wth->browser_check_contents("Current Status");
     $wth->browser_check_contents("This is a test site"); 
-    my $constcount = $threshold + 1;
-    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$threshold</td><td align="center">0</td><td align="center">1</td><td align="center">1</td>]); 
+    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$threshold</td><td align="center">1</td><td align="center">1</td><td align="center">1</td>]); 
 }
 
 sub do_abuse_report {
