@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.39 2008-10-11 13:03:51 matthew Exp $
+ * $Id: admin-ycml.php,v 1.40 2009-08-05 10:25:48 matthew Exp $
  * 
  */
 
@@ -127,7 +127,7 @@ class ADMIN_PAGE_YCML_MAIN {
         foreach ($rows as $k=>$r) {
             $c_id = $r['area_id'] ? $r['area_id'] : -1;
             $c_name = array_key_exists($c_id, $areas_info) ? $areas_info[$c_id]['name'] : '&lt;Unknown / bad postcode&gt;';
-            $r_names = array_key_exists($c_id, $reps_info) ? join(', ', $reps_info[$c_id]['names']) : 'Unknown';
+            $r_names = isset($reps_info[$c_id]['names']) ? join(', ', $reps_info[$c_id]['names']) : 'Unknown';
             $row = "";
             $row .= '<td>';
             if ($c_id != -1) $row .= '<a href="' . OPTION_BASE_URL . '/view/'.$c_id.'">';
