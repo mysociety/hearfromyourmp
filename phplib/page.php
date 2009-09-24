@@ -5,7 +5,7 @@
 // Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: page.php,v 1.29 2009-06-29 14:48:59 matthew Exp $
+// $Id: page.php,v 1.30 2009-09-24 16:16:53 matthew Exp $
 
 require_once '../../phplib/person.php';
 require_once '../../phplib/tracking.php';
@@ -136,7 +136,7 @@ piwik_url = pkBaseURL + "piwik.php";
 piwik_log(piwik_action_name, piwik_idsite, piwik_url);
 //-->
 </script>
-<noscript><img src="http://piwik.mysociety.org/piwik.php?i=1" style="border:0" alt=""></noscript>
+<noscript><img src="http://piwik.mysociety.org/piwik.php?idsite=3" style="border:0" alt=""></noscript>
 <!-- /Piwik -->
 <?  } ?>
 </body>
