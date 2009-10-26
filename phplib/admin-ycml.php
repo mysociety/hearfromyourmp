@@ -6,7 +6,7 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org. WWW: http://www.mysociety.org
  *
- * $Id: admin-ycml.php,v 1.40 2009-08-05 10:25:48 matthew Exp $
+ * $Id: admin-ycml.php,v 1.41 2009-10-26 12:56:04 matthew Exp $
  * 
  */
 
@@ -306,7 +306,7 @@ if any. This must be set before messages can be posted:</p>
                 print '<h3>Messages</h3> <table cellpadding="3" cellspacing="0" border="0"><tr><th>State</th><th>Subject</th><th></th></tr>';
                 foreach ($query as $r) {
                     print "<tr><td>$r[state]</td><td>";
-                    if ($r['state']=='approved') print '<a href="http://www.hearfromyourmp.com/view/message/'.$r['id'].'">';
+                    if ($r['state']=='approved') print '<a href="' . OPTION_BASE_URL . '/view/message/'.$r['id'].'">';
                     print $r['subject'];
                     if ($r['state']=='approved') print '</a>';
                     print '</td><td><form method="post"><input type="hidden" name="resend_confirmation" value="'.$r['id'].'"><input type="submit" value="Resend confirmation email"';
@@ -643,7 +643,7 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
 
                     print '<tr class="break">';
                     $commentT = comment_show_one($comment, true);
-                    $commentT = preg_replace('/<a href="#/', '<a href="http://www.hearfromyourmp.com/view/message/'
+                    $commentT = preg_replace('/<a href="#/', '<a href="' . OPTION_BASE_URL . '/view/message/'
                         . $comment['message'] . '#', $commentT);
                     print "<td>$commentT <input type='submit' name='delete_comment_${comment_id}' value='Delete this comment'>";
                     print '</td></tr></table>';
