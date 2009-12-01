@@ -5,7 +5,7 @@
 // Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 // Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 //
-// $Id: post.php,v 1.22 2007-12-18 11:31:16 angie Exp $
+// $Id: post.php,v 1.23 2009-12-01 13:59:44 matthew Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
@@ -23,6 +23,9 @@ if (!$P)
 in an email that has been sent to you. If you have done that and are still
 seeing this page, then your browser does not have cookies enabled, which we
 use to track logins. Please enable cookies and try again.');
+
+if (OPTION_POSTING_DISABLED)
+    err('Posting is currently disabled.');
 
 importparams(
     array('area_id', '/^\d+$/', '', null),

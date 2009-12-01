@@ -14,9 +14,11 @@
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.15 2007-12-11 20:03:00 angie Exp $
+ * $Id: general-example,v 1.16 2009-12-01 13:59:44 matthew Exp $
  * 
  */
+
+define('OPTION_POSTING_DISABLED', '');
 
 define('OPTION_YCML_DB_NAME', 'ycml');
 define('OPTION_YCML_DB_USER', 'ycml');
