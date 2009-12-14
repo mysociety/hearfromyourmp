@@ -24,7 +24,6 @@ create table person (
     email text not null,
     password text,
     website text,
-    moo text,
     numlogins integer not null default 0
 );
 
