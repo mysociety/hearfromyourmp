@@ -69,8 +69,8 @@ $wth->log_watcher_self_test($base_url . "/test.php?error=1", "deliberate_error_t
 
 # Syntax check all .php files
 print "Syntax check all PHP files...\n" if $verbose > 0;
-$wth->php_check_syntax("../../ycml/");
-$wth->php_check_syntax("../../ycml/templates/emails/", qr//);
+$wth->php_check_syntax("../../hearfromyourmp/");
+$wth->php_check_syntax("../../hearfromyourmp/templates/emails/", qr//);
 
 date_print("Basic signup test...");
 do_basic_signup_test();
