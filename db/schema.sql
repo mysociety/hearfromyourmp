@@ -19,7 +19,6 @@ create function ms_current_timestamp()
 -- users, but call the table person rather than user so we don't have to quote
 -- its name in every statement....
 create table person (
-    boo text,
     id serial not null primary key,
     name text,
     email text not null,
