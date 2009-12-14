@@ -18,10 +18,10 @@ $short_opts = '';
 $long_opts = array('verbose', 'help', 'rep=');
 
 chdir(dirname($_SERVER['SCRIPT_FILENAME']));
-require_once '../../phplib/phpcli.php';
-require_once '../../phplib/cli.php';
-require_once '../../phplib/db.php';
-require_once "../../phplib/person.php";
+require_once '../commonlib/phplib/phpcli.php';
+require_once '../commonlib/phplib/cli.php';
+require_once '../commonlib/phplib/db.php';
+require_once "../commonlib/phplib/person.php";
 require_once '../conf/general';
 require_once '../phplib/reps.php';
 

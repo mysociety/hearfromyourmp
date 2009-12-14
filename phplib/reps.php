@@ -7,10 +7,10 @@
 //
 // $Id: reps.php,v 1.6 2009-06-29 14:48:59 matthew Exp $
 
-require_once "../../phplib/utility.php";
-require_once "../../phplib/mapit.php";
-require_once "../../phplib/dadem.php";
-require_once "../../phplib/votingarea.php";
+require_once "../commonlib/phplib/utility.php";
+require_once "../commonlib/phplib/mapit.php";
+require_once "../commonlib/phplib/dadem.php";
+require_once "../commonlib/phplib/votingarea.php";
 
 # ycml_get_area_id POSTCODE
 # Given a postcode, returns the appropriate area id

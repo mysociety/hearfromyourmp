@@ -17,10 +17,10 @@ require_once '../phplib/alert.php';
 require_once '../phplib/constituent.php';
 require_once '../phplib/reps.php';
 require_once '../phplib/comment.php';
-require_once '../../phplib/person.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/importparams.php';
-require_once '../../phplib/mapit.php';
+require_once '../commonlib/phplib/person.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/importparams.php';
+require_once '../commonlib/phplib/mapit.php';
 
 importparams(
     array('area_id', '/^\d+$/', 'Invalid area ID', null),

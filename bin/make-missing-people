@@ -10,9 +10,9 @@
 # $Id: make-missing-people,v 1.3 2007-09-18 13:08:42 matthew Exp $
 
 require_once "../conf/general";
-require_once '../../phplib/db.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/mapit.php';
+require_once '../commonlib/phplib/db.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/mapit.php';
 
 $right = 0;
 $q = db_query('select id,name,email from constituent where person_id is null');

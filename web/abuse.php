@@ -10,8 +10,8 @@
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../phplib/comment.php';
-require_once '../../phplib/importparams.php';
-require_once '../../phplib/utility.php';
+require_once '../commonlib/phplib/importparams.php';
+require_once '../commonlib/phplib/utility.php';
 
 page_header('Report Abuse');
 report_abusive_thing();

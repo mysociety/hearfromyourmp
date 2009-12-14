@@ -7,8 +7,8 @@
 //
 // $Id: alert.php,v 1.1 2005-08-26 15:35:32 matthew Exp $
 
-require_once '../../phplib/db.php';
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/db.php';
+require_once '../commonlib/phplib/person.php';
 
 /* alert_signup PERSON MESSAGE
  * Signs PERSON up to receive email alerts when comments are posted to MESSAGE. */

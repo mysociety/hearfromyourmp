@@ -9,7 +9,7 @@
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/person.php';
 
 page_header('Comment alerts');
 if (get_http_var('direct_unsubscribe')) {

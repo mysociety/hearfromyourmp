@@ -7,9 +7,9 @@
 //
 // $Id: fns.php,v 1.24 2007-12-10 11:29:54 angie Exp $
 
-require_once '../../phplib/evel.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/evel.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/person.php';
 
 // $to can either be one address in a string, or an array of (address, name)
 function ycml_send_email_template($to, $template_name, $values, $headers = array()) {

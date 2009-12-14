@@ -10,9 +10,9 @@
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
 require_once '../phplib/comment.php';
-require_once '../../phplib/person.php';
-require_once '../../phplib/importparams.php';
-require_once '../../phplib/dadem.php';
+require_once '../commonlib/phplib/person.php';
+require_once '../commonlib/phplib/importparams.php';
+require_once '../commonlib/phplib/dadem.php';
 
 $title = 'Post a message';
 page_header($title);

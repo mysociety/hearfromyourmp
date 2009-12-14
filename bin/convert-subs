@@ -9,9 +9,9 @@
 # $Id: convert-subs,v 1.6 2007-09-18 12:58:29 matthew Exp $
 
 require_once "../conf/general";
-require_once '../../phplib/db.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/mapit.php';
+require_once '../commonlib/phplib/db.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/mapit.php';
 
 $wrong = 0; $deleted = 0; $right = 0;
 $q = db_query('select id,name,email,postcode from constituent where constituency is null');

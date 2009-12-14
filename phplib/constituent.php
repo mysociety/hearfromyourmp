@@ -7,7 +7,7 @@
 //
 // $Id: constituent.php,v 1.7 2007-10-31 18:14:02 matthew Exp $
 
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/person.php';
 
 /* constituent_unsubscribe PERSON_ID ALERT_ID
  * Remove the subscription to the alert, checks the alert is owned

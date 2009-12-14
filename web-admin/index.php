@@ -12,12 +12,12 @@
 
 require_once "../conf/general";
 require_once "../phplib/admin-ycml.php";
-require_once "../../phplib/template.php";
-require_once "../../phplib/admin-phpinfo.php";
-require_once "../../phplib/admin-serverinfo.php";
-require_once "../../phplib/admin-configinfo.php";
-require_once "../../phplib/admin-embed.php";
-require_once "../../phplib/admin.php";
+require_once "../commonlib/phplib/template.php";
+require_once "../commonlib/phplib/admin-phpinfo.php";
+require_once "../commonlib/phplib/admin-serverinfo.php";
+require_once "../commonlib/phplib/admin-configinfo.php";
+require_once "../commonlib/phplib/admin-embed.php";
+require_once "../commonlib/phplib/admin.php";
 
 $pages = array(
     new ADMIN_PAGE_YCML_LATEST,

@@ -10,7 +10,7 @@
  * 
  */
 
-require_once '../../phplib/votingarea.php';
+require_once '../commonlib/phplib/votingarea.php';
 require_once 'reps.php';
 
 function recent_messages() {

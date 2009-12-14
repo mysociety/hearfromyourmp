@@ -14,12 +14,12 @@
 // Load configuration file
 require_once "../conf/general";
 
-require_once '../../phplib/db.php';
-require_once '../../phplib/stash.php';
-require_once "../../phplib/error.php";
-require_once '../../phplib/mapit.php';
-require_once "../../phplib/utility.php";
-require_once '../../phplib/votingarea.php';
+require_once '../commonlib/phplib/db.php';
+require_once '../commonlib/phplib/stash.php';
+require_once "../commonlib/phplib/error.php";
+require_once '../commonlib/phplib/mapit.php';
+require_once "../commonlib/phplib/utility.php";
+require_once '../commonlib/phplib/votingarea.php';
 require_once 'page.php';
 
 /* Output buffering: PHP's output buffering is broken, because it does not

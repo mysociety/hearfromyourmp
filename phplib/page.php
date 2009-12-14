@@ -7,9 +7,9 @@
 //
 // $Id: page.php,v 1.30 2009-09-24 16:16:53 matthew Exp $
 
-require_once '../../phplib/person.php';
-require_once '../../phplib/tracking.php';
-require_once '../../phplib/mapit.php';
+require_once '../commonlib/phplib/person.php';
+require_once '../commonlib/phplib/tracking.php';
+require_once '../commonlib/phplib/mapit.php';
 
 /* page_header TITLE [PARAMS]
  * Print top part of HTML page, with the given TITLE. This prints up to the

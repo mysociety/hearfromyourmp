@@ -11,7 +11,7 @@
  */
 
 require_once '../phplib/ycml.php';
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/person.php';
 
 if (person_if_signed_on(true)) {
     person_signoff();

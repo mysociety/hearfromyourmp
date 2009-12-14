@@ -9,7 +9,7 @@
 // $Id: authed.php,v 1.1 2005-12-05 20:57:34 francis Exp $
 
 require_once '../phplib/ycml.php';
-require_once '../../phplib/auth.php';
+require_once '../commonlib/phplib/auth.php';
 
 header("Content-Type: text/plain");
 

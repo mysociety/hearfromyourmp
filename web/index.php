@@ -10,7 +10,7 @@
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
 require_once '../phplib/recent.php';
-require_once '../../phplib/utility.php';
+require_once '../commonlib/phplib/utility.php';
 
 page_header();
 front_page();

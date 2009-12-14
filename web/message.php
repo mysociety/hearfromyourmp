@@ -11,7 +11,7 @@
  */
 
 require_once '../phplib/ycml.php';
-require_once '../../phplib/importparams.php';
+require_once '../commonlib/phplib/importparams.php';
 
 importparams(
         array('t',              '/.+$/',            '', null)

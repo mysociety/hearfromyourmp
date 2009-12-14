@@ -20,14 +20,14 @@ require_once '../conf/general';
 /* for some reason phpcli.php has to be included immediately
  * after conf/general or you get an error
  * /usr/share/php/Console/Getopt.php:188: Undefined offset:  1 */
-require_once '../../phplib/phpcli.php';
+require_once '../commonlib/phplib/phpcli.php';
 
 require_once '../phplib/fns.php';
 require_once '../phplib/reps.php';
-require_once '../../phplib/cli.php';
-require_once '../../phplib/db.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/person.php';
+require_once '../commonlib/phplib/cli.php';
+require_once '../commonlib/phplib/db.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/person.php';
 require_once 'work-out-site';
 
 $switches = $options[0];

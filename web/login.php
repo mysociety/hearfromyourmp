@@ -43,10 +43,10 @@
 require_once '../phplib/ycml.php';
 require_once '../phplib/fns.php';
 require_once '../phplib/constituent.php';
-require_once '../../phplib/auth.php';
-require_once '../../phplib/person.php';
-require_once '../../phplib/stash.php';
-require_once '../../phplib/importparams.php';
+require_once '../commonlib/phplib/auth.php';
+require_once '../commonlib/phplib/person.php';
+require_once '../commonlib/phplib/stash.php';
+require_once '../commonlib/phplib/importparams.php';
 
 /* As a first step try to set a cookie and read it on redirect, so that we can
  * warn the user explicitly if they appear to be refusing cookies. */

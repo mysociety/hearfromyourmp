@@ -9,9 +9,9 @@
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/constituent.php';
-require_once '../../phplib/person.php';
-require_once '../../phplib/utility.php';
-require_once '../../phplib/importparams.php';
+require_once '../commonlib/phplib/person.php';
+require_once '../commonlib/phplib/utility.php';
+require_once '../commonlib/phplib/importparams.php';
 
 postcode_page();
 
