@@ -11,10 +11,10 @@ SOURCE=/tmp/ycml-signup-rate-graph-data-$RANDOM$RANDOM
 GPSCRIPT=/tmp/ycml-signup-rate-graph-script-$RANDOM$RANDOM
 
 cd `dirname $0`
-cd ../../
-source shlib/deployfns
+cd ../
+source commonlib/shlib/deployfns
 
-read_conf ycml/conf/general
+read_conf conf/general
 
 echo "select date(creation_time), count(*) from constituent
     where area_id is not null group by
@@ -48,5 +48,5 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > ycml/web/ycml-live-signups.png
+gnuplot < $GPSCRIPT > web/ycml-live-signups.png
 
