@@ -1,4 +1,4 @@
-#!/usr/local/bin/php -q
+#!/usr/bin/php -q
 <?
 # convert-subs:
 # Convert people from the old system to the new.
@@ -26,7 +26,7 @@ while ($r = db_fetch_array($q)) {
         $wrong++;
         continue;
     }
-    $new_areas = mapit_get_voting_areas($pc, NEW_AREA_GENERATION);
+    $new_areas = mapit_get_voting_areas($postcode, NEW_AREA_GENERATION);
     if (mapit_get_error($new_areas)) {
         print "No new area for $postcode (id $id)\n";
         $wrong++;
