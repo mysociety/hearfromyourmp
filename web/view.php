@@ -146,7 +146,7 @@ So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has'
     if (OPTION_AREA_TYPE == 'WMC') {
         $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
         echo 'To discover everything you could possibly want to know about what your MP ', 
-            isset($rep_infos[0]['name']) ? 'gets' : 'got',
+            isset($reps_info[0]['name']) ? 'gets' : 'got',
             ' up to in Parliament, see their page on our sister site <a href="',
             $twfy_link, '">TheyWorkForYou</a>.';
     }
