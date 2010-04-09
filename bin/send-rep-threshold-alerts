@@ -160,13 +160,6 @@ function send_rep_threshold_alerts($type) {
                      array($P->id(), $area_id));
             }
             db_commit();
-            $already_present = db_getOne("select confirmation_email from rep_cache where 
-                id = ? for update", array($id) );
-            if (!$already_present) {
-                db_query("update rep_cache set confirmation_email=? where id=?",
-                    array($rep_info['email'], $id));
-                db_commit();
-            }
             $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
             $pp = array(
                 'message_url' => $url,

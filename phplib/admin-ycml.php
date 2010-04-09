@@ -212,9 +212,6 @@ class ADMIN_PAGE_YCML_MAIN {
                 if ($r['is_rep']=='t') $choices .= ' selected';
                 $choices .= ' value="' . $r['id'] . '">' . $r['name'] . ' &lt;' . $r['email'] . '&gt;</option>';
             }
-            $confirmation_email = db_getOne('select confirmation_email from rep_cache where area_id = ?', $id);
-            if (is_null($confirmation_email))
-                $confirmation_email = '';
             $sent_messages = db_getOne("select count(*) from message where area_id=? and state in ('approved','closed')", $id);
 ?>
 <form method="post">
@@ -233,28 +230,6 @@ Not interested - <input type="submit" value="Change">
  <input type="checkbox" name="female" value="1"> Female?
 <?          }
 ?></strong></p></form>
-<h3>Post a message as this MP</h3>
-<p style="color: #990000">Not used anymore; generate a login URL and use the rep interface as they do</p>
-<!-- 
-<?          if ($confirmation_email && !$no_thanks) { ?>
-<form method="post" accept-charset="UTF-8">
-<table cellpadding="3" cellspacing="0" border="0">
-<tr><th><label for="subject">Subject:</label></th>
-<td><input type="text" id="subject" name="subject" value="" size="40"></td>
-</tr>
-<tr valign="top"><th><label for="message">Message:</label></th>
-<td><textarea id="message" name="message" rows="10" cols="58"></textarea></td>
-</tr></table>
-<input type="submit" value="Post">
-</form>
-<?          } elseif (!$confirmation_email) { ?>
-<p>You cannot post a message until a confirmation email address is set for
-this area.</p>
-<?          } elseif ($no_thanks) { ?>
-<p>This MP has asked not to use our service!</p>
-<?          }
-?>
--->
 <h3>Create or set login for this MP</h3>
 <p style="color: #990000">Do not use in multi-member areas, it de-reps everyone else!</p>
 <form method="post">
@@ -270,21 +245,6 @@ this area.</p>
 ?>
  type="submit" value="Use this account">
 </form>
-<h3>Set confirmation email address for this MP</h3>
-<p style="color: #990000">Always using DaDem contact details now, too confusing otherwise.
-<br>Fix manually if it ever actually needs to be.</p>
-<!--
-<p>This is the email address to which a confirmation request will be sent for
-each message posted. This is independent of the address for the MP's own login,
-if any. This must be set before messages can be posted:</p>
-<?
-            ?>
-<form method="post">
-<input type="hidden" name="area_id" value="<?=htmlspecialchars($id)?>">
-<input type="text" name="confirmation_email" value="<?=htmlspecialchars($confirmation_email)?>" size="30">
-<input type="submit" name="setConfirmationEmail" value="Set confirmation email address">
-</form>
--->
 <?    
         }
 
@@ -309,9 +269,7 @@ if any. This must be set before messages can be posted:</p>
                     if ($r['state']=='approved' || $r['state']=='closed') print '<a href="' . OPTION_BASE_URL . '/view/message/'.$r['id'].'">';
                     print $r['subject'];
                     if ($r['state']=='approved' || $r['state']=='closed') print '</a>';
-                    print '</td><td><form method="post"><input type="hidden" name="resend_confirmation" value="'.$r['id'].'"><input type="submit" value="Resend confirmation email"';
-                    if ($r['state'] != 'ready') print ' disabled';
-                    print '></form></tr>';
+                    print '</td></tr>';
                 }
                 print '</table>';
             }
@@ -429,22 +387,6 @@ if any. This must be set before messages can be posted:</p>
                     array($P->id(), $area_id, '', $_SERVER['REMOTE_ADDR']));
             db_commit();
             print '<p><em>MP created</em></p>';
-        } elseif (get_http_var('setConfirmationEmail')) {
-            $id = get_http_var('area_id');
-            $email = get_http_var('confirmation_email');
-            if (!is_null($id) && !is_null($email)) {
-                if (validate_email($email)) {
-                    db_query('update area_cache set confirmation_email = ? where id = ?', array($email, $id));
-                    db_commit();
-                    print '<p><em>Confirmation email address set to '
-                            . htmlspecialchars($email)
-                            . '</em></p>';
-                } else {
-                    print '<p><em>"'
-                            . htmlspecialchars($email)
-                            . '" is not a valid email address</em></p>';
-                }
-            }
         } elseif (get_http_var('selectMP')) {
             $c_id = get_http_var('selectMP');
             if (ctype_digit($c_id)) {
@@ -467,10 +409,6 @@ if any. This must be set before messages can be posted:</p>
                 print '<p><em>Added to the not interested list</em></p>';
             }
             db_commit();
-        } elseif ($m_id = get_http_var('resend_confirmation')) {
-            db_query("UPDATE message SET state='new' WHERE id=?", $m_id);
-            db_commit();
-            print '<p><em>Message set for reconfirmation</em></p>';
         }
 
         // Display page

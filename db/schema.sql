@@ -245,7 +245,5 @@ create table rep_cache (
     id integer not null primary key,
     name text not null,
     created integer not null,
-    area_id integer not null,
-    -- Email to which confirmation requests and some alerts? are sent
-    confirmation_email text not null default ''
+    area_id integer not null
 );

@@ -56,13 +56,6 @@ foreach ($areas as $area_id) {
                  array($P->id(), $area_id));
         }
         db_commit();
-        $already_present = db_getOne("select confirmation_email from rep_cache where 
-            id = ? for update", array($id) );
-        if (!$already_present) {
-            db_query("update rep_cache set confirmation_email=? where id=?",
-                array($rep_info['email'], $id));
-            db_commit();
-        }
     }
 }
 
