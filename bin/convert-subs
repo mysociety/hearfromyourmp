@@ -21,9 +21,19 @@ while ($r = db_fetch_array($q)) {
     $id = $r['id'];
     $old_id = $r['area_id'];
     $postcode = canonicalise_postcode($r['postcode']);
+    if (!$postcode) {
+        print "Missing postcode, MP account (id $id)\n";
+        $wrong++;
+        continue;
+    }
     $new_areas = mapit_get_voting_areas($postcode, NEW_AREA_GENERATION);
     if (mapit_get_error($new_areas)) {
-        print "No new area for $postcode (id $id)\n";
+        print "Lookup problem with $postcode (id $id)\n";
+        $wrong++;
+        continue;
+    }
+    if (!isset($new_areas['WMC'])) {
+        print "$postcode no longer exists (id $id)\n";
         $wrong++;
         continue;
     }
@@ -32,12 +42,12 @@ while ($r = db_fetch_array($q)) {
         continue;
     $already_exist = db_getOne('select id from constituent where area_id = ? and person_id = ?', array($new_id, $r['person_id']));
     if ($already_exist) {
-        #db_query('delete from constituent where id = ?', array($id));
+        db_query('delete from constituent where id = ?', array($id));
         print "Deleting duplicate entry $id, postcode $postcode\n";
         $deleted++;
     } else {
-        #db_query("update constituent set area_id=? where id=?", array($new_id, $id));
-        print "Updating entry $id, postcode $postcode from $old_id to $new_id\n";
+        db_query("update constituent set area_id=? where id=?", array($new_id, $id));
+        #print "Updating entry $id, postcode $postcode from $old_id to $new_id\n";
         $right++;
     }
 
