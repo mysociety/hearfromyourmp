@@ -118,7 +118,7 @@ function view_messages($area_id) {
                         AND visible<>0) as numposts
                     FROM message
                     WHERE state in ('approved','closed') and area_id = ?
-                    ORDER BY message.posted DESC", $area_id, $max_created);
+                    ORDER BY message.posted DESC", $area_id);
     while ($r = db_fetch_array($q)) {
         $messages .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
         if (count($reps_info)>1) {
