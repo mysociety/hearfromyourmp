@@ -149,6 +149,7 @@ place.</em>';
         } else {
             print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in %s %s. ",
                 english_ordinal($count), $rep_name, $area_info['name'], area_type());
+        }
     }
     if (!OPTION_POSTING_DISABLED && $nothanks['status'] == 't') {
         $rep_gender = $nothanks['gender'];
