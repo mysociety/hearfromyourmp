@@ -19,21 +19,17 @@ $wrong = 0; $deleted = 0; $right = 0;
 $q = db_query('select id, area_id, postcode, person_id from constituent');
 while ($r = db_fetch_array($q)) {
     $id = $r['id'];
+    $old_id = $r['area_id'];
     $postcode = canonicalise_postcode($r['postcode']);
-    $areas = mapit_get_voting_areas($postcode);
-    if (mapit_get_error($areas)) {
-        print "No current area for $postcode (id $id)\n";
-        $wrong++;
-        continue;
-    }
     $new_areas = mapit_get_voting_areas($postcode, NEW_AREA_GENERATION);
     if (mapit_get_error($new_areas)) {
         print "No new area for $postcode (id $id)\n";
         $wrong++;
         continue;
     }
-    $old_id = $areas['WMC'];
     $new_id = $new_areas['WMC'];
+    if ($old_id == $new_id)
+        continue;
     $already_exist = db_getOne('select id from constituent where area_id = ? and person_id = ?', array($new_id, $r['person_id']));
     if ($already_exist) {
         #db_query('delete from constituent where id = ?', array($id));
