@@ -34,13 +34,13 @@ while ($r = db_fetch_array($q)) {
     }
     $old_id = $areas['WMC'];
     $new_id = $new_areas['WMC'];
-    $already_exist = db_getOne('select id from constituent where constituency = ? and person_id = ?', array($new_id, $r['person_id']));
+    $already_exist = db_getOne('select id from constituent where area_id = ? and person_id = ?', array($new_id, $r['person_id']));
     if ($already_exist) {
         #db_query('delete from constituent where id = ?', array($id));
         print "Deleting duplicate entry $id, postcode $postcode\n";
         $deleted++;
     } else {
-        #db_query("update constituent set constituency=? where id=?", array($new_id, $id));
+        #db_query("update constituent set area_id=? where id=?", array($new_id, $id));
         print "Updating entry $id, postcode $postcode from $old_id to $new_id\n";
         $right++;
     }
