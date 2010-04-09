@@ -197,11 +197,19 @@ over to their successor.&quot;</p>
     $this_or_these = count($reps_info) > 1 ? 'these ' . rep_type('plural') : 'this ' . rep_type('single');
     $this_or_these_possessive = count($reps_info)>1 ? $this_or_these . '&rsquo;' : $this_or_these . '&rsquo;s';
     if ($num_messages==0) {
-        echo '<li>We have sent ', $this_or_these, ' ', $emails_sent_to_rep,
+        echo '<li>';
+        if (!count($reps_info)) {
+            echo 'We sent';
+        } else {
+            echo 'We have sent ';
+        }
+        echo $this_or_these, ' ', $emails_sent_to_rep,
             ' ', make_plural($emails_sent_to_rep, 'message'),
-            ' so far, asking them to send an email to their constituents.
-We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
+            ' so far, asking them to send an email to their constituents.';
+        if (count($reps_info)) {
+            echo 'We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
+        }
     } else { ?>
     <li>We sent <?=$this_or_these ?> <?=$emails_sent_to_rep ?> <?=make_plural($emails_sent_to_rep, 'message') ?>, asking them to send an email to their constituents.
     <li><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have' : 'has') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
