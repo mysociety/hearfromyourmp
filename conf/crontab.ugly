@@ -16,7 +16,6 @@ MAILTO=team@hearfromyourmp.com
 
 # Frequently, on one machine only as not concurrent
 5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
-*/5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-message-confirmations
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
 
 # Once a day, on one machine only as not concurrent
@@ -32,7 +31,6 @@ MAILTO=team@hearfromyourmp.com
 
 # Frequently
 5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
-*/5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-message-confirmations
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
 
 # Once a day
