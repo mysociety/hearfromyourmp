@@ -61,7 +61,11 @@ function league_table($sort) {
     while ($r = db_fetch_row($q)) {
         $area_ids[] = $r[0];
     }
-    $reps_info = ycml_get_all_reps_info($area_ids);
+    if (OPTION_POSTING_DISABLED) {
+        $reps_info = array();
+    } else {
+        $reps_info = ycml_get_all_reps_info($area_ids);
+    }
     list($areas_info, $rows) = league_fetch_data($sort);
 
     $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
@@ -98,22 +102,15 @@ function league_table($sort) {
     }
 
     echo '<h2>Current Status</h2>';
-    echo "<ul><li>$people ", make_plural($people, 'person has', 'people have'), " signed up in ";
-    if (OPTION_AREA_TYPE == 'WMC' && $consts==646) echo 'all ';
+    echo '<ul><li>' . number_format($people) . ' ' . make_plural($people, 'person has', 'people have') . " signed up in ";
+    if (OPTION_AREA_TYPE == 'WMC' && $consts==650) echo 'all ';
     echo "$consts ", area_type('plural', $consts);
     echo "<li>$people_lastday ", make_plural($people_lastday, 'person', 'people'), ' in the last day';
-    if (OPTION_AREA_TYPE == 'WMC') {
-        $left = 646 - $consts;
-        if ($consts<645)
-            print "<li>There are $left constituencies with nobody signed up";
-        elseif ($consts==645)
-            print "<li>There is 1 constituency with nobody signed up";
-    }
     echo "<li>$morethan ", make_plural($morethan, area_type() . ' has', area_type('plural') . ' have'),
          ' ', OPTION_THRESHOLD_STEP, " or more subscribers, $morethan_emailed ",
          make_plural($morethan_emailed, 'has', 'have'), ' been sent emails';
-    echo "<li>$mp_written_messages ", make_plural($mp_written_messages, 'message'),
-         ' sent by ', rep_type('plural'), ", $comments ",
+    echo '<li>', number_format($mp_written_messages), ' ', make_plural($mp_written_messages, 'message'),
+         ' sent by ', rep_type('plural'), ", ", number_format($comments), ' ',
          make_plural($comments, 'comment'), ' made by constituents';
     print '</ul>';
     print '<p><strong>Click on the headings (e.g. ' . area_type() . ') to sort the table by different columns.</strong></p>';

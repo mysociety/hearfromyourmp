@@ -61,7 +61,7 @@ what they&rsquo;ve said. Safe, easy and democratic.</p>
 <?
     echo '<p align="center">', $people, ' ', make_plural($people, 'person has', 'people have'),
         ' signed up in ';
-    if ($consts==646) echo 'all ';
+    if ($consts==650) echo 'all ';
     echo $consts, ' ', area_type('plural', $consts);
     echo ' &mdash; <a href="/league">League table</a></p>';
 }

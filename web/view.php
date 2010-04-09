@@ -102,20 +102,33 @@ function view_messages($area_id) {
     }
     $signed_up = db_getOne("SELECT count(*) FROM constituent WHERE is_rep='f' and area_id = ?", $area_id);
     $nothanks = db_getRow('SELECT status,website,gender FROM rep_nothanks WHERE area_id = ?', $area_id);
+    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message
+        WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?
+            AND extract(epoch from message.posted) > ?', $area_id, $max_created);
+    $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert
+        WHERE area_id = ? and extract(epoch from whensent) > ?', $area_id, $max_created);
+    $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
+    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message
+        WHERE state in ('approved','closed') AND area_id = ?", $area_id);
+    
+    $messages = '';
+    $num_messages = 0;
     $q = db_query("SELECT *, extract(epoch from posted) as posted,
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
                     FROM message
-                    WHERE state in ('approved','closed') and area_id = ? AND extract(epoch from posted) > ?
+                    WHERE state in ('approved','closed') and area_id = ?
                     ORDER BY message.posted DESC", $area_id, $max_created);
-    $num_messages = db_num_rows($q);
-    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?
-        AND extract(epoch from message.posted) > ?', $area_id, $max_created);
-    $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert WHERE area_id = ?
-        and extract(epoch from whensent) > ?', $area_id, $max_created);
-    $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
-    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state in ('approved','closed') AND area_id = ?", $area_id);
-    
+    while ($r = db_fetch_array($q)) {
+        $messages .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
+        if (count($reps_info)>1) {
+            $messages .= ', by ' . $reps_info[$r['rep_id']]['name'];
+        }
+        $messages .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
+        if ($r['posted'] > $max_created)
+            $num_messages++;
+    }
+
     $title = $area_info['name'];
     if (count($reps_info)==1 && isset($reps_info_arr[0]['name']))
         $title = $reps_info_arr[0]['name'] . ', ' . $title;
@@ -181,7 +194,7 @@ over to their successor.&quot;</p>
 <h3>Statistics</h3>
 <ul>
 <?
-    $this_or_these = make_plural(count($reps_info), 'this ' . rep_type('single'), 'these ' . rep_type('plural'));
+    $this_or_these = count($reps_info) > 1 ? 'these ' . rep_type('plural') : 'this ' . rep_type('single');
     $this_or_these_possessive = count($reps_info)>1 ? $this_or_these . '&rsquo;' : $this_or_these . '&rsquo;s';
     if ($num_messages==0) {
         echo '<li>We have sent ', $this_or_these, ' ', $emails_sent_to_rep,
@@ -191,7 +204,7 @@ We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
     } else { ?>
     <li>We sent <?=$this_or_these ?> <?=$emails_sent_to_rep ?> <?=make_plural($emails_sent_to_rep, 'message') ?>, asking them to send an email to their constituents.
-    <li><?=ucfirst($this_or_these) ?> <?=make_plural(count($reps_info), 'has', 'have') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
+    <li><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have' : 'has') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
         <?=$_SERVER['site_name']?><?=$num_messages>1?', most recently':'' ?> at <?=prettify($latest_message) ?>.
     <li>Constituents have left <?=$num_comments==0?'no':"a total of $num_comments" ?> comment<?=$num_comments!=1?'s':'' ?>
         on <?=$this_or_these_possessive ?> <?=make_plural($num_messages, 'message') ?>.
@@ -199,18 +212,10 @@ We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
 </ul>
 
 <?
-    $out = '';
-    while ($r = db_fetch_array($q)) {
-        $out .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
-        if (count($reps_info)>1) {
-            $out .= ', by ' . $reps_info[$r['rep_id']]['name'];
-        }
-        $out .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
-    }
-    if ($out) {
-        print "<h3>Messages posted</h3> <ul>$out</ul>";
+    if ($messages) {
+        print "<h3>Messages posted in this constituency</h3> <ul>$messages</ul>";
     } else { ?>
-<p><em><?=ucfirst($this_or_these) ?> <?=make_plural(count($reps_info), 'has', 'have') ?> not yet sent any messages through <?=$_SERVER['site_name']?>.</em></p>
+<p><em><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have': 'has') ?> not yet sent any messages through <?=$_SERVER['site_name']?>.</em></p>
 <?
     }
 }
