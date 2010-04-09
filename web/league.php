@@ -42,7 +42,7 @@ function league_fetch_data($sort) {
     global $sort_orders;
     $q = db_query("SELECT COUNT(id) AS count,area_id,
     EXTRACT(epoch FROM MAX(creation_time)) AS latest,
-    (SELECT COUNT(*) FROM message WHERE state = 'approved' and area_id = constituent.area_id) AS messages,
+    (SELECT COUNT(*) FROM message WHERE state in ('approved','closed') and area_id = constituent.area_id) AS messages,
     (SELECT COUNT(*) FROM comment,message WHERE area_id = constituent.area_id AND message.id=comment.message AND visible > 0) AS comments,
     (SELECT COUNT(*) FROM rep_threshold_alert WHERE rep_threshold_alert.area_id = constituent.area_id
         AND extract(epoch from whensent) > (select max(created) from rep_cache where constituent.area_id=rep_cache.area_id)) AS emails_to_rep,
@@ -72,7 +72,7 @@ function league_table($sort) {
     # This way is far too slow:
     # $morethan = db_getOne('SELECT COUNT(DISTINCT(constituency)) FROM constituent WHERE (SELECT COUNT(*) FROM constituent AS c WHERE c.constituency = constituent.constituency) >= 25');
     $morethan_emailed = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM rep_threshold_alert');
-    $mp_written_messages = db_getOne("SELECT COUNT(*) FROM message WHERE state = 'approved'");
+    $mp_written_messages = db_getOne("SELECT COUNT(*) FROM message WHERE state in ('approved','closed')");
     $comments = db_getOne("SELECT COUNT(*) FROM comment WHERE visible > 0");
 
     if ($sort=='p') {

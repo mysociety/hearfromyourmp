@@ -98,7 +98,7 @@ create table message (
     -- registered address for approval, moving in to state 'ready'. Once the
     -- MP's assistant clicks on the link in the confirmation mail, they move
     -- to 'approved' and are sent.
-    state text not null default ('new') check (state in ('new', 'ready', 'approved'))
+    state text not null default ('new') check (state in ('new', 'ready', 'approved', 'closed'))
 );
 create index message_state_area_id_idx on message(state,area_id);
 

@@ -69,7 +69,7 @@ discuss them with other constituents</strong><br>
  * Page listing all constituencies having messages. */
 function view_constituencies() {
     mini_signup_form();
-    $q = db_query("SELECT DISTINCT area_id FROM message where state = 'approved'");
+    $q = db_query("SELECT DISTINCT area_id FROM message where state in ('approved','closed')");
     $out = array();
     while ($r = db_fetch_array($q)) {
         $out[] = $r['area_id'];
@@ -106,13 +106,13 @@ function view_messages($area_id) {
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
                     FROM message
-                    WHERE state = 'approved' and area_id = ? ORDER BY message.posted DESC", $area_id);
+                    WHERE state in  ('approved','closed') and area_id = ? ORDER BY message.posted DESC", $area_id);
     $num_messages = db_num_rows($q);
     $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?', $area_id);
     $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert WHERE area_id = ?
         and extract(epoch from whensent) > ?', $area_id, $max_created);
     $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
-    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state='approved' AND area_id = ?", $area_id);
+    $latest_message = db_getOne("SELECT EXTRACT(epoch FROM MAX(posted)) FROM message WHERE state in ('approved','closed') AND area_id = ?", $area_id);
     
     $title = $area_info['name'];
     if (count($reps_info)==1 && isset($reps_info_arr[0]['name']))
@@ -227,11 +227,11 @@ function view_message($message) {
     page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
     mini_signup_form();
     $next = db_getOne("SELECT id FROM message
-        WHERE state = 'approved' and area_id = ? AND posted > ?
+        WHERE state in ('approved','closed') and area_id = ? AND posted > ?
         ORDER BY posted LIMIT 1",
         array($area_id, $r['posted']) );
     $prev = db_getOne("SELECT id FROM message
-        WHERE state = 'approved' and area_id = ? AND posted < ?
+        WHERE state in ('approved','closed') and area_id = ? AND posted < ?
         ORDER BY posted DESC LIMIT 1",
         array($area_id, $r['posted']) );
     print '<div id="dispmessage">';
@@ -263,7 +263,11 @@ function view_message($message) {
     } else {
         $P = person_if_signed_on();
     }
-    if (!is_null($P)) {
+    if (OPTION_POSTING_DISABLED) {
+        print '<p id="formreplace">During the election period, commenting on this site is disabled.</p>';
+    } elseif ($r['state'] == 'closed') {
+        print '<p id="formreplace">Commenting on this message is now disabled.</p>';
+    } elseif (!is_null($P)) {
         if (person_allowed_to_reply($P->id(), $area_id, $message)) {
             comment_form($P);
         } else {
@@ -281,14 +285,14 @@ function view_message($message) {
 }
 
 function message_get($id) {
-    $r = db_getRow("SELECT *,extract(epoch from posted) as epoch FROM message WHERE state = 'approved' and id = ?", $id);
+    $r = db_getRow("SELECT *,extract(epoch from posted) as epoch FROM message WHERE state in ('approved','closed') and id = ?", $id);
     if (!$r)
         err('Unknown message ID', E_USER_NOTICE);
     return $r;
 }
 
 function view_post_comment_form() {
-    global $q_text, $q_h_text, $q_emailreplies, $q_replyid, $q_counter, $q_message, $q_Post;
+    global $q_text, $q_h_text, $q_emailreplies, $q_replyid, $q_counter, $q_message, $q_post;
     importparams(
         array('text', '//', '', null),
         array('emailreplies', '/^1$/', '', null),
@@ -296,6 +300,14 @@ function view_post_comment_form() {
         array('counter', '/^\d+$/', '', null),
         array('Post', '/^Post$/', '', null)
     );
+
+    if (OPTION_POSTING_DISABLED) {
+        print '<div class="error">During the election period, commenting on this site is disabled.</div>';
+        return false;
+    } elseif ($r['state'] == 'closed') {
+        print '<div class="error">Commenting on this message is now disabled.</div>';
+        return false;
+    }
 
     $r = array();
     $r['reason_web'] = _('Before posting to '.$_SERVER['site_name'].', we need to confirm your email address and that you are subscribed to this constituency.');
@@ -312,7 +324,9 @@ function view_post_comment_form() {
 
     /* Need to make sure that this person hasn't posted two comments already in
      * the last 24 hours. */
-    if (db_getOne("select count(id) from comment where person_id = ? and date > current_timestamp - '24 hours'::interval", $P->id()) >= 2) {
+    $posted_by_rep = constituent_is_rep($P->id(), $area_id);
+    if (db_getOne("select count(id) from comment where person_id = ? and date > current_timestamp - '24 hours'::interval", $P->id()) >= 2
+        && !$posted_by_rep) {
         print '<div class="error">Sorry, but you have already posted two comments in the last 24 hours.</div>';
 
         if (!is_null($q_text) && strlen($q_text) > 0) {
@@ -346,7 +360,7 @@ function view_post_comment_form() {
         $q_counter = null;
    }
 
-    if (!$q_Post || is_null($q_counter)) {
+    if (!$q_post || is_null($q_counter)) {
         print $preview;
         comment_form($P);
     } else {

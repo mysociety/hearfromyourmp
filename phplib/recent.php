@@ -15,7 +15,7 @@ require_once 'reps.php';
 
 function recent_messages() {
     $q = db_query("SELECT id, subject, area_id, rep_id FROM message
-        where state = 'approved' ORDER BY posted DESC LIMIT 5");
+        where state in ('approved','closed') ORDER BY posted DESC LIMIT 5");
     $out = '';
     while ($r = db_fetch_array($q)) {
         if (va_is_fictional_area($r['area_id']) && !OPTION_YCML_STAGING) continue;

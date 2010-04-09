@@ -27,10 +27,10 @@ class ADMIN_PAGE_YCML_SUMMARY {
     function display() {
         $signups = db_getOne('SELECT COUNT(*) FROM constituent');
         $consts = db_getOne('SELECT COUNT(DISTINCT(area_id)) FROM constituent');
-            $consts_posted = db_getOne("select count(distinct area_id) from message where state='approved'");
+            $consts_posted = db_getOne("select count(distinct area_id) from message where state in ('approved','closed')");
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
-        $messages_approved = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'approved\'');
+        $messages_approved = db_getOne("SELECT COUNT(*) FROM message WHERE state in ('approved','closed')");
         $messages_ready = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'ready\'');
         $messages_notresponded = db_getAll("SELECT * FROM message WHERE state='ready' AND posted < now()-interval '1 day'");
         $notresponded_details = '';
@@ -215,7 +215,7 @@ class ADMIN_PAGE_YCML_MAIN {
             $confirmation_email = db_getOne('select confirmation_email from rep_cache where area_id = ?', $id);
             if (is_null($confirmation_email))
                 $confirmation_email = '';
-            $sent_messages = db_getOne("select count(*) from message where area_id=? and state='approved'", $id);
+            $sent_messages = db_getOne("select count(*) from message where area_id=? and state in ('approved','closed')", $id);
 ?>
 <form method="post">
 <p>Alert status: <strong>
@@ -306,9 +306,9 @@ if any. This must be set before messages can be posted:</p>
                 print '<h3>Messages</h3> <table cellpadding="3" cellspacing="0" border="0"><tr><th>State</th><th>Subject</th><th></th></tr>';
                 foreach ($query as $r) {
                     print "<tr><td>$r[state]</td><td>";
-                    if ($r['state']=='approved') print '<a href="' . OPTION_BASE_URL . '/view/message/'.$r['id'].'">';
+                    if ($r['state']=='approved' || $r['state']=='closed') print '<a href="' . OPTION_BASE_URL . '/view/message/'.$r['id'].'">';
                     print $r['subject'];
-                    if ($r['state']=='approved') print '</a>';
+                    if ($r['state']=='approved' || $r['state']=='closed') print '</a>';
                     print '</td><td><form method="post"><input type="hidden" name="resend_confirmation" value="'.$r['id'].'"><input type="submit" value="Resend confirmation email"';
                     if ($r['state'] != 'ready') print ' disabled';
                     print '></form></tr>';
