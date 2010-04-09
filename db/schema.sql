@@ -94,11 +94,7 @@ create table message (
     posted timestamp not null default current_timestamp,
     subject text not null,
     content text not null,
-    -- Messages start in state 'new'; then they are mailed to the MP's
-    -- registered address for approval, moving in to state 'ready'. Once the
-    -- MP's assistant clicks on the link in the confirmation mail, they move
-    -- to 'approved' and are sent.
-    state text not null default ('new') check (state in ('new', 'ready', 'approved', 'closed'))
+    state text not null default ('approved') check (state in ('approved', 'closed'))
 );
 create index message_state_area_id_idx on message(state,area_id);
 

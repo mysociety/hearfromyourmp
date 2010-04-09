@@ -31,20 +31,6 @@ class ADMIN_PAGE_YCML_SUMMARY {
         $people1 = db_getOne('SELECT COUNT(*) FROM person');
         $people2 = db_getOne('SELECT COUNT(DISTINCT(person_id)) FROM constituent');
         $messages_approved = db_getOne("SELECT COUNT(*) FROM message WHERE state in ('approved','closed')");
-        $messages_ready = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'ready\'');
-        $messages_notresponded = db_getAll("SELECT * FROM message WHERE state='ready' AND posted < now()-interval '1 day'");
-        $notresponded_details = '';
-        if (count($messages_notresponded)) {
-            $notresponded_details = ':<ul>';
-            foreach ($messages_notresponded as $row) {
-                $area_info = ycml_get_area_info($row['area_id']);
-                $rep_info = ycml_get_rep_info($row['rep_id']);
-                $notresponded_details .= "<li>$rep_info[name], $area_info[name], $row[posted], subject '$row[subject]'";
-            }
-            $notresponded_details .= '</ul>';
-        }
-        $messages_notresponded = count($messages_notresponded);
-        $messages_new = db_getOne('SELECT COUNT(*) FROM message WHERE state=\'new\'');
         $alerts = db_getOne('SELECT COUNT(*) FROM alert');
         $comments = db_getOne('SELECT COUNT(*) FROM comment');
 
@@ -52,13 +38,7 @@ class ADMIN_PAGE_YCML_SUMMARY {
             (though $people1 person entries) to $consts areas<br>
             $consts_posted areas have had $messages_approved message".
             ($messages_approved!=1?'s':'').", and there have been 
-            $comments comments<br>
-            $messages_new message" . ($messages_new!=1?'s are':' is') .
-            " awaiting mailing out for confirmation,
-            $messages_ready message" . ($messages_ready!=1?'s are':' is') .
-            " waiting for approval, $messages_notresponded of those " .
-            ($messages_notresponded!=1?'were':'was') . " sent more than a day ago$notresponded_details
-            <br>$alerts alerts";
+            $comments comments<br>$alerts alerts";
     }
 }
 
@@ -333,50 +313,11 @@ Not interested - <input type="submit" value="Change">
         print '</div>';
     }
 
-    function post_message($area_id, $subject, $message) {
-
-        if (get_http_var('confirm')) {
-            $message = str_replace("\r", '', $message);
-            db_query("INSERT INTO message (area_id, subject, content, state)
-                        VALUES (?, ?, ?, 'new')",
-                        array($area_id, $subject, $message));
-            db_commit();
-            print '<p><em>Message posted!</em></p>';
-            return 1;
-        } else {
-            /* Show preview of message. */
-            print '<h2>Preview of message</h2>';
-            print '<p><strong>Subject:</strong> ' . htmlspecialchars($subject) . '</p>';
-            print '<h3>Web page</h3>';
-            $content = comment_prettify($message);
-            $content = preg_replace('#<p>\*(.*?)\*</p>#', "<h3>$1</h3>", $content);
-            $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
-            print '<blockquote><p>' . $content . '</p></blockquote>';
-            print '<h3>Email</h3>';
-            $preview = preg_replace('#\r#', '', htmlspecialchars($message));
-            print '<pre>';
-            $paras = preg_split('/\n{2,}/', $preview);
-            foreach ($paras as $para) {
-                $para = "     $para";
-                print wordwrap($para, 64, "\n     ");
-                print "\n\n";
-            }
-            print '</pre>';
-            print '<form method="POST" accept-charset="UTF-8"><input type="hidden" name="subject" value="' . htmlspecialchars($subject) . '"><input type="hidden" name="message" value="' . htmlspecialchars($message) . '"><input type="submit" name="confirm" value="Confirm message"></form>';
-            return 0;
-        }
-    }
-
     function display($self_link) {
         $area_id = get_http_var('area_id');
 
         // Perform actions
-        $subject = get_http_var('subject');
-        $message = get_http_var('message');
-        if ($subject && $message) {
-            if (!$this->post_message($area_id, $subject, $message))
-                return;
-        } elseif (get_http_var('createMP')) {
+        if (get_http_var('createMP')) {
             $reps = dadem_get_representatives($area_id);
             $rep_info = dadem_get_representative_info($reps[0]);
             $email = get_http_var('MPemail');
