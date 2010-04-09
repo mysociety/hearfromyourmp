@@ -106,9 +106,11 @@ function view_messages($area_id) {
                     (select count(*) from comment where comment.message=message.id
                         AND visible<>0) as numposts
                     FROM message
-                    WHERE state in  ('approved','closed') and area_id = ? ORDER BY message.posted DESC", $area_id);
+                    WHERE state in ('approved','closed') and area_id = ? AND extract(epoch from posted) > ?
+                    ORDER BY message.posted DESC", $area_id, $max_created);
     $num_messages = db_num_rows($q);
-    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?', $area_id);
+    $num_comments = db_getOne('SELECT COUNT(*) FROM comment,message WHERE visible<>0 AND comment.message = message.id AND message.area_id = ?
+        AND extract(epoch from message.posted) > ?', $area_id, $max_created);
     $emails_sent_to_rep = db_getOne('SELECT COUNT(*) FROM rep_threshold_alert WHERE area_id = ?
         and extract(epoch from whensent) > ?', $area_id, $max_created);
     $next_threshold = db_getOne('SELECT rep_threshold(?, +1, '.OPTION_THRESHOLD_STEP.');', $signed_up);
@@ -146,7 +148,7 @@ So far, <?="<strong>$signed_up</strong> " . make_plural($signed_up, 'person has'
     if (OPTION_AREA_TYPE == 'WMC') {
         $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
         echo 'To discover everything you could possibly want to know about what your MP ', 
-            isset($reps_info[0]['name']) ? 'gets' : 'got',
+            isset($reps_info_arr[0]['name']) ? 'gets' : 'got',
             ' up to in Parliament, see their page on our sister site <a href="',
             $twfy_link, '">TheyWorkForYou</a>.';
     }
