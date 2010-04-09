@@ -13,39 +13,39 @@ require_once '../commonlib/phplib/db.php';
 require_once '../commonlib/phplib/utility.php';
 require_once '../commonlib/phplib/mapit.php';
 
+define('NEW_AREA_GENERATION', 13);
+
 $wrong = 0; $deleted = 0; $right = 0;
-$q = db_query('select id,name,email,postcode from constituent where constituency is null');
+$q = db_query('select id, area_id, postcode, person_id from constituent');
 while ($r = db_fetch_array($q)) {
     $id = $r['id'];
     $postcode = canonicalise_postcode($r['postcode']);
-    $name = $r['name'];
-    $email = $r['email'];
     $areas = mapit_get_voting_areas($postcode);
     if (mapit_get_error($areas)) {
-        print "Illegal postcode entered, id $id, postcode $postcode\n";
+        print "No current area for $postcode (id $id)\n";
         $wrong++;
-    } else {
-        $wmc_id = $areas['WMC'];
-        $person_id = db_getOne('select id from person where email = ?', $email);
-        if (is_null($person_id)) {
-            $person_id = db_getOne("select nextval('person_id_seq')");
-            db_query('insert into person (id,name,email) values (?,?,?)', array($person_id, $name, $email));
-        }
-        $already_exist = db_getOne('select id from constituent where constituency = ? and person_id = ?', array($wmc_id, $person_id));
-        if ($already_exist) {
-            db_query('delete from constituent where id = ?', array($id));
-            print "Deleting duplicate entry $id, email $email, postcode $postcode\n";
-            $deleted++;
-        } else {
-            db_query("update constituent set name=null,email=null,person_id=?,constituency=? where id=?", array($person_id, $wmc_id, $id));
-#            print "Updating entry $id, email $email, postcode $postcode to constituency $wmc_id, person id $person_id\n";
-            $right++;
-        }
+        continue;
     }
+    $new_areas = mapit_get_voting_areas($pc, NEW_AREA_GENERATION);
+    if (mapit_get_error($new_areas)) {
+        print "No new area for $postcode (id $id)\n";
+        $wrong++;
+        continue;
+    }
+    $old_id = $areas['WMC'];
+    $new_id = $new_areas['WMC'];
+    $already_exist = db_getOne('select id from constituent where constituency = ? and person_id = ?', array($new_id, $r['person_id']));
+    if ($already_exist) {
+        #db_query('delete from constituent where id = ?', array($id));
+        print "Deleting duplicate entry $id, postcode $postcode\n";
+        $deleted++;
+    } else {
+        #db_query("update constituent set constituency=? where id=?", array($new_id, $id));
+        print "Updating entry $id, postcode $postcode from $old_id to $new_id\n";
+        $right++;
+    }
+
 }
 
 print "\n$wrong wrong postcodes, $right updated, $deleted dupes deleted.\n";
-db_commit();
-
-?>
 

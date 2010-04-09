@@ -33,10 +33,6 @@ create unique index person_email_lower_idx on person(lower(email));
 -- An area's constituents who have signed up
 create table constituent (
     id serial not null primary key,
--- For old-style signups. TODO: Remove this when everyone switched over
-    name text,
-    email text,
--- For new-style signups
     person_id integer not null references person(id),
 -- Constituency they've signed up to, plus postcode they used, and whether they're the current rep.
     area_id integer, -- can be NULL if postcode is bad
