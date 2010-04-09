@@ -204,8 +204,11 @@ over to their successor.&quot;</p>
             echo 'We have sent ';
         }
         echo $this_or_these, ' ', $emails_sent_to_rep,
-            ' ', make_plural($emails_sent_to_rep, 'message'),
-            ' so far, asking them to send an email to their constituents.';
+            ' ', make_plural($emails_sent_to_rep, 'message');
+        if (count($reps_info)) {
+            echo ' so far';
+        }
+        echo ', asking them to send an email to their constituents.';
         if (count($reps_info)) {
             echo 'We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
