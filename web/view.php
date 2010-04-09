@@ -199,7 +199,7 @@ over to their successor.&quot;</p>
     if ($num_messages==0) {
         echo '<li>';
         if (!count($reps_info)) {
-            echo 'We sent';
+            echo 'We sent ';
         } else {
             echo 'We have sent ';
         }
