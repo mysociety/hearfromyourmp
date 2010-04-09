@@ -66,7 +66,7 @@ function do_subscribe() {
     if (OPTION_AREA_ID && $area_info['parent_area_id'] != OPTION_AREA_ID)
         return array('That postcode does not appear to be in the correct region');
     $reps_info = ycml_get_reps_for_area($area_id);
-    if (!count($reps_info)) {
+    if (!count($reps_info) || OPTION_POSTING_DISABLED) {
         $rep_name = 'the future ' . $area_info['rep_name'];
     } elseif (count($reps_info)>1) {
         $rep_name = 'your ' . strtolower($area_info['rep_name_plural']);
@@ -138,10 +138,19 @@ continue
     $nothanks = db_getRow('SELECT status,website,gender FROM rep_nothanks WHERE area_id = ?', $area_id);
 ?>
 <p id="loudmessage"><?
-    if (!$already_signed)
-        print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in %s %s. ",
-            english_ordinal($count), $rep_name, $area_info['name'], area_type());
-    if ($nothanks['status'] == 't') {
+    if (!$already_signed) {
+        if (OPTION_POSTING_DISABLED) { # Must be in an election period
+            print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails in %s %s. ",
+                english_ordinal($count), $area_info['name'], area_type());
+            print '<em>During or after the election, we will transfer everyone
+to the new ' . area_type('plural', 2) . ', according to the postcode you have
+given us, so don&rsquo;t worry if you think you&rsquo;ve been put in the wrong
+place.</em>';
+        } else {
+            print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in %s %s. ",
+                english_ordinal($count), $rep_name, $area_info['name'], area_type());
+    }
+    if (!OPTION_POSTING_DISABLED && $nothanks['status'] == 't') {
         $rep_gender = $nothanks['gender'];
         if ($rep_gender == 'm') { $nomi = 'he is'; $accu = 'him'; $geni = 'his'; }
         elseif ($rep_gender == 'f') { $nomi = 'she is'; $accu = 'her'; $geni = 'her'; }
@@ -160,10 +169,6 @@ service<?
 regardless of whether your current <?=$area_info['rep_name'] ?> chooses to use the site or not.
 If your <?=$area_info['rep_name'] ?> changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
-<?  } else {
-        #$next_threshold = db_getOne('select rep_threshold(?, +1, 5)', $count);
-        #$next_next_threshold = db_getOne('select rep_threshold(?, +1, 5)', $next_threshold);
-?>
 <?  }
 
     $this_site = 'hfymp';
