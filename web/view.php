@@ -210,7 +210,7 @@ over to their successor.&quot;</p>
         }
         echo ', asking them to send an email to their constituents.';
         if (count($reps_info)) {
-            echo 'We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
+            echo ' We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
         }
     } else { ?>
