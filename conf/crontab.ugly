@@ -15,7 +15,7 @@ MAILTO=team@hearfromyourmp.com
 !!(* if ($vhost eq 'www.hearfromyourmp.com') { *)!!
 
 # Frequently, on one machine only as not concurrent
-5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
+#5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
 
 # Once a day, on one machine only as not concurrent
@@ -23,7 +23,7 @@ MAILTO=team@hearfromyourmp.com
 33 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-comment-alerts
 
 # Once a week run threshold with warnings, so see MPs that need emails
-30 1 * * Tue !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts
+#30 1 * * Tue !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts
 
 !!(* } elsif ($vhost eq 'www.hearfromyourcouncillor.com') { *)!!
 
