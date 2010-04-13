@@ -59,7 +59,7 @@ what they&rsquo;ve said. Safe, easy and democratic.</p>
 
 </div>
 <?
-    echo '<p align="center">', $people, ' ', make_plural($people, 'person has', 'people have'),
+    echo '<p align="center">', number_format($people), ' ', make_plural($people, 'person has', 'people have'),
         ' signed up in ';
     if ($consts==650) echo 'all ';
     echo $consts, ' ', area_type('plural', $consts);

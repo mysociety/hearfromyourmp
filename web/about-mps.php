@@ -59,10 +59,9 @@ are concerned about, and get feedback about what they think.
 
 <dt id="who">So who runs all this, and what's in it for them?</dt>
 
-<dd>This site was built by <a
-href="http://mysociety.org/">mySociety</a>. mySociety is a charitable
-organisation which has grown out of the community of volunteers who
-built sites like 
+<dd>This site was built by <a href="http://www.mysociety.org/">mySociety</a>. mySociety is the
+project of a <a href="http://www.ukcod.org.uk/">registered charity</a>
+which has grown out of the community of volunteers who built sites like 
 <a href="http://www.theyworkforyou.com">TheyWorkForYou.com</a>. 
 mySociety's primary mission is to build internet projects which give
 people simple, tangible benefits in the civic and community aspects of

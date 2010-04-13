@@ -10,8 +10,8 @@ importance at the moment. All you have to do to talk to them is visit:
     <?=$values['message_url']?>
 
 This mail has been sent by HearFromYourCouncillor, a free service from
-charitable project mySociety. mySociety also runs WriteToThem, civic action
-site PledgeBank and TheyWorkForYou.
+mySociety. mySociety also runs sites such as WriteToThem, civic action
+site PledgeBank, FixMyStreet, and TheyWorkForYou.
 
 HearFromYourCouncillor is a strictly non-partisan site which is trying to
 build healthier and more productive long-term relationships between

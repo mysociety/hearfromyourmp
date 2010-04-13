@@ -128,8 +128,9 @@ unless you write to them.
 <dd>Yes, and we provide <a href="link">special code</a> to make it easy for you.
 
 <dt>Who are you?
-<dd>This site was built by <a href="http://www.mysociety.org/">mySociety</a>. mySociety is a charitable
-organisation which has grown out of the community of volunteers who
+<dd>This site was built by <a href="http://www.mysociety.org/">mySociety</a>. mySociety is the
+project of a <a href="http://www.ukcod.org.uk/">registered charity</a>
+which has grown out of the community of volunteers who
 built sites like TheyWorkForYou.com. mySociety's primary mission is to
 build internet projects which give people simple, tangible benefits in
 the civic and community aspects of their lives. Our first project was
