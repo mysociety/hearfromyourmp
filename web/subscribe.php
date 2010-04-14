@@ -142,10 +142,6 @@ continue
         if (OPTION_POSTING_DISABLED) { # Must be in an election period
             print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails in %s %s. ",
                 english_ordinal($count), $area_info['name'], area_type());
-            print '<em>During or after the election, we will transfer everyone
-to the new ' . area_type('plural', 2) . ', according to the postcode you have
-given us, so don&rsquo;t worry if you think you&rsquo;ve been put in the wrong
-place.</em>';
         } else {
             print sprintf("<strong>Great!</strong> You're the %s person to sign up to get emails from %s in %s %s. ",
                 english_ordinal($count), $rep_name, $area_info['name'], area_type());
