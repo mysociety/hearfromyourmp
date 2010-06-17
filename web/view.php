@@ -226,7 +226,7 @@ over to their successor.&quot;</p>
     if ($messages) {
         print "<h3>Messages posted in this constituency</h3> <ul>$messages</ul>";
     } else { ?>
-<p><em><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have': 'has') ?> not yet sent any messages through <?=$_SERVER['site_name']?>.</em></p>
+<p><em><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have': 'has') ?> not yet sent any messages through <?=$_SERVER['site_name']?> this Parliament.</em></p>
 <?
     }
 }
