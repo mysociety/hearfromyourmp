@@ -12,16 +12,16 @@ require_once '../phplib/constituent.php';
 require_once '../phplib/recent.php';
 
 page_header();
+print recent_messages();
+print recent_replies();
+$num = db_getOne("select count(distinct area_id) from message");
 if (OPTION_AREA_TYPE == 'WMC') 
-    mp_about_page();
+    mp_about_page($num);
 else
-    cllr_about_page();
+    cllr_about_page($num);
 page_footer();
 
-function mp_about_page() {
-    print recent_messages();
-    print recent_replies();
-    $num = db_getOne("select count(distinct area_id) from message where state='approved'");
+function mp_about_page($num) {
 ?>
 <div id="indented">
 
@@ -194,10 +194,7 @@ to the charity that runs HearFromYourMP.)
 <?
 }
 
-function cllr_about_page() {
-    print recent_messages();
-    print recent_replies();
-    $num = db_getOne("select count(distinct area_id) from message where state='approved'");
+function cllr_about_page($num) {
 ?>
 <div id="indented">
 

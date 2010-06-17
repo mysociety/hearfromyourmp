@@ -208,13 +208,13 @@ over to their successor.&quot;</p>
         if (count($reps_info)) {
             echo ' so far';
         }
-        echo ', asking them to send an email to their constituents.';
+        echo ' in this Parliament, asking them to send an email to their constituents.';
         if (count($reps_info)) {
             echo ' We will automatically email them ', $emails_sent_to_rep>0 ? 'again ' : '',
             ' when the list in this ' . area_type() . ' reaches ', $next_threshold, '.';
         }
     } else { ?>
-    <li>We sent <?=$this_or_these ?> <?=$emails_sent_to_rep ?> <?=make_plural($emails_sent_to_rep, 'message') ?>, asking them to send an email to their constituents.
+    <li>We sent <?=$this_or_these ?> <?=$emails_sent_to_rep ?> <?=make_plural($emails_sent_to_rep, 'message') ?> in this Parliament, asking them to send an email to their constituents.
     <li><?=ucfirst($this_or_these) ?> <?=(count($reps_info)>1 ? 'have' : 'has') ?> sent <?=$num_messages ?> <?=make_plural($num_messages, 'message') ?> through
         <?=$_SERVER['site_name']?><?=$num_messages>1?', most recently':'' ?> at <?=prettify($latest_message) ?>.
     <li>Constituents have left <?=$num_comments==0?'no':"a total of $num_comments" ?> comment<?=$num_comments!=1?'s':'' ?>

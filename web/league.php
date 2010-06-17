@@ -108,7 +108,7 @@ function league_table($sort) {
     echo "<li>$people_lastday ", make_plural($people_lastday, 'person', 'people'), ' in the last day';
     echo "<li>$morethan ", make_plural($morethan, area_type() . ' has', area_type('plural') . ' have'),
          ' ', OPTION_THRESHOLD_STEP, " or more subscribers, $morethan_emailed ",
-         make_plural($morethan_emailed, 'has', 'have'), ' been sent emails';
+         make_plural($morethan_emailed, 'has', 'have'), ' been sent emails in this Parliament';
     echo '<li>', number_format($mp_written_messages), ' ', make_plural($mp_written_messages, 'message'),
          ' sent by ', rep_type('plural'), ", ", number_format($comments), ' ',
          make_plural($comments, 'comment'), ' made by constituents';
@@ -171,7 +171,7 @@ function table_header($sort) {
         'c' => ucwords(area_type()),
         'p' => ucwords($rep_type),
         's'=>'Signups',
-        'e' => "Emails sent asking $rep_type to post",
+        'e' => "Emails sent to $rep_type this Parliament",
         'm' => "Messages sent by $rep_type",
         'r'=>'Comments left by constituents',
         'l'=>'Latest signup'
