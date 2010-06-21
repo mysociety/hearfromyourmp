@@ -271,7 +271,7 @@ sub do_post_reply {
     $wth->browser_check_contents("Previewing your comment");    
 
     $wth->browser_submit_form(form_name => 'commentform',
-        button => 'Post'
+        button => 'post'
     );
     $wth->browser_check_contents("Thank you for your comment");     
 
