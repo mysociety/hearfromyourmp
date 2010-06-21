@@ -316,7 +316,7 @@ function view_post_comment_form() {
         array('emailreplies', '/^1$/', '', null),
         array('replyid', '/^\d+$/', '', null),
         array('counter', '/^\d+$/', '', null),
-        array('Post', '/^Post$/', '', null)
+        array('post', '/^Post$/', '', null)
     );
 
     $r = message_get($q_message);
@@ -417,7 +417,7 @@ function comment_form($P) {
 <p><label for="text">Public message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
 <p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> <label for="emailreplies" class="inline_label">Email me future comments to this message</label></p>
 <input type="submit" name="Preview" value="Preview">
-<? if ($counter>0) print '<input type="submit" name="Post" value="Post">'; ?>
+<? if ($counter>0) print '<input type="submit" name="post" value="Post">'; ?>
 </form>
 <?
 }
