@@ -273,11 +273,11 @@ function view_message($message) {
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
     if (get_http_var('showform')) {
-        $r = array();
-        $r['reason_web'] = _('Before posting to ' . $_SERVER['site_name'] . ', we need to confirm your email address and that you are subscribed to this ' . area_type() . '.');
-        $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this " . area_type() . '.');
-        $r['reason_email_subject'] = "Post to $_SERVER[site_name]";
-        $P = person_signon($r);
+        $rr = array();
+        $rr['reason_web'] = _('Before posting to ' . $_SERVER['site_name'] . ', we need to confirm your email address and that you are subscribed to this ' . area_type() . '.');
+        $rr['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this " . area_type() . '.');
+        $rr['reason_email_subject'] = "Post to $_SERVER[site_name]";
+        $P = person_signon($rr);
     } else {
         $P = person_if_signed_on();
     }
@@ -319,6 +319,7 @@ function view_post_comment_form() {
         array('Post', '/^Post$/', '', null)
     );
 
+    $r = message_get($q_message);
     if (OPTION_POSTING_DISABLED) {
         print '<div class="error">During the election period, commenting on this site is disabled.</div>';
         return false;
@@ -327,13 +328,12 @@ function view_post_comment_form() {
         return false;
     }
 
-    $r = array();
-    $r['reason_web'] = _('Before posting to '.$_SERVER['site_name'].', we need to confirm your email address and that you are subscribed to this constituency.');
-    $r['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-    $r['reason_email_subject'] = _("Post to $_SERVER[site_name]");
-    $P = person_signon($r);
+    $rr = array();
+    $rr['reason_web'] = _('Before posting to '.$_SERVER['site_name'].', we need to confirm your email address and that you are subscribed to this constituency.');
+    $rr['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
+    $rr['reason_email_subject'] = _("Post to $_SERVER[site_name]");
+    $P = person_signon($rr);
 
-    $r = message_get($q_message);
     $area_id = $r['area_id'];
     if (!person_allowed_to_reply($P->id(), $area_id, $q_message)) {
         print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
