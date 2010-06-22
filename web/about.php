@@ -176,8 +176,8 @@ what should I do?
 tell us what you want, or build it yourself as a volunteer. :)
 
 <dt>You guys are so cool &mdash; how can we thank you?
-<dd>Gin and chocolates, marked c/o Tom Steinberg, 18 Victoria Park
-Square, London E2 9PF. I'll make sure the rest of the gang get their
+<dd>Gin and chocolates, marked c/o Tom Steinberg, PO Box 839, Oxford, OX1 9LG.
+I'll make sure the rest of the gang get their
 share.  Honest. (Or, if you are unaccountably out of alcohol and sweets,
 you can <a href="https://secure.mysociety.org/donate/">donate money</a>
 to the charity that runs HearFromYourMP.)
