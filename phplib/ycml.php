@@ -45,7 +45,7 @@ function ycml_handle_error($num, $message, $file, $line, $context) {
             $err = "<p><em>$message</em></p>";
         else
             # Message will be in log file, don't display it for cleanliness
-            $err = '<p>Please try again later, or <a href="mailto:team@mysociety.org">email us</a> for help resolving the problem.</p>';
+            $err = '<p>Please try again later, or <a href="mailto:' . OPTION_CONTACT_EMAIL . '">email us</a> for help resolving the problem.</p>';
         if ($num & (E_USER_ERROR | E_USER_WARNING)) {
             $err = "<p><em>$message</em></p> $err";
         }

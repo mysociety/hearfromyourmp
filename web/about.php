@@ -22,6 +22,7 @@ else
 page_footer();
 
 function mp_about_page($num) {
+    $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
 ?>
 <div id="indented">
 
@@ -172,7 +173,7 @@ we'll be glad to do what we can to help.
 
 <dt>I want to contact someone in charge, or request a new/different feature &mdash;
 what should I do?
-<dd>Write to us at <a href="mailto:team&#64;hearfromyourmp.com">team&#64;hearfromyourmp.com</a>,
+<dd>Write to us at <a href="mailto:<?=$contact_email?>"><?=$contact_email?></a>,
 tell us what you want, or build it yourself as a volunteer. :)
 
 <dt>You guys are so cool &mdash; how can we thank you?

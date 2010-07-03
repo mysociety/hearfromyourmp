@@ -17,6 +17,7 @@ page_footer();
 function about_mps_page() {
     print recent_messages();
     print recent_replies();
+    $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
 ?>
 
 <div id="indented">
@@ -230,14 +231,14 @@ do I need to do?</dt>
 <dd>If you've reached a threshold and received an email from us,
 simply follow its instructions. If you haven't had an email, or can't
 find it, simply email us at 
-<a href="mailto:team@hearfromyourmp.com">team@hearfromyourmp.com</a>
+<a href="mailto:<?=$contact_email?>"><?=$contact_email?></a>
 and we'll be happy to help.</dd>
 
 <dt id="unsure">I'm not sure, and would like more information. Whom
 should I contact?</dt>
 
 <dd>Please feel free to email any questions you have to 
-<a href="mailto:team@hearfromyourmp.com">team@hearfromyourmp.com</a>.
+<a href="mailto:<?=$contact_email?>"><?=$contact_email?></a>.
 </dd>
 
 <dt id="remove">I'm really not interested at all. Can you remove my
