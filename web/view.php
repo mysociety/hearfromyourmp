@@ -287,7 +287,7 @@ function view_message($message) {
         print '<p id="formreplace">Commenting on this message is now disabled.</p>';
     } elseif (!is_null($P)) {
         if (person_allowed_to_reply($P->id(), $area_id, $message)) {
-            comment_form($P);
+            comment_form($P, $area_id);
         } else {
             print '<p id="formreplace">You are not subscribed to ' . $_SERVER['site_name'] . ' in this ' . area_type() . ', or subscribed after this message was posted.</p>';
         }
@@ -380,7 +380,7 @@ function view_post_comment_form() {
 
     if (!$q_post || is_null($q_counter)) {
         print $preview;
-        comment_form($P);
+        comment_form($P, $area_id);
     } else {
         $refs = '';
         if ($q_replyid != '') {
@@ -400,12 +400,13 @@ function view_post_comment_form() {
     }
 }
 
-function comment_form($P) {
+function comment_form($P, $area_id) {
     global $q_message, $q_counter, $q_h_text, $q_emailreplies;
     if (is_null($q_counter))
         $counter = 0;
     else
         $counter = $q_counter + 1;
+    $posted_by_rep = constituent_is_rep($P->id(), $area_id);
 ?>
 <form id="commentform" name="commentform" action="/view" method="post" accept-charset="utf-8">
 <input type="hidden" name="mode" value="post">
@@ -413,7 +414,13 @@ function comment_form($P) {
 <input type="hidden" name="message" value="<?=$q_message ?>">
 <? /* NO THREADING <input type="hidden" name="replyid" value=""> */ ?>
 <h2>Post a reply</h2>
+<?
+    if (!$posted_by_rep) {
+?>
 <p><em>Note that you may post at most two replies in any given 24-hour period</em></p>
+<?
+    }
+?>
 <p><label for="text">Public message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
 <p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> <label for="emailreplies" class="inline_label">Email me future comments to this message</label></p>
 <input type="submit" name="Preview" value="Preview">
