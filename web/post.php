@@ -53,9 +53,9 @@ if ($q_post == 2) { # Post
     ))
         err("Blank subject or message when confirming - should not happen!");
     $q_message = str_replace("\r", '', $q_message);
-    db_query("INSERT INTO message (area_id, subject, content, state, rep_id)
-                VALUES (?, ?, ?, 'approved', ?)",
-                array($q_area_id, $q_subject, $q_message, $q_rep));
+    db_query("INSERT INTO message (area_id, subject, content, state, rep_id, rep_name)
+                VALUES (?, ?, ?, 'approved', ?, ?)",
+                array($q_area_id, $q_subject, $q_message, $q_rep, $rep_info['name']));
     db_commit();
     print '<p><em>Thank you; your message has been posted, and will be emailed to the subscribed constituents shortly.</em></p>';
     # TODO: Cross-sell TheyWorkForYou!? Maybe ask for copyright-free photos of them?

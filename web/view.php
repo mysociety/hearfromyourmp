@@ -121,8 +121,12 @@ function view_messages($area_id) {
                     ORDER BY message.posted DESC", $area_id);
     while ($r = db_fetch_array($q)) {
         $messages .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
-        if (count($reps_info)>1 && isset($reps_info[$r['rep_id']])) {
-            $messages .= ', by ' . $reps_info[$r['rep_id']]['name'];
+        if (count($reps_info)>1) {
+            $rep_name = $r['rep_name'];
+            if (!$rep_name && isset($reps_info[$r['rep_id']]))
+                $rep_name = $reps_info[$r['rep_id']]['name'];
+            if ($rep_name)
+                $messages .= ', by ' . $rep_name;
         }
         $messages .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
         if ($r['posted'] > $max_created)
@@ -240,9 +244,14 @@ function view_message($message) {
     $content = preg_replace('#((<p>\*.*?</p>\n)+)#e', "'<ul>'.str_replace('<p>*', '<li>', '$1') . \"</ul>\n\"", $content);
     $area_id = $r['area_id'];
     $rep_id = $r['rep_id'];
-    $rep_info = ycml_get_rep_info($rep_id);
+    $rep_name = $r['rep_name'];
+    if (!$rep_name) {
+        $rep_info = ycml_get_rep_info($rep_id);
+        if (isset($rep_info['name']))
+            $rep_name = $rep_info['name'];
+    }
     $area_info = ycml_get_area_info($area_id);
-    page_header($r['subject'] . ' - ' . $rep_info['name'] . ', ' . $area_info['name']);
+    page_header($r['subject'] . ' - ' . $rep_name . ', ' . $area_info['name']);
     mini_signup_form();
     $next = db_getOne("SELECT id FROM message
         WHERE state in ('approved','closed') and area_id = ? AND posted > ?
@@ -263,7 +272,7 @@ function view_message($message) {
         $twfy_link = 'http://www.theyworkforyou.com/mp/?c=' . urlencode($area_info['name']);
         echo '<a href="', $twfy_link, '">';
     }
-    echo $rep_info['name'];
+    echo $rep_name;
     if (OPTION_AREA_TYPE == 'WMC') echo '</a>';
     echo '</strong>, ', rep_type('single'), ' for <strong>' . $area_info['name'] . '</strong>, at <strong>' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     print '</div>';

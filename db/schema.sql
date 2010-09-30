@@ -87,6 +87,7 @@ create table message (
     id serial not null primary key,
     area_id integer not null,
     rep_id integer not null, -- Which rep in this area posted the message
+    rep_name text not null default '', -- As the rep might disappear from dadem if it's a councillor
     posted timestamp not null default current_timestamp,
     subject text not null,
     content text not null,
