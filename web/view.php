@@ -122,6 +122,9 @@ function view_messages($area_id) {
     while ($r = db_fetch_array($q)) {
         $messages .= '<li>' . prettify($r['posted']) . " : <a href=\"/view/message/$r[id]\">$r[subject]</a>";
         if (count($reps_info)>1) {
+            if (!array_key_exists($r['rep_id'], $reps_info)) {
+                $reps_info[$r['rep_id']] = ycml_get_rep_info($r['rep_id']);
+            }
             $messages .= ', by ' . $reps_info[$r['rep_id']]['name'];
         }
         $messages .= ". $r[numposts] " . make_plural($r['numposts'], 'reply' , 'replies') . '</li>';
