@@ -247,7 +247,7 @@ function view_message($message) {
     $rep_name = $r['rep_name'];
     if (!$rep_name) {
         $rep_info = ycml_get_rep_info($rep_id);
-        if (isset($rep_info['name']))
+        if (!dadem_get_error($rep_info))
             $rep_name = $rep_info['name'];
     }
     $area_info = ycml_get_area_info($area_id);
