@@ -6,11 +6,7 @@
 #
 # $Id: crontab.ugly,v 1.14 2008-12-01 12:45:52 francis Exp $
 
-!!(* if ($user eq 'matthew') { *)!!
-MAILTO=matthew@mysociety.org
-!!(* } else { *)!!
-MAILTO=team@hearfromyourmp.com
-!!(* } *)!!
+MAILTO=cron-!!(*= $site *)!!@mysociety.org
 
 !!(* if ($vhost eq 'www.hearfromyourmp.com') { *)!!
 
