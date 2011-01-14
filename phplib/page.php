@@ -8,7 +8,6 @@
 // $Id: page.php,v 1.30 2009-09-24 16:16:53 matthew Exp $
 
 require_once '../commonlib/phplib/person.php';
-require_once '../commonlib/phplib/tracking.php';
 require_once '../commonlib/phplib/mapit.php';
 
 /* page_header TITLE [PARAMS]
@@ -97,7 +96,7 @@ function page_header($title='', $params = array()) {
 /* page_footer PARAMS
  * Print bottom of HTML page. This closes the "content" <div>.  If
  * PARAMS['nonav'] is true then the footer navigation is not displayed. If 
- * PARAMS['extra'] is set, then it is passed to track_event as extra
+ * PARAMS['extra'] is set, then it was passed to track_event as extra
  * user-tracking information to be associated with this page view. */
 function page_footer($params = array()) {
     static $footer_outputted = 0; 
@@ -105,10 +104,6 @@ function page_footer($params = array()) {
         $footer_outputted = 1;
 
     echo '</div></div>';
-    $extra = null;
-    if (array_key_exists('extra', $params) && $params['extra'])
-        $extra = $params['extra'];
-    track_event($extra);
 ?>
 <p id="footer">
 <a href="/about">About this site</a>
