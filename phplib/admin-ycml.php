@@ -89,6 +89,21 @@ class ADMIN_PAGE_YCML_MAIN {
                     if ($rep_info['email'] === '')
                         print("Email address returned by DaDem was blank; should be null.");
                 } else {
+                    # Create account for rep if they don't already have one.
+                    $P = person_get_or_create($rep_info['email'], $rep_info['name']);
+                    $already_signed = db_getOne("select id from constituent where 
+                        area_id = ? and person_id = ?
+                        for update", array( $area_id, $P->id() ) );
+                    if (!$already_signed) {
+                        db_query("insert into constituent (
+                                    person_id, area_id, is_rep,
+                                    postcode, creation_ipaddr
+                                )
+                                values (?, ?, ?, ?, ?)", array($P->id(), $area_id, true, '', ''));
+                    } else {
+                         db_query("update constituent set is_rep = true where person_id=? and area_id=?",
+                             array($P->id(), $area_id));
+                    }
                     print "Email address for ${rep_info['name']} is ${rep_info['email']}.";
                     $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
                     db_commit();
@@ -206,8 +221,13 @@ Not interested - <input type="submit" value="Change">
                     print 'New user';
                 } ?>
 <input type="hidden" name="change_alert_state" value="not_interested">
- - <input type="submit" value="Not interested">
- <input type="checkbox" name="female" value="1"> Female?
+ -
+ Gender: <select name="gender">
+ <option>-</option>
+ <option>Female</option>
+ <option>Male</option>
+ </select>
+ <input type="submit" value="Not interested">
 <?          }
 ?></strong></p></form>
 <h3>Create or set login for this MP</h3>
@@ -344,7 +364,7 @@ Not interested - <input type="submit" value="Change">
                 if (db_getOne('SELECT status FROM rep_nothanks WHERE area_id = ?', $area_id)=='f') {
                     db_query('UPDATE rep_nothanks SET status=? WHERE area_id = ?', array(true, $area_id));
                 } else {
-                    $gender = get_http_var('female') ? 'f' : 'm';
+                    $gender = get_http_var('gender')=='Female' ? 'f' : 'm';
                     db_query('INSERT INTO rep_nothanks (area_id, status, website, gender) VALUES (?,?,?,?)', array($area_id, true, null, $gender));
                 }
                 print '<p><em>Added to the not interested list</em></p>';
