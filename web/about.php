@@ -165,11 +165,10 @@ addresses to anyone else.
 
 <dt>Is this open source?
 <dd>Yep, all our code is open source under the GNU Affero GPL. You can
-<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">find
-it here</a> (in the 'ycml' directory). We use some
-licensed data to do postcode and constituency lookups though, I'm
-afraid. If you are interested in translating it to another country,
-we'll be glad to do what we can to help.
+<a href="https://github.com/mysociety/hearfromyourmp">find
+it here on GitHub</a> with help from <a href="http://mapit.mysociety.org">MaPit</a>
+for postcode and constituency lookups. If you are interested in translating it
+to another country, we'll be glad to do what we can to help.
 
 <dt>I want to contact someone in charge, or request a new/different feature &mdash;
 what should I do?
@@ -332,11 +331,10 @@ addresses to anyone else.
 
 <dt>Is this open source?
 <dd>Yep, all our code is open source under the GNU Affero GPL. You can
-<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">find
-it here</a> (in the 'ycml' directory). We use some
-licensed data to do postcode and constituency lookups though, I'm
-afraid. If you are interested in translating it to another country,
-we'll be glad to do what we can to help.
+<a href="https://github.com/mysociety/hearfromyourmp">find
+it here on GitHub</a> with help from <a href="http://mapit.mysociety.org">MaPit</a>
+for postcode and constituency lookups. If you are interested in translating it
+to another country, we'll be glad to do what we can to help.
 
 <dt>I want to contact someone in charge, or request a new/different feature &mdash;
 what should I do?
