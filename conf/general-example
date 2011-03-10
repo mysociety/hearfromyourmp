@@ -47,12 +47,12 @@ define('OPTION_THRESHOLD_STEP_STAGING', 0);
 
 // Where web services used are
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
-define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
+define('OPTION_MAPIT_URL', 'http://mapit.mysociety.org/');
 define('OPTION_DADEM_URL', 'http://services.mysociety.org/dadem');
 
 // For passing authentication to HearFromYourMP
 define('OPTION_AUTH_SHARED_SECRET', 'long string of random bytes');
 
 // Log file (used in test harness, and later in admin scripts)
-define('OPTION_HTTPD_ERROR_LOG', '/var/log/apache/error.log');
+define('OPTION_HTTPD_ERROR_LOG', '/var/log/apache2/error.log');
 
