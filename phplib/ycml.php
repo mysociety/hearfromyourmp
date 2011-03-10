@@ -64,6 +64,8 @@ function ycml_show_error($message) {
 }
 
 /* Find out what domain we're on */
+# TODO - assumes that the hostname has two (or more) dots in it or the $m[2]
+# borks. Should behave better if the regex does not match.
 preg_match('#^(.+)\.(.+?)\.(.+?)$#', strtolower($_SERVER['HTTP_HOST']), $m);
 if ($m[2] == 'hearfromyourcouncillor') {
     if ($m[1] != 'cheltenham' && !preg_match('#^/admin#', $_SERVER['REQUEST_URI'])) {
