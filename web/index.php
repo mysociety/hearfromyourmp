@@ -33,7 +33,7 @@ function front_page() {
     if ($rep_type != $rep_type_plural) {
         echo 'them';
     } else {
-        echo $rep_type_plural;
+        echo "your $rep_type_plural";
     }
     echo ' and other local people</h2>';
     constituent_subscribe_box();
