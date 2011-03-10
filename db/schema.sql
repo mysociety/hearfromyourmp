@@ -8,6 +8,8 @@
 -- $Id: schema.sql,v 1.33 2008-01-08 11:15:53 matthew Exp $
 --
 
+begin;
+
 -- Returns the timestamp of current time, but with possibly overriden "today".
 create function ms_current_timestamp()
     returns timestamp as '
@@ -240,3 +242,5 @@ create table rep_cache (
     created integer not null,
     area_id integer not null
 );
+
+commit;
