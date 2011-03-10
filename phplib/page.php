@@ -56,15 +56,34 @@ function page_header($title='', $params = array()) {
         echo '<style type="text/css">@import url("/css/cheltenham.css");</style>';
     }
     echo '</head><body>';
+    
+    // Warn that we are on a testing site
+    $devwarning = array();
+    if (OPTION_YCML_STAGING) {
+        $devwarning[] = _('This is a test site for developers only.<br><strong>These are not
+        messages from representatives; nothing here is real.</strong><br>You probably want
+<a href="http://www.hearfromyourmp.com/">the real site</a>.');
+    }
+    if (count($devwarning) > 0) {
+        echo '<p class="noprint" align="center" style="color: #b00; border-bottom: 1px solid #b00; background-color: #fcc; margin: 0">';
+        echo join('<br>', $devwarning);
+        echo '</p>';
+    }
+    
+    // Special case Cheltenham
     if (OPTION_AREA_ID==2326) {
         echo '<a title="Back to Cheltenham Council website" href="http://www.cheltenham.gov.uk/"><img id="cobrand_logo" alt="Return to www.cheltenham.gov.uk" src="/cheltenham-logo.jpg"></a>';
     }
+
     echo '<h1>';
     echo '<a href="http://www.mysociety.org/"><img alt="Visit mySociety.org" src="/mysociety-dark-50.png" id="logo"><span id="logoie"></span></a>';
+
     if ($_SERVER['REQUEST_URI']!='/') print '<a href="/">';
     echo $site_name;
     if ($_SERVER['REQUEST_URI']!='/') print '</a>';
+
     echo '</h1>';
+
     // Display who is logged in 
     if ($P) {
         print '<p id="signedon" class="noprint">';
@@ -78,19 +97,7 @@ function page_header($title='', $params = array()) {
         print '</a>)</small></p>';
     }
 
-    // Warn that we are on a testing site
-    $devwarning = array();
-    if (OPTION_YCML_STAGING) {
-        $devwarning[] = _('This is a test site for developers only.<br><strong>These are not
-        messages from representatives; nothing here is real.</strong><br>You probably want
-<a href="http://www.hearfromyourmp.com/">the real site</a>.');
-    }
     echo '<div id="w"><div id="content">';
-    if (count($devwarning) > 0) {
-        echo '<p class="noprint" align="center" style="color: #cc0000;">';
-        echo join('<br>', $devwarning);
-        echo '</p>';
-    }
 }
 
 /* page_footer PARAMS
