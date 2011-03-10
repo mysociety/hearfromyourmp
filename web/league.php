@@ -152,11 +152,13 @@ function league_table($sort) {
     if (count($rows)) {
         table_header($sort);
         $a = 0;
+        print "<tbody>";
         foreach ($rows as $row) {
             print '<tr'.($a++%2==0?' class="alt"':'').'>';
             print $row;
             print '</tr>'."\n";
         }
+        print "</tbody>";
         print '</table>';
     } else {
         print '<p>No-one has signed up to HearFromYourMP at all, anywhere, ever.</p>';
@@ -166,7 +168,9 @@ function league_table($sort) {
 function table_header($sort) {
     $rep_type = rep_type();
 
-    print '<table border="0" cellpadding="4" cellspacing="0"><tr>';
+    print '<table border="0" cellpadding="4" cellspacing="0">';
+    print '<thead>';
+    print '<tr>';
     $cols = array(
         'c' => ucwords(area_type()),
         'p' => ucwords($rep_type),
@@ -184,6 +188,7 @@ function table_header($sort) {
         print '</th>';
     }
     print '</tr>';
+    print '</thead>';
     print "\n";
 }
 
