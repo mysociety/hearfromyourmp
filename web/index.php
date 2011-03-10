@@ -17,18 +17,37 @@ front_page();
 page_footer();
 
 function front_page() {
+
+    echo recent_messages();
+    echo recent_replies();
+
+    echo '<div id="indented">';
+    $P = person_if_signed_on(true); /* Don't renew any login cookie. */
+    if ( $P ) 
+        logged_in_content($P);
+    else
+        normal_content();
+    echo '</div>';
+    
+    $people = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE is_rep='f'");
+    $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
+
+    echo '<p align="center">', number_format($people), ' ', make_plural($people, 'person has', 'people have'),
+        ' signed up in ';
+    if ($consts==650) echo 'all ';
+    echo $consts, ' ', area_type('plural', $consts);
+    echo ' &mdash; <a href="/league">League table</a></p>';
+}
+
+function normal_content () {
+
     $rep_type = rep_type('single');
     $rep_type_plural = rep_type();
     $rep_type_anti_plural = 's';
     if (OPTION_AREA_TYPE != 'WMC')
         $rep_type_anti_plural = '';
-    $people = db_getOne("SELECT COUNT(DISTINCT(person_id)) FROM constituent WHERE is_rep='f'");
-    $consts = db_getOne("SELECT COUNT(DISTINCT(area_id)) FROM constituent WHERE is_rep='f'");
 
-    echo recent_messages();
-    echo recent_replies();
-    echo '<div id="indented">
-<h2 align="center">Get email from your ', $rep_type_plural,
+    echo '<h2 align="center">Get email from your ', $rep_type_plural,
     '<br>Discuss it with ';
     if ($rep_type != $rep_type_plural) {
         echo 'them';
@@ -57,12 +76,60 @@ constituents. To leave your thoughts, you just enter your text and hit
 enter. There&rsquo;s no tiresome login &mdash; you can just start talking about
 what they&rsquo;ve said. Safe, easy and democratic.</p>
 
-</div>
 <?
-    echo '<p align="center">', number_format($people), ' ', make_plural($people, 'person has', 'people have'),
-        ' signed up in ';
-    if ($consts==650) echo 'all ';
-    echo $consts, ' ', area_type('plural', $consts);
-    echo ' &mdash; <a href="/league">League table</a></p>';
 }
 
+
+function logged_in_content ( $P ) {
+
+    echo '<h2>Your Alerts:</h2>';
+
+    // get all the areas that the user is subscribed to
+    $area_ids     = array();
+    $area_ids_all = db_getAll( 'SELECT area_id FROM constituent WHERE person_id = ?', $P->id );    
+    foreach ( $area_ids_all as $arr) {
+        $area_ids[] = $arr['area_id'];
+    }
+    
+    # If not subscribed to any stop here
+    if ( ! count( $area_ids) ) {
+        echo "You are not subscribed to any alerts...";
+        return;
+    }
+    
+    // echo '<pre>', var_dump( $area_ids ), '</pre>';
+        
+    // loop over all the areas that the user is subscribed to and list the
+    // representatives there.
+
+    echo '<ul>';
+    foreach ( $area_ids as $area_id ) {
+        if (va_is_fictional_area($area_id) && !OPTION_YCML_STAGING) continue;
+        $reps_info = ycml_get_reps_for_area($area_id);    
+        $area_info = ycml_get_area_info($area_id);
+        foreach ( $reps_info as $rep ) {
+            $name    = trim("$area_info[rep_prefix] $rep[name] $area_info[rep_suffix]");
+            $area    = $area_info['name'];
+            $area_id = $area_info['area_id'];
+            echo "<li><a href=\"/view/$area_id\">$name</a>, $area</li>";
+        }
+    }    
+    echo '</ul>';
+    
+    $messages_q = db_query( 'SELECT m.id, m.area_id, m.subject, m.rep_name FROM message m, constituent c WHERE c.person_id = ? AND c.area_id = m.area_id ORDER BY m.posted DESC LIMIT 6', $P->id );
+    $out = '';
+    
+    while ($m = db_fetch_array($messages_q)) {
+        if (va_is_fictional_area($m['area_id']) && !OPTION_YCML_STAGING) continue;
+        $area_info = ycml_get_area_info($m['area_id']);
+        $rep_name = trim("$area_info[rep_prefix] $m[rep_name] $area_info[rep_suffix]");
+        $out .= "<li><a href='/view/message/$m[id]'>$m[subject]</a>, by $rep_name, $area_info[name]</li>";
+    }
+
+    echo '<h2>Recent messages:</h2>';
+    if ($out) 
+        echo '<ul>' . $out . '</ul>';   
+    else
+        echo '<p>Your representatives have not sent any messages yet.</p>';
+
+}
