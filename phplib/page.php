@@ -120,7 +120,7 @@ function page_footer($params = array()) {
 | <a href="/contact">Contact us</a>
 <br>
 <small>Built by <a href="http://www.mysociety.org/">mySociety</a>.
-Powered by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
+Powered by <a href="http://www.m247.com/">M247</a>.
 <a href="/privacy">Privacy policy</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>

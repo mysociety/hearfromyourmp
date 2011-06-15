@@ -145,7 +145,7 @@ representatives, for free. Our more recent sites include
 combination of paid core developers and unpaid volunteers. The core
 developers were paid for by the ODPM's e-innovations fund in
 partnership with West Sussex County Council. Our servers are kindly
-hosted by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
+hosted by <a href="http://www.m247.com/">M247</a>.
 
 <dt>Do you need any help with the project?
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
@@ -311,7 +311,7 @@ representatives, for free. Our more recent sites include
 combination of paid core developers and unpaid volunteers. The core
 developers were paid for by the ODPM's e-innovations fund in
 partnership with West Sussex County Council. Our servers are kindly
-hosted by <a href="http://www.easynet.net/publicsector/">Easynet</a>.
+hosted by <a href="http://www.m247.com/">M247</a>.
 
 <dt>Do you need any help with the project?
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
