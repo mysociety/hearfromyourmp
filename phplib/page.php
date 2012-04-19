@@ -55,6 +55,20 @@ function page_header($title='', $params = array()) {
     if (OPTION_AREA_ID==2326) {
         echo '<style type="text/css">@import url("/css/cheltenham.css");</style>';
     }
+    if (OPTION_WEB_DOMAIN == 'www.hearfromyourmp.com') { ?>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-660910-10']);
+  _gaq.push (['_gat._anonymizeIp']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<?
+    }
     echo '</head><body>';
     
     // Warn that we are on a testing site
@@ -121,7 +135,7 @@ function page_footer($params = array()) {
 <br>
 <small>Built by <a href="http://www.mysociety.org/">mySociety</a>.
 Powered by <a href="http://www.m247.com/">M247</a>.
-<a href="/privacy">Privacy policy</a>.
+<a href="/privacy">Privacy and cookies</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>
 <?  if (OPTION_WEB_DOMAIN == 'www.hearfromyourmp.com') { ?>
