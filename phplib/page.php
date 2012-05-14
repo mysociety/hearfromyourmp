@@ -138,20 +138,6 @@ Powered by <a href="http://www.m247.com/">M247</a>.
 <a href="/privacy">Privacy and cookies</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>
-<?  if (OPTION_WEB_DOMAIN == 'www.hearfromyourmp.com') { ?>
-<!-- Piwik -->
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.mysociety.org/" : "http://piwik.mysociety.org/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
-try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://piwik.mysociety.org/piwik.php?idsite=3" style="border:0" alt=""/></p></noscript>
-<!-- End Piwik Tag -->
-<?  } ?>
 </body>
 </html>
 <? } }
