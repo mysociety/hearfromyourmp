@@ -52,7 +52,7 @@ our $base_url = mySociety::Config::get('BASE_URL');
 our $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
 # set the threshold for testing send-rep-threshold-alerts
 our $threshold = mySociety::Config::get('THRESHOLD_STEP_STAGING');;
-our $postcode = 'ZZ9 9ZZ';
+our $postcode = 'SW1A 1AA';
 
 our $reps_message = 'we hope everything is working well';
 
@@ -312,7 +312,7 @@ sub do_league_table {
     $wth->browser_get('/league');
     $wth->browser_check_contents("Current Status");
     $wth->browser_check_contents("This is a test site"); 
-    $wth->browser_check_contents(qq[mySociety Test Constituency</a></td><td>Ttom Seinberg</td><td align="center">$threshold</td><td align="center">1</td><td align="center">1</td><td align="center">1</td>]); 
+    $wth->browser_check_contents(qq[Cities of London and Westminster</a></td><td>Fark Mield</td><td align="center">$threshold</td><td align="center">1</td><td align="center">1</td><td align="center">1</td>]); 
 }
 
 sub do_abuse_report {

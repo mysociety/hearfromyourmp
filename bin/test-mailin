@@ -14,7 +14,6 @@
 
 # Horrible boilerplate to set up appropriate library paths.
 use FindBin;
-use lib "$FindBin::B../commonlib/perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 chdir $FindBin::Bin;
 
