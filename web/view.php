@@ -75,7 +75,7 @@ function view_constituencies() {
         $out[] = $r['area_id'];
     }
     if (count($out)) {
-        $areas_info = mapit_get_voting_areas_info($out);
+        $areas_info = mapit_call('areas', $out);
         $out = array();
         foreach ($areas_info as $area_id => $array) {
             if (va_is_fictional_area($area_id)) continue;

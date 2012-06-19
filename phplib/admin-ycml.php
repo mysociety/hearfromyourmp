@@ -164,7 +164,7 @@ class ADMIN_PAGE_YCML_MAIN {
         if (!$sort || preg_match('/[^etn]/', $sort)) $sort = 'e';
 
         if ($id > 0) {
-            $area_info = mapit_get_voting_area_info($id);
+            $area_info = mapit_call('area', $id);
             $reps = dadem_get_representatives($id);
             $reps_info = array_values(dadem_get_representatives_info($reps));
             $query = 'SELECT constituent.*, person.*, extract(epoch from creation_time) as creation_time
@@ -406,7 +406,7 @@ class ADMIN_PAGE_YCML_LATEST {
         while ($r = db_fetch_array($q)) {
             $c_id = $r['area_id'];
             if (!array_key_exists($c_id, $this->area_info)) {
-                $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+                $this->area_info[$c_id] = mapit_call('area', $c_id);
             }
             if (!$this->area_id || $this->area_id==$c_id) {
                 $time[$r['epoch']][] = $r;
@@ -428,7 +428,7 @@ class ADMIN_PAGE_YCML_LATEST {
             while ($r = db_fetch_array($q)) {
                 $c_id = $r['area_id'];
                 if (!array_key_exists($c_id, $this->area_info)) {
-                    $this->area_info[$c_id] = mapit_get_voting_area_info($c_id);
+                    $this->area_info[$c_id] = mapit_call('area', $c_id);
                 }
                 if (!$this->area_id || $this->area_id==$c_id) {
                     $time[$r['epoch']][] = $r;
@@ -598,7 +598,7 @@ Search for a subscriber: <input type="text" name="search" value="<?=$h_search ?>
             $constituencies = array();
             foreach ($q as $r)
                 $constituencies[] = $r['area_id'];
-            $areas_info = mapit_get_voting_areas_info($constituencies);
+            $areas_info = mapit_call('areas', $constituencies);
             
             $c = 0;
             foreach ($q as $r) {

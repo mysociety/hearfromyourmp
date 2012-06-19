@@ -27,7 +27,7 @@ function page_header($title='', $params = array()) {
     $site_name = "HearFromYour$rep_type_u";
     $_SERVER['site_name'] = $site_name;
     if (OPTION_AREA_ID) {
-        $area_info = mapit_get_voting_area_info(OPTION_AREA_ID);
+        $area_info = mapit_call('area', OPTION_AREA_ID);
         $site_name .= ' &ndash; ' . short_name($area_info['name']);
     }
 

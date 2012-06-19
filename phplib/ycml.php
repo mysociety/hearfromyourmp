@@ -120,6 +120,13 @@ function rep_type($type = '') {
     return $rep_type;
 } 
 
+function rep_name($name) {
+    global $va_rep_prefix, $va_rep_suffix;
+    $prefix = $va_rep_prefix[OPTION_AREA_TYPE];
+    $suffix = $va_rep_suffix[OPTION_AREA_TYPE];
+    return trim("$prefix $name $suffix");
+}
+
 function area_type($type = '', $plural = 0) {
     global $va_type_name;
     $area_type = $va_type_name[OPTION_AREA_TYPE];
@@ -132,7 +139,7 @@ function area_type($type = '', $plural = 0) {
 
 function get_example_postcode() {
     if (OPTION_AREA_ID)
-        return canonicalise_postcode(mapit_get_example_postcode(OPTION_AREA_ID));
+        return canonicalise_postcode(mapit_call('area/example_postcode', OPTION_AREA_ID));
     return 'OX1 3DR';
 }
 

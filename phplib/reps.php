@@ -12,21 +12,26 @@ require_once "../commonlib/phplib/mapit.php";
 require_once "../commonlib/phplib/dadem.php";
 require_once "../commonlib/phplib/votingarea.php";
 
-# ycml_get_area_id POSTCODE
-# Given a postcode, returns the appropriate area id
-function ycml_get_area_id($postcode) {
-    $areas = mapit_get_voting_areas($postcode);
+# ycml_get_area POSTCODE
+# Given a postcode, returns the appropriate area
+function ycml_get_area($postcode) {
+    $areas = mapit_call('postcode', $postcode);
     if (mapit_get_error($areas)) {
         /* This error should never happen, as earlier postcode validation in form will stop it */
         err("Invalid postcode while subscribing, please check and try again. Contact us if it still doesn't work.");
     }
-    return isset($areas[OPTION_AREA_TYPE]) ? $areas[OPTION_AREA_TYPE] : null;
+    foreach ($areas['areas'] as $id => $area) {
+        if ($area['type'] == OPTION_AREA_TYPE) {
+            return $area;
+        }
+    }
+    return null;
 }
 
 # ycml_get_constituency_info AREA_ID
 # Given an area id, returns (REP NAME, REP SUFFIX, AREA NAME)
 function ycml_get_area_info($area_id) {
-    $area_info = mapit_get_voting_area_info($area_id);
+    $area_info = mapit_call('area', $area_id);
     mapit_check_error($area_info);
     if ($area_info['type'] != OPTION_AREA_TYPE)
         err('Invalid area type');
@@ -50,7 +55,7 @@ function ycml_get_all_areas_info($q, $ignore_fictional = true) {
     }
 
     if (count($ids)) {
-        $areas_info2 = mapit_get_voting_areas_info($ids);
+        $areas_info2 = mapit_call('areas', $ids);
         foreach ($areas_info2 as $id => $row) {
             db_query('INSERT INTO area_cache (id,name) VALUES (?,?)', array($id, $row['name']));
         }

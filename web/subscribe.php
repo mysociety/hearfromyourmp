@@ -59,17 +59,17 @@ function do_subscribe() {
         return $errors;
 
     $q_postcode = canonicalise_postcode($q_postcode);
-    $area_id = ycml_get_area_id($q_postcode);
-    if (!$area_id)
+    $area_info = ycml_get_area($q_postcode);
+    if (!$area_info)
         return array('That postcode does not appear to be in the correct region');
-    $area_info = ycml_get_area_info($area_id);
-    if (OPTION_AREA_ID && $area_info['parent_area_id'] != OPTION_AREA_ID)
+    $area_id = $area_info['id'];
+    if (OPTION_AREA_ID && $area_info['parent_area'] != OPTION_AREA_ID)
         return array('That postcode does not appear to be in the correct region');
     $reps_info = ycml_get_reps_for_area($area_id);
     if (!count($reps_info) || OPTION_POSTING_DISABLED) {
-        $rep_name = 'the future ' . $area_info['rep_name'];
+        $rep_name = 'the future ' . rep_type('single');
     } elseif (count($reps_info)>1) {
-        $rep_name = 'your ' . strtolower($area_info['rep_name_plural']);
+        $rep_name = 'your ' . strtolower(rep_type('plural'));
     } else {
         foreach ($reps_info as $rep_id => $rep_info) { }
         $rep_name = $rep_info['name'];
@@ -162,9 +162,9 @@ service<?
 
 <p>In accordance with our site policy we will continue to allow signups for
 <?=$area_info['name'] ?>. As our FAQ says &quot;There is one list per
-<?=area_type() ?>, not per <?=$area_info['rep_name'] ?>, and we will continue to accept subscribers
-regardless of whether your current <?=$area_info['rep_name'] ?> chooses to use the site or not.
-If your <?=$area_info['rep_name'] ?> changes for any reason, we will hand access to the list
+<?=area_type() ?>, not per <?=rep_type('single') ?>, and we will continue to accept subscribers
+regardless of whether your current <?=rep_type('single') ?> chooses to use the site or not.
+If your <?=rep_type('single') ?> changes for any reason, we will hand access to the list
 over to their successor.&quot;</p>
 <?  }
 

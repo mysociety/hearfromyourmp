@@ -52,14 +52,14 @@ $area = array();
 $q = db_query('select postcode from constituent where constituency <> 0');
 $n = 0;
 while (list($pc) = db_fetch_row($q)) {
-    $a = mapit_get_voting_areas($pc);
+    $a = mapit_call('postcode', $pc);
     if (rabx_is_error($a))
         continue;
-    $id = $a['EUR'];
+    $id = $a['areas']['EUR'];
     if (array_key_exists($id, $area))
         ++$area[$id]['count'];
     else {
-        $area[$id] = mapit_get_voting_area_info($id);
+        $area[$id] = mapit_call('area', $id);
         $area[$id]['count'] = 1;
     }
     ++$n;

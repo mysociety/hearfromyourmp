@@ -53,13 +53,14 @@ $area = array();
 $q = db_query('select postcode from constituent where constituency <> 0');
 $n = 0;
 while (list($pc) = db_fetch_row($q)) {
-    $a = mapit_get_voting_areas($pc);
-    foreach ($a as $type => $id) {
+    $a = mapit_call('postcode', $pc);
+    foreach ($a['areas'] as $id => $aa) {
+        $type = $aa['type'];
         if (preg_match('/^(CTY|DIS|MTD|UTA|LBO|LGD|COI)$/', $type)) {
             if (array_key_exists($id, $area))
                 ++$area[$id]['count'];
             else {
-                $area[$id] = mapit_get_voting_area_info($id);
+                $area[$id] = mapit_call('area', $id);
                 $area[$id]['count'] = 1;
             }
         }

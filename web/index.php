@@ -108,9 +108,9 @@ function logged_in_content ( $P ) {
         $reps_info = ycml_get_reps_for_area($area_id);    
         $area_info = ycml_get_area_info($area_id);
         foreach ( $reps_info as $rep ) {
-            $name    = trim("$area_info[rep_prefix] $rep[name] $area_info[rep_suffix]");
+            $name    = rep_name($rep['name']);
             $area    = $area_info['name'];
-            $area_id = $area_info['area_id'];
+            $area_id = $area_info['id'];
             echo "<li><a href=\"/view/$area_id\">$name</a>, $area</li>";
         }
     }    
@@ -122,7 +122,7 @@ function logged_in_content ( $P ) {
     while ($m = db_fetch_array($messages_q)) {
         if (va_is_fictional_area($m['area_id']) && !OPTION_YCML_STAGING) continue;
         $area_info = ycml_get_area_info($m['area_id']);
-        $rep_name = trim("$area_info[rep_prefix] $m[rep_name] $area_info[rep_suffix]");
+        $rep_name = rep_name($m['rep_name']);
         $out .= "<li><a href='/view/message/$m[id]'>$m[subject]</a>, by $rep_name, $area_info[name]</li>";
     }
 

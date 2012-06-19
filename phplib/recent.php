@@ -21,7 +21,7 @@ function recent_messages() {
         if (va_is_fictional_area($r['area_id']) && !OPTION_YCML_STAGING) continue;
         $area_info = ycml_get_area_info($r['area_id']);
         $rep_info = ycml_get_rep_info($r['rep_id']);
-        $rep_name = trim("$area_info[rep_prefix] $rep_info[name] $area_info[rep_suffix]");
+        $rep_name = rep_name($rep_info['name']);
         $out .= "<li><a href='/view/message/$r[id]'>$r[subject]</a>, by $rep_name, $area_info[name]</li>";
     }
 //    if ($out) print '<div class="box"><h2>Latest messages</h2> <ul>' . $out . '</ul></div>';

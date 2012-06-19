@@ -27,9 +27,9 @@ db_connect();
 define('OPTION_AREA_ID', 2326);
 define('OPTION_AREA_TYPE', 'DIW');
 define('OPTION_THRESHOLD_STEP', '5');
-$areas = mapit_get_voting_area_children(2326);
+$areas = mapit_call('area/children', 2326);
 
-foreach ($areas as $area_id) {
+foreach ($areas as $area_id => $area) {
     $reps_info = ycml_get_reps_for_area($area_id);
     foreach ($reps_info as $id => $rep_info) {
         if (!isset($rep_info['email']) || $rep_info['email'] === '') {

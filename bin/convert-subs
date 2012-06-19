@@ -26,7 +26,7 @@ while ($r = db_fetch_array($q)) {
         $wrong++;
         continue;
     }
-    $new_areas = mapit_get_voting_areas($postcode, NEW_AREA_GENERATION);
+    $new_areas = mapit_call('postcode', $postcode, array( 'generation' => NEW_AREA_GENERATION ) );
     if (mapit_get_error($new_areas)) {
         print "Lookup problem with $postcode (id $id)\n";
         $wrong++;
