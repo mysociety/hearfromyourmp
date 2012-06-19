@@ -122,8 +122,8 @@ function rep_type($type = '') {
 
 function rep_name($name) {
     global $va_rep_prefix, $va_rep_suffix;
-    $prefix = $va_rep_prefix[OPTION_AREA_TYPE];
-    $suffix = $va_rep_suffix[OPTION_AREA_TYPE];
+    $prefix = array_key_exists(OPTION_AREA_TYPE, $va_rep_prefix) ? $va_rep_prefix[OPTION_AREA_TYPE] : '';
+    $suffix = array_key_exists(OPTION_AREA_TYPE, $va_rep_suffix) ? $va_rep_suffix[OPTION_AREA_TYPE] : '';
     return trim("$prefix $name $suffix");
 }
 
