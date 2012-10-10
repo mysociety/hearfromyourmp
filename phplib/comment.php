@@ -5,8 +5,6 @@
  * 
  * Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
  * Email: matthew@mysociety.org; WWW: http://www.mysociety.org
- *
- * $Id: comment.php,v 1.1 2007-10-31 17:15:52 matthew Exp $
  * 
  */
 
@@ -51,7 +49,11 @@ function comment_show_one($r, $noabuse = false) {
     $comment .= ', ';
     $comment .= $ds;
     if ($r['posted_by_rep']) $comment .= '</strong>';
-    $content = comment_prettify($r['content']);
+    if ($r['visible']) {
+        $content = comment_prettify($r['content']);
+    } else {
+        $content = '<em>This comment has been removed</em>';
+    }
     $comment .= ':';
     if (!$noabuse)
         $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";

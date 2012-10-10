@@ -9,8 +9,6 @@
 # 
 # Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: view.php,v 1.65 2008-11-28 09:41:10 francis Exp $
 
 require_once '../phplib/ycml.php';
 require_once '../phplib/alert.php';
@@ -277,7 +275,7 @@ function view_message($message) {
     echo '</strong>, ', rep_type('single'), ' for <strong>' . $area_info['name'] . '</strong>, at <strong>' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     print '</div>';
 
-    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_rep from comment,person where person_id = person.id and message = ? and visible <> 0 order by refs || \',\' || comment.id, date', $message);
+    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_rep from comment,person where person_id = person.id and message = ? order by refs || \',\' || comment.id, date', $message);
     if ($cc && count($cc))
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 

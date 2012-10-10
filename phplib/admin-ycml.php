@@ -4,9 +4,7 @@
  * HearFromYourMP admin pages.
  * 
  * Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
- * Email: francis@mysociety.org. WWW: http://www.mysociety.org
- *
- * $Id: admin-ycml.php,v 1.41 2009-10-26 12:56:04 matthew Exp $
+ * Email: matthew@mysociety.org. WWW: http://www.mysociety.org
  * 
  */
 
@@ -507,9 +505,9 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
         foreach ($_POST as $k => $v) {
             if ($do_discard && preg_match('/^ar_([1-9]\d*)$/', $k, $a))
                 db_query('delete from abusereport where id = ?', $a[1]);
-            if (preg_match('/^delete_comment_([0-9a-f]{8})$/', $k, $a)) {
-                db_query('select delete_comment(?)', $a[1]);
-                print "<em>Deleted comment"
+            if (preg_match('/^remove_comment_([0-9a-f]{8})$/', $k, $a)) {
+                db_query('UPDATE comment SET visible=0 WHERE id=?', $a[1]);
+                print "<em>Removed comment"
                         . " #" . htmlspecialchars($a[1]) . "</em><br>";
             }
         }
@@ -544,7 +542,7 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
                     $commentT = comment_show_one($comment, true);
                     $commentT = preg_replace('/<a href="#/', '<a href="' . OPTION_BASE_URL . '/view/message/'
                         . $comment['message'] . '#', $commentT);
-                    print "<td>$commentT <input type='submit' name='delete_comment_${comment_id}' value='Delete this comment'>";
+                    print "<td>$commentT <input type='submit' name='remove_comment_${comment_id}' value='Remove this comment'>";
                     print '</td></tr></table>';
                     $old_id = $comment_id;
                 }
