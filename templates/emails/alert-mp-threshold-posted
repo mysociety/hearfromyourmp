@@ -21,7 +21,7 @@ As always, if you have any further questions, please follow this link
 
     http://www.hearfromyourmp.com/about-mps
 
-Or email us at team@hearfromyourmp.com, or call us on 020 3287 9859.
+Or email us at <?=$values['contact_email']?>, or call us on 020 3287 9859.
 
 All the best,
 

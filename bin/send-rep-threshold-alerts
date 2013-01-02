@@ -162,6 +162,7 @@ function send_rep_threshold_alerts($type) {
             db_commit();
             $url = person_make_signon_url(null, $rep_info['email'], 'GET', OPTION_BASE_URL . '/post/r' . $id, null);
             $pp = array(
+                'contact_email' => OPTION_CONTACT_EMAIL,
                 'message_url' => $url,
                 'subscribers' => $current,
                 'area_name' => $area_info['name'],

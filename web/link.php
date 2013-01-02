@@ -52,6 +52,7 @@ function link_box() {
 
 function link_to_us_page() {
     $rep_type = rep_type();
+    $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
 ?>
 <h2>How to link to us</h2>
 
@@ -66,8 +67,7 @@ up to hear from their <?=$rep_type ?>. It'll look like this.</p>
 
 <p>Feel free to hack around with the design as much as you like. Any questions,
 just drop us a line at <a
-href="mailto:team@<?=OPTION_EMAIL_DOMAIN ?>">team@<?=OPTION_EMAIL_DOMAIN ?></a>.</p>
-
+href="mailto:<?=$contact_email?>"><?=$contact_email?></a>.</p>
 
 <?
 

@@ -107,8 +107,10 @@ function send_contact_form($name, $email, $subject, $message) {
         $success = ycml_send_email(OPTION_CONTACT_EMAIL, $subject, $message . "\n\n-- \n" . $postfix, $headers);
     else
         $success = true;
-    if (!$success)
-        err(_("Failed to send message.  Please try again, or <a href=\"mailto:team@" . OPTION_EMAIL_DOMAIN . '">email us</a>.'));
+    if (!$success) {
+        $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
+        err(_("Failed to send message.  Please try again, or <a href=\"mailto:" . $contact_email . '">email us</a>.'));
+    }
     print _('Thanks for your feedback.  We\'ll get back to you as soon as we can!');
 }
 

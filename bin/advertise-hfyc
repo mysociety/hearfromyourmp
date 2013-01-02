@@ -53,7 +53,7 @@ while (!feof(STDIN)) {
     $url = 'http://www.hearfromyourcouncillor.com/L/' . $token;
 
     $headers = array();
-    $headers['From'] = array('team@hearfromyourmp.com', 'HearFromYourMP');
+    $headers['From'] = array(OPTION_CONTACT_EMAIL, 'HearFromYourMP');
     $success = ycml_send_email(array($email, $name), 'HearFromYourCouncillor',
 "Hi $name,
 

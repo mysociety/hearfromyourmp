@@ -195,6 +195,7 @@ to the charity that runs HearFromYourMP.)
 }
 
 function cllr_about_page($num) {
+    $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
 ?>
 <div id="indented">
 
@@ -338,12 +339,12 @@ to another country, we'll be glad to do what we can to help.
 
 <dt>I want to contact someone in charge, or request a new/different feature &mdash;
 what should I do?
-<dd>Write to us at <a href="mailto:team&#64;hearfromyourmp.com">team&#64;hearfromyourmp.com</a>,
+<dd>Write to us at <a href="mailto:<?=$contact_email?>"><?=$contact_email?></a>,
 tell us what you want, or build it yourself as a volunteer. :)
 
 <dt>You guys are so cool &mdash; how can we thank you?
-<dd>Gin and chocolates, marked c/o Tom Steinberg, 18 Victoria Park
-Square, London E2 9PF. I'll make sure the rest of the gang get their
+<dd>Gin and chocolates, marked c/o Tom Steinberg, 483 Green Lanes, London N13 4BS.
+I'll make sure the rest of the gang get their
 share.  Honest. (Or, if you are unaccountably out of alcohol and sweets,
 you can <a href="https://secure.mysociety.org/donate/">donate money</a>
 to the charity that runs HearFromYourCouncillor.)
