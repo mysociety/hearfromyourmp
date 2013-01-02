@@ -134,7 +134,7 @@ function page_footer($params = array()) {
 | <a href="/contact">Contact us</a>
 <br>
 <small>Built by <a href="http://www.mysociety.org/">mySociety</a>.
-Powered by <a href="http://www.m247.com/">M247</a>.
+Powered by <a href="http://www.bytemark.co.uk/">Bytemark</a>.
 <a href="/privacy">Privacy and cookies</a>.
 <a href="/terms">Terms of use</a>.</small>
 </p>
