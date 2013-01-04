@@ -275,7 +275,7 @@ function view_message($message) {
     echo '</strong>, ', rep_type('single'), ' for <strong>' . $area_info['name'] . '</strong>, at <strong>' . prettify($r['epoch']) . '</strong>:</p> <blockquote><p>' . $content . '</p></blockquote>';
     print '</div>';
 
-    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_rep from comment,person where person_id = person.id and message = ? order by refs || \',\' || comment.id, date', $message);
+    $cc = db_getAll('select comment.id, refs, name, email, website, extract(epoch from date) as date, content, posted_by_rep, visible from comment,person where person_id = person.id and message = ? order by refs || \',\' || comment.id, date', $message);
     if ($cc && count($cc))
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
@@ -368,7 +368,7 @@ function view_post_comment_form() {
         if (db_getOne('select count(*) from comment where id = ? and visible <> 0', $q_replyid) != 1)
             err("Bad reply ID $replyid");
         print '<p><em>This is the comment to which you are replying:</em></p>'
-        . '<blockquote>' . comment_show_one(db_getRow('SELECT id, author, email, link, date, content FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
+        . '<blockquote>' . comment_show_one(db_getRow('SELECT id, author, email, link, date, content, visible FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
     }
 
     $preview = '';
