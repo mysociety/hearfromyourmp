@@ -533,7 +533,7 @@ class ADMIN_PAGE_YCML_ABUSEREPORTS {
                     print '<table>';
                     $comment = db_getRow('
                                         select comment.id, message, extract(epoch from date) as date,
-                                            content, posted_by_rep, name, email, website
+                                            content, posted_by_rep, name, email, website, visible
                                         from comment, person
                                         where comment.person_id = person.id
                                             and comment.id = ?', $comment_id);
