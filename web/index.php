@@ -94,6 +94,7 @@ function logged_in_content ( $P ) {
     # If not subscribed to any stop here
     if ( ! count( $area_ids) ) {
         echo "You are not subscribed to any alerts...";
+        echo '<p><a href="/subscribe">Subsribe to a new alert</a></p>';
         return;
     }
     
@@ -125,6 +126,8 @@ function logged_in_content ( $P ) {
         $rep_name = rep_name($m['rep_name']);
         $out .= "<li><a href='/view/message/$m[id]'>$m[subject]</a>, by $rep_name, $area_info[name]</li>";
     }
+    
+    echo '<p><a href="/subscribe">Get emails from another MP</a></p>';
 
     echo '<h2>Recent messages:</h2>';
     if ($out) 
