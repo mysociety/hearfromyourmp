@@ -1,45 +1,16 @@
 # crontab.ugly:
 # Timed tasks for HearFromYourMP. Template file.
-#
-# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
-# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
-#
-# $Id: crontab.ugly,v 1.14 2008-12-01 12:45:52 francis Exp $
 
 MAILTO=cron-!!(*= $site *)!!@mysociety.org
 
-!!(* if ($vhost eq 'www.hearfromyourmp.com') { *)!!
-
 # Frequently, on one machine only as not concurrent
-5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
 */5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
 
 # Once a day, on one machine only as not concurrent
 5 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-comment-alerts
 33 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-comment-alerts
 
-# Once a week run threshold with warnings, so see MPs that need emails
-30 1 * * Tue !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts
-
-!!(* } elsif ($vhost eq 'www.hearfromyourcouncillor.com') { *)!!
-
-# HFYC is only on one machine anyway as per new policy
-
-# Frequently
-5 8,10,12,14,16 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts --nowarn
-*/5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
-
-# Once a day
-5 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-comment-alerts
-33 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-comment-alerts
-
-# Once a week run threshold with warnings, so see reps that need emails
-30 1 * * Tue !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-threshold-alerts
-
-!!(* } *)!!
-
 # Once a day, on all machines
 !!(* if (!$staging) { *)!!
 51 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/signup-rate-graph
 !!(* } *)!!
-

@@ -46,6 +46,8 @@ function page_header($title='', $params = array()) {
     if (!$title)
         echo " &ndash; Sign up to hear from your $rep_type about local issues, and to discuss them with other constituents";
 ?></title>
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600">
+<link rel="stylesheet" type="text/css" media="all" href="/assets/css/banner.css">
 <style type="text/css">@import url("/ycml.css");</style>
 <!--[if LT IE 7]>
 <style type="text/css">@import url("/ie6.css");</style>
@@ -69,7 +71,20 @@ function page_header($title='', $params = array()) {
 </script>
 <?
     }
-    echo '</head><body>';
+?>
+</head>
+<body>
+
+<div class="retirement-banner retirement-banner--hearfromyourmp">
+  <div class="retirement-banner__inner">
+    <a class="retirement-banner__logo" href="https://www.mysociety.org/">mySociety</a>
+    <p class="retirement-banner__description">With regret, we’ve made the
+    difficult decision to close this site down when Parliament is dissolved.
+    <a class="retirement-banner__more" href="https://www.mysociety.org/2015/01/28/goodbye-to-some-old-friends/">Find out more&hellip;</a></p>
+  </div>
+</div>
+
+<?
     
     // Warn that we are on a testing site
     $devwarning = array();
