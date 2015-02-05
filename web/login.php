@@ -238,7 +238,8 @@ function login_page() {
                     ));
         db_commit();
         $url = OPTION_BASE_URL . "/L/$token";
-        $template_data = rabx_unserialise(stash_get_extra($q_stash));
+        $extra = stash_get_extra($q_stash);
+        $template_data = rabx_unserialise($extra);
         $template_data['url'] = $url;
         $template_data['user_name'] = $q_name ? " $q_name" : '';
         $template_data['user_email'] = $q_email;
@@ -277,7 +278,8 @@ function login_form($errors = array()) {
     if (is_null($q_name))
         $q_name = $q_h_name = '';   /* shouldn't happen */
 
-    $template_data = rabx_unserialise(stash_get_extra($q_stash));
+    $extra = stash_get_extra($q_stash);
+    $template_data = rabx_unserialise($extra);
     $reason = htmlspecialchars($template_data['reason_web']);
 
     if (sizeof($errors)) {
