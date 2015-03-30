@@ -78,9 +78,10 @@ function page_header($title='', $params = array()) {
 <div class="retirement-banner retirement-banner--hearfromyourmp">
   <div class="retirement-banner__inner">
     <a class="retirement-banner__logo" href="https://www.mysociety.org/">mySociety</a>
-    <p class="retirement-banner__description">With regret, we’ve made the
-    difficult decision to close this site down when Parliament is dissolved.
-    <a class="retirement-banner__more" href="https://www.mysociety.org/2015/01/28/goodbye-to-some-old-friends/">Find out more&hellip;</a></p>
+    <p class="retirement-banner__description">
+HearFromYourMP is now closed. The site is available as an archive for you to
+browse, but you can no longer sign up or receive updates.
+<a href="/closed">Find out more&hellip;</a></p>
   </div>
 </div>
 
@@ -145,8 +146,6 @@ function page_footer($params = array()) {
 <a href="/about">About this site</a>
 <? if (OPTION_AREA_TYPE=='WMC') { ?> | <a href="/about-mps">If you are an MP</a><? } ?>
 | <a href="/league">League table</a>
-| <a href="/link">Link to us</a>
-| <a href="/contact">Contact us</a>
 <br>
 <small>Built by <a href="http://www.mysociety.org/">mySociety</a>.
 Powered by <a href="http://www.bytemark.co.uk/">Bytemark</a>.

@@ -55,8 +55,6 @@ function comment_show_one($r, $noabuse = false) {
         $content = '<em>This comment has been removed</em>';
     }
     $comment .= ':';
-    if (!$noabuse)
-        $comment .= " <small>(<a href=\"/abuse?id=$r[id]\">Is this post abusive?</a>)</small>";
     /* Permalink to this comment. */
     $comment .= " <a href=\"#comment${r['id']}\" class=\"comment-permalink\" title=\"Link to this comment\">#</a>";
     $comment .= "</p>\n<div><p>$content</p></div>";

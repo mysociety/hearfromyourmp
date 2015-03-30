@@ -18,9 +18,6 @@ page_footer();
 
 function front_page() {
 
-    echo recent_messages();
-    echo recent_replies();
-
     echo '<div id="indented">';
     $P = person_if_signed_on(true); /* Don't renew any login cookie. */
     if ( $P ) 

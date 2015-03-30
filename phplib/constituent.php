@@ -40,39 +40,9 @@ function constituent_unsubscribe_link($signup_id, $email) {
 
 /* Display form for YCML sign up. */
 function constituent_subscribe_box($array = array()) {
-    $name = get_http_var('name');
-    if (array_key_exists('email', $array))
-        $email = $array['email'];
-    else
-        $email = get_http_var('email');
-    $postcode = get_http_var('postcode');
-    $return = get_http_var('r');
-
-    $P = person_if_signed_on();
-    if (!is_null($P)) {
-        if (is_null($name) || !$name)
-            $name = $P->name_or_blank();
-        if (is_null($email) || !$email)
-            $email = $P->email();
-    }
-
-    $example_postcode = get_example_postcode();
-
 ?>
 <form accept-charset="utf-8" method="post" action="/subscribe" name="subscribe_form">
 <div id="subscribeBox">
-<input type="hidden" name="r" value="<?=htmlspecialchars($return) ?>">
-    <input type="hidden" name="subscribe" id="subscribe" value="1">
-    <label for="name">Your name:</label>
-    <input type="text" name="name" id="name" value="<?=htmlspecialchars($name) ?>" size="20">
-    <label for="email">Your email:</label>
-    <input type="text" name="email" id="email" value="<?=htmlspecialchars($email) ?>" size="25">
-    <label for="postcode">UK postcode:</label> 
-    <input type="text" name="postcode" id="postcode" value="<?=htmlspecialchars($postcode) ?>" size="10">
-&nbsp; 
-    <input type="submit" class="submit" value="Sign up">
-    <input type="hidden" name="sign" id="sign" value="<?=htmlentities(get_http_var('sign'))?>">
-    <br><em>(for example <?=$example_postcode ?>)</em>
 </div>
 </form>
 <? 

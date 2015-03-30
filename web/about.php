@@ -12,8 +12,6 @@ require_once '../phplib/constituent.php';
 require_once '../phplib/recent.php';
 
 page_header();
-print recent_messages();
-print recent_replies();
 $num = db_getOne("select count(distinct area_id) from message");
 if (OPTION_AREA_TYPE == 'WMC') 
     mp_about_page($num);

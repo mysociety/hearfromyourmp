@@ -15,8 +15,6 @@ about_mps_page();
 page_footer();
 
 function about_mps_page() {
-    print recent_messages();
-    print recent_replies();
     $contact_email = str_replace('@', '&#64;', OPTION_CONTACT_EMAIL);
 ?>
 

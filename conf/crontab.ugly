@@ -2,15 +2,3 @@
 # Timed tasks for HearFromYourMP. Template file.
 
 MAILTO=cron-!!(*= $site *)!!@mysociety.org
-
-# Frequently, on one machine only as not concurrent
-*/5 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-message-alerts
-
-# Once a day, on one machine only as not concurrent
-5 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-rep-comment-alerts
-33 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/send-comment-alerts
-
-# Once a day, on all machines
-!!(* if (!$staging) { *)!!
-51 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/hearfromyourmp/bin/signup-rate-graph
-!!(* } *)!!

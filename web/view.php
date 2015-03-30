@@ -26,10 +26,7 @@ importparams(
     array('mode', '/^post$/', 'Invalid mode', null)
 );
 
-if ($q_mode == 'post') {
-    page_header('Replying to a message');
-    view_post_comment_form();
-} elseif ($q_message) {
+if ($q_message) {
     # Show thread for particular message.
     view_message($q_message);
 } elseif ($q_area_id) {
@@ -66,7 +63,6 @@ discuss them with other constituents</strong><br>
 /* view_constituencies
  * Page listing all constituencies having messages. */
 function view_constituencies() {
-    mini_signup_form();
     $q = db_query("SELECT DISTINCT area_id FROM message where state in ('approved','closed')");
     $out = array();
     while ($r = db_fetch_array($q)) {
@@ -135,7 +131,6 @@ function view_messages($area_id) {
     if (count($reps_info)==1 && isset($reps_info_arr[0]['name']))
         $title = $reps_info_arr[0]['name'] . ', ' . $title;
     page_header($title);
-    mini_signup_form();
 
     echo '<h2>', $area_info['name'], '</h2>';
     $reps = array();
@@ -250,7 +245,6 @@ function view_message($message) {
     }
     $area_info = ycml_get_area_info($area_id);
     page_header($r['subject'] . ' - ' . $rep_name . ', ' . $area_info['name']);
-    mini_signup_form();
     $next = db_getOne("SELECT id FROM message
         WHERE state in ('approved','closed') and area_id = ? AND posted > ?
         ORDER BY posted LIMIT 1",
@@ -279,34 +273,6 @@ function view_message($message) {
     if ($cc && count($cc))
         print '<h3>Comments</h3> <ul id="comments">' . comment_show($cc, 0, count($cc) - 1) . '</ul>';
 
-    if (get_http_var('showform')) {
-        $rr = array();
-        $rr['reason_web'] = _('Before posting to ' . $_SERVER['site_name'] . ', we need to confirm your email address and that you are subscribed to this ' . area_type() . '.');
-        $rr['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this " . area_type() . '.');
-        $rr['reason_email_subject'] = "Post to $_SERVER[site_name]";
-        $P = person_signon($rr);
-    } else {
-        $P = person_if_signed_on();
-    }
-    if (OPTION_POSTING_DISABLED) {
-        print '<p id="formreplace">During the election period, commenting on this site is disabled.</p>';
-    } elseif ($r['state'] == 'closed') {
-        print '<p id="formreplace">Commenting on this message is now disabled.</p>';
-    } elseif (!is_null($P)) {
-        if (person_allowed_to_reply($P->id(), $area_id, $message)) {
-            comment_form($P, $area_id);
-        } else {
-            print '<p id="formreplace">You are not subscribed to ' . $_SERVER['site_name'] . ' in this ' . area_type() . ', or subscribed after this message was posted.</p>';
-        }
-    } else { ?>
-<p id="formreplace">If you are subscribed to <?=$_SERVER['site_name']?> in this <?=area_type() ?>,
-<a href="/view/message/<?=$message ?>/reply">log in</a> to post a reply.
-<br>Otherwise, if you live in the UK, 
-<a href="/subscribe?r=/view/message/<?=$message ?>">sign up</a> in order to
-<?=$_SERVER['site_name']?>.
-</p>
-<?
-    }
 }
 
 function message_get($id) {
@@ -316,133 +282,3 @@ function message_get($id) {
     return $r;
 }
 
-function view_post_comment_form() {
-    global $q_text, $q_h_text, $q_emailreplies, $q_replyid, $q_counter, $q_message, $q_post;
-    importparams(
-        array('text', '//', '', null),
-        array('emailreplies', '/^1$/', '', null),
-        array('replyid', '/^\d+$/', '', null),
-        array('counter', '/^\d+$/', '', null),
-        array('post', '/^Post$/', '', null)
-    );
-
-    $r = message_get($q_message);
-    if (OPTION_POSTING_DISABLED) {
-        print '<div class="error">During the election period, commenting on this site is disabled.</div>';
-        return false;
-    } elseif ($r['state'] == 'closed') {
-        print '<div class="error">Commenting on this message is now disabled.</div>';
-        return false;
-    }
-
-    $rr = array();
-    $rr['reason_web'] = _('Before posting to '.$_SERVER['site_name'].', we need to confirm your email address and that you are subscribed to this constituency.');
-    $rr['reason_email'] = _("You'll then be able to post to the site, as long as you are subscribed to this constituency.");
-    $rr['reason_email_subject'] = _("Post to $_SERVER[site_name]");
-    $P = person_signon($rr);
-
-    $area_id = $r['area_id'];
-    if (!person_allowed_to_reply($P->id(), $area_id, $q_message)) {
-        print '<div class="error">Sorry, but you are not subscribed to this constituency, or you subscribed after this message was posted.</div>';
-        return false;
-    }
-
-    /* Need to make sure that this person hasn't posted two comments already in
-     * the last 24 hours. */
-    $posted_by_rep = constituent_is_rep($P->id(), $area_id);
-    if (db_getOne("select count(id) from comment where person_id = ? and date > current_timestamp - '24 hours'::interval", $P->id()) >= 2
-        && !$posted_by_rep) {
-        print '<div class="error">Sorry, but you have already posted two comments in the last 24 hours.</div>';
-
-        if (!is_null($q_text) && strlen($q_text) > 0) {
-            /* Show them the text of their comment so that they can save it. */
-            print '<p>Here is the text of your comment. You can save this page (using File | Save) or cut-and-paste the text into another program if you would like to keep your comment and post it at a later date:</p>';
-            $content = comment_prettify($q_text);
-            print "<div><p>$content</p></div>";
-        }
-        
-        return false;
-    }
-
-    if (!is_null($q_replyid)) {
-        if (db_getOne('select count(*) from comment where id = ? and visible <> 0', $q_replyid) != 1)
-            err("Bad reply ID $replyid");
-        print '<p><em>This is the comment to which you are replying:</em></p>'
-        . '<blockquote>' . comment_show_one(db_getRow('SELECT id, author, email, link, date, content, visible FROM comment WHERE id = ?', $replyid)) . '</blockquote>';
-    }
-
-    $preview = '';
-    if (!is_null($q_counter)) {
-        $website = $P->website_or_blank();
-        $preview = '<h3>Previewing your comment</h3> <ul id="comments"><li><p><em>Not yet</em> posted by ';
-        if ($website) $preview .= "<a href=\"$website\">";
-        $preview .= $P->name();
-        if ($website) $preview .= '</a>';
-        $preview .= ':</p> <div>' . comment_prettify($q_text) . '</div></li></ul>';
-    }
-
-    if (!preg_match('#[^\s]#', $q_text)) {
-        $q_counter = null;
-   }
-
-    if (!$q_post || is_null($q_counter)) {
-        print $preview;
-        comment_form($P, $area_id);
-    } else {
-        $refs = '';
-        if ($q_replyid != '') {
-            $refs = db_getOne('select refs from comment where id = ?', $q_replyid);
-            $refs .= ",$q_replyid";
-        }
-
-        $posted_by_rep = constituent_is_rep($P->id(), $area_id);
-        db_query('insert into comment (id, message, refs, person_id, ipaddr, content, visible, posted_by_rep)
-            values (comment_next_id(), ?, ?, ?, ?, ?, ?, ?)', array($q_message, $refs, $P->id(),
-            $_SERVER['REMOTE_ADDR'], $q_text, 1, $posted_by_rep));
-        if ($q_emailreplies)
-            alert_signup($P->id(), $q_message);
-        db_commit();
-
-        print '<p>Thank you for your comment. You can <a href="/view/message/' . $q_message . '">view it here</a>.</p>';
-    }
-}
-
-function comment_form($P, $area_id) {
-    global $q_message, $q_counter, $q_h_text, $q_emailreplies;
-    if (is_null($q_counter))
-        $counter = 0;
-    else
-        $counter = $q_counter + 1;
-    $posted_by_rep = constituent_is_rep($P->id(), $area_id);
-?>
-<form id="commentform" name="commentform" action="/view" method="post" accept-charset="utf-8">
-<input type="hidden" name="mode" value="post">
-<input type="hidden" name="counter" value="<?=$counter ?>">
-<input type="hidden" name="message" value="<?=$q_message ?>">
-<? /* NO THREADING <input type="hidden" name="replyid" value=""> */ ?>
-<h2>Post a reply</h2>
-<?
-    if (!$posted_by_rep) {
-?>
-<p><em>Note that you may post at most two replies in any given 24-hour period</em></p>
-<?
-    }
-?>
-<p><label for="text">Public message:</label><textarea name="text" id="text" rows="10" cols="50"><?=$q_h_text ?></textarea></p>
-<p><input<? if ($q_emailreplies) print ' checked'; ?> type="checkbox" id="emailreplies" name="emailreplies" value="1"> <label for="emailreplies" class="inline_label">Email me future comments to this message</label></p>
-<input type="submit" name="Preview" value="Preview">
-<? if ($counter>0) print '<input type="submit" name="post" value="Post">'; ?>
-</form>
-<?
-}
-
-function person_allowed_to_reply($person_id, $area_id, $message) {
-    $signed_up = db_getOne('SELECT constituent.id FROM constituent,message
-                            WHERE person_id = ? AND constituent.area_id = ? AND message.id = ?
-                            AND creation_time<=posted',
-                            array($person_id, $area_id, $message));
-    if ($signed_up) return true;
-    return false;
-}
-
-?>
